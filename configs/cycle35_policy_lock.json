@@ -1,0 +1,65 @@
+{
+  "schema_version": "cycle35-policy-lock-v1",
+  "policy_version": "cycle35-deployment-policy-v1",
+  "lock_created_at_utc": "2026-08-25T22:05:00Z",
+  "source_cycle": 34,
+  "selection_method": "modal_cycle34_variant_then_fixed_simplicity_tiebreak",
+  "selection_rule": {
+    "source": "cycle34_nested_walk_forward.json",
+    "metric_scope": "selection counts only; no 2526 labels",
+    "tie_break_order": [
+      "constant_train_rate",
+      "legacy",
+      "expanded",
+      "referee_enhanced",
+      "platt_expanded",
+      "platt_referee_enhanced"
+    ],
+    "fallback": "constant_train_rate_if_safety_contract_fails"
+  },
+  "markets": {
+    "btts": {
+      "market": "btts",
+      "selected_variant": "constant_train_rate",
+      "selection_counts": {
+        "constant_train_rate": 3,
+        "legacy": 3,
+        "expanded": 1,
+        "platt_expanded": 1
+      },
+      "feature_version": "pre-match-rolling-v0.2",
+      "model_version": "constant-historical-rate-v1",
+      "calibration_policy": "none",
+      "training_seasons": ["1516", "1617", "1718", "1819", "1920", "2021", "2122", "2223", "2324", "2425"],
+      "calibration_seasons": [],
+      "training_cutoff": "2025-05-31T23:59:59Z",
+      "threshold": 0.5
+    },
+    "cards": {
+      "market": "cards",
+      "selected_variant": "constant_train_rate",
+      "selection_counts": {
+        "constant_train_rate": 5,
+        "platt_referee_enhanced": 2,
+        "referee_enhanced": 1
+      },
+      "feature_version": "card-team-referee-rolling-v0.2",
+      "model_version": "constant-historical-rate-v1",
+      "calibration_policy": "none",
+      "training_seasons": ["1516", "1617", "1718", "1819", "1920", "2021", "2122", "2223", "2324", "2425"],
+      "calibration_seasons": [],
+      "training_cutoff": "2025-05-31T23:59:59Z",
+      "threshold": 0.5
+    }
+  },
+  "input_artifact_hashes": {
+    "cycle34_report": "9c398e7cd4001690e24b59552e12450db6d67797adb91d398d20b0463686488d",
+    "cycle34_fold_metrics": "6f1b74773cdb03f4a23d5db1d21031af2dd60e9e02416478926c15d11d347c04",
+    "cycle34_report_manifest": "a3efeace8845ba7fd107860a10e9517a8ddb4b36ec34e90ea617df3ce01301e1",
+    "cycle34_fold_metrics_manifest": "7e71128f45e97ed0b17591662124465f8ea13ca43e50725cf7662874f0ac9611",
+    "cycle34_documentation": "ca7b9382c964105ac53b3c9be8da10a16ab7eb8de744999005663f1b5f6c271c",
+    "source_commit": "d0041b9b520efdaefc905c1756c8c5279616b2e6"
+  },
+  "protected_holdout": ["2526"],
+  "commercial_release": false
+}
