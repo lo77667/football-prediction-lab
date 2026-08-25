@@ -144,3 +144,8 @@
 ## حالة CI بعد decision ledger
 
 الـcommit `49d5ad7` منشور على `main`، ونجحت الفحوص المحلية مع **109 اختبارات**. فشل `quality-gate` البعيد خلال ثانيتين تقريبًا، والـjob ما يزال يعرض `steps: []` دون log؛ لذلك لا يوجد دليل على تنفيذ checkout أو preflight أو الاختبارات في GitHub، ولا يُنسب الفشل إلى الكود المحلي.
+
+
+## حماية ledger من claims المالية
+
+أضيف validator يرفض إدخال كلمات أو أسباب تدّعي `profit` أو `ROI` أو `stake` أو `bet` أو توصية odds داخل أحداث التدقيق. بقيت flags `financial_execution` و`outcome_recorded` ثابتة على `false`. الـcommit `fa5dcd8` منشور، ونجحت الفحوص المحلية مع **110 اختبارات**. فشل CI البعيد للسبب نفسه: job ينتهي مع `steps: []` قبل تنفيذ أي خطوة.
