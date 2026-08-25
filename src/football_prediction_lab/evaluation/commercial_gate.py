@@ -13,6 +13,14 @@ from football_prediction_lab.evaluation.odds_schema import (
     audit_odds_snapshots,
     remove_binary_overround_from_snapshots,
 )
+from football_prediction_lab.evaluation.selection_provenance import (
+    SelectionProvenance,
+    build_selection_provenance,
+)
+from football_prediction_lab.evaluation.source_policy import (
+    SourceSelectionPolicy,
+    apply_source_selection_policy,
+)
 
 
 class GateDecision(BaseModel):
@@ -29,6 +37,54 @@ class GateDecision(BaseModel):
     protocol: Literal["opening", "latest_pre_match"]
     market_implied_probability: float | None = None
     overround: float | None = None
+    selection_provenance: SelectionProvenance | None = None
+
+
+def gate_prediction_with_source_policy(
+    prediction: PredictionRecord,
+    snapshots: list[OddsSnapshot],
+    policy: SourceSelectionPolicy,
+    *,
+    selection_protocol: Literal["opening", "latest_pre_match"] = "latest_pre_match",
+    kickoff_tolerance_seconds: int = 60,
+    holdout_seasons: set[str] | None = None,
+    match_season: str | None = None,
+) -> GateDecision:
+    """Apply a predeclared source policy before running the commercial gate."""
+
+    if policy.market != prediction.market:
+        return GateDecision(
+            accepted=False,
+            prediction_id=prediction.prediction_id,
+            match_id=prediction.match_id,
+            market=prediction.market,
+            selected_snapshot_ids=[],
+            reasons=["source_policy_market_mismatch"],
+            protocol=selection_protocol,
+        )
+    policy_result = apply_source_selection_policy(
+        snapshots,
+        policy,
+        kickoff_utc=prediction.kickoff_utc,
+    )
+    decision = gate_prediction_for_market_comparison(
+        prediction,
+        policy_result.accepted,
+        selection_protocol=selection_protocol,
+        kickoff_tolerance_seconds=kickoff_tolerance_seconds,
+        holdout_seasons=holdout_seasons,
+        match_season=match_season,
+    )
+    if not decision.accepted:
+        return decision.model_copy(
+            update={
+                "reasons": decision.reasons + [
+                    row["reason"] for row in policy_result.discarded_rows
+                ]
+            }
+        )
+    provenance = build_selection_provenance(policy, policy_result.accepted)
+    return decision.model_copy(update={"selection_provenance": provenance})
 
 
 def gate_prediction_for_market_comparison(

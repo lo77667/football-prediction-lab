@@ -5,6 +5,7 @@ import pytest
 
 from football_prediction_lab.evaluation.commercial_gate import (
     gate_prediction_for_market_comparison,
+    gate_prediction_with_source_policy,
 )
 from football_prediction_lab.evaluation.commercial_report import (
     assert_no_protected_holdout,
@@ -12,6 +13,7 @@ from football_prediction_lab.evaluation.commercial_report import (
 )
 from football_prediction_lab.evaluation.contracts import PredictionRecord
 from football_prediction_lab.evaluation.odds_schema import OddsSnapshot
+from football_prediction_lab.evaluation.source_policy import SourceSelectionPolicy
 
 KICKOFF = datetime(2025, 8, 1, 12, tzinfo=UTC)
 ISSUED = datetime(2025, 8, 1, 10, tzinfo=UTC)
@@ -53,6 +55,23 @@ def odds(selection: str, snapshot_id: str, **overrides: object) -> OddsSnapshot:
     }
     values.update(overrides)
     return OddsSnapshot(**values)
+
+
+def test_gate_with_source_policy_attaches_selection_provenance() -> None:
+    source_policy = SourceSelectionPolicy(
+        policy_id="policy-1",
+        market="btts",
+        source_name="fixture-source",
+        odds_type="pre_match",
+        declared_at=ISSUED - timedelta(hours=1),
+    )
+    result = gate_prediction_with_source_policy(
+        prediction(), [odds("yes", "yes"), odds("no", "no")], source_policy
+    )
+    assert result.accepted is True
+    assert result.selection_provenance is not None
+    assert result.selection_provenance.policy_id == "policy-1"
+    assert len(result.selection_provenance.policy_sha256) == 64
 
 
 def test_gate_accepts_complete_binary_pre_match_market() -> None:
