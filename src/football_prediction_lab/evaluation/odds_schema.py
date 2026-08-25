@@ -2,6 +2,8 @@
 
 from __future__ import annotations
 
+import hashlib
+import json
 from collections import Counter
 from datetime import UTC, datetime
 from typing import Any, Literal
@@ -137,14 +139,7 @@ def audit_odds_snapshots(
             discarded.append(_discard(snapshot.snapshot_id, "duplicate_outcome_in_snapshot"))
             continue
         snapshot_selection_keys.add(snapshot_selection_key)
-        key = (
-            snapshot.match_id,
-            snapshot.market,
-            snapshot.selection,
-            snapshot.odds_type,
-            captured_at.isoformat(),
-            snapshot.source_name,
-        )
+        key = canonical_snapshot_key(snapshot)
         duplicate_keys[key] += 1
         accepted.append(snapshot)
 
@@ -152,14 +147,7 @@ def audit_odds_snapshots(
         if count <= 1:
             continue
         for snapshot in accepted[:]:
-            snapshot_key = (
-                snapshot.match_id,
-                snapshot.market,
-                snapshot.selection,
-                snapshot.odds_type,
-                _as_utc(snapshot.captured_at).isoformat(),
-                snapshot.source_name,
-            )
+            snapshot_key = canonical_snapshot_key(snapshot)
             if snapshot_key == key:
                 accepted.remove(snapshot)
                 discarded.append(_discard(snapshot.snapshot_id, "duplicate_snapshot_key"))
@@ -215,6 +203,27 @@ def audit_odds_snapshots(
         "kickoff_tolerance_seconds": kickoff_tolerance_seconds,
     }
     return OddsAuditResult(accepted=selected, discarded_rows=discarded, summary=summary)
+
+
+def canonical_snapshot_key(snapshot: OddsSnapshot) -> tuple[str, str, str, str, str, str]:
+    """Return the stable deduplication key required by the commercial protocol."""
+
+    return (
+        snapshot.match_id,
+        snapshot.market,
+        snapshot.selection,
+        snapshot.odds_type,
+        _as_utc(snapshot.captured_at).isoformat(),
+        snapshot.source_name,
+    )
+
+
+def canonical_snapshot_fingerprint(snapshot: OddsSnapshot) -> str:
+    """Hash the canonical JSON representation without including mutable runtime fields."""
+
+    payload = snapshot.model_dump(mode="json")
+    encoded = json.dumps(payload, sort_keys=True, separators=(",", ":")).encode("utf-8")
+    return hashlib.sha256(encoded).hexdigest()
 
 
 def market_implied_probability(decimal_odds: float) -> float:

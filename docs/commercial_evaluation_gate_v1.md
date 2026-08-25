@@ -61,3 +61,10 @@
 ## حالة CI بعد ingestion adapter
 
 الـcommit `e6b63a0` موجود على `main`، ونجحت الفحوص المحلية مع **94 اختبارًا**. أما GitHub Actions `quality-gate` فأنهى التشغيل بالفشل خلال ثوانٍ مع `steps: []` ومن دون سجل runner، وهو نفس النمط البيئي السابق؛ لذلك لا يُنسب الفشل إلى الاختبارات أو Ruff دون سجل تنفيذ فعلي.
+
+
+## التحسين التالي المنفذ: canonical snapshot identity
+
+أُضيفت `canonical_snapshot_key` و`canonical_snapshot_fingerprint` إلى `evaluation/odds_schema.py`. المفتاح الحتمي يطابق مفتاح البروتوكول `(match_id, market, selection, odds_type, captured_at, source)`، بينما يحسب fingerprint من JSON قانوني مرتب المفاتيح. أُعيد استخدام المفتاح نفسه داخل duplicate detection حتى لا تختلف قاعدة التدقيق عن قاعدة الهوية.
+
+اختُبرت حتمية المفتاح والبصمة مع اختلاف ترتيب الحقول، وبقيت حماية post-kickoff وclosing و2526 كما هي. هذا تحسين سلامة وتدقيق، وليس دليلًا على ربحية أو تفوق تنبؤي.

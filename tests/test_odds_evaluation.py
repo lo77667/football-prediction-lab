@@ -9,6 +9,8 @@ from football_prediction_lab.evaluation.odds_schema import (
     MatchReference,
     OddsSnapshot,
     audit_odds_snapshots,
+    canonical_snapshot_fingerprint,
+    canonical_snapshot_key,
     remove_binary_overround_from_snapshots,
 )
 
@@ -37,6 +39,14 @@ def snapshot(snapshot_id: str, selection: str, **overrides: object) -> dict[str,
     }
     value.update(overrides)
     return value
+
+
+def test_canonical_snapshot_identity_is_stable() -> None:
+    first = OddsSnapshot(**snapshot("s-1", "yes"))
+    second = OddsSnapshot(**dict(reversed(list(snapshot("s-1", "yes").items()))))
+    assert canonical_snapshot_key(first) == canonical_snapshot_key(second)
+    assert canonical_snapshot_fingerprint(first) == canonical_snapshot_fingerprint(second)
+    assert len(canonical_snapshot_fingerprint(first)) == 64
 
 
 def test_snapshot_requires_provenance_and_reusable_policy() -> None:
