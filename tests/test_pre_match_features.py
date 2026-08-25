@@ -1,6 +1,21 @@
 import pandas as pd
+import pytest
 
-from football_prediction_lab.features.pre_match import build_pre_match_features
+from football_prediction_lab.features.pre_match import (
+    build_pre_match_features,
+    feature_columns_for_window,
+)
+
+
+def test_feature_columns_for_window_is_single_window() -> None:
+    columns = feature_columns_for_window(3)
+
+    assert "home_avg_scored_3" in columns
+    assert "expected_total_goals_3" in columns
+    assert not any(column.endswith("_5") or column.endswith("_10") for column in columns)
+
+    with pytest.raises(ValueError, match="exactly one window"):
+        feature_columns_for_window((3, 5))  # type: ignore[arg-type]
 
 
 def test_current_result_is_not_used_in_features() -> None:

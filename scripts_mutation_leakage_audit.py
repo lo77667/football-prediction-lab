@@ -9,21 +9,34 @@ from pathlib import Path
 import pandas as pd
 
 from football_prediction_lab.features.cards import CARD_FEATURE_COLUMNS, build_card_features
-from football_prediction_lab.features.pre_match import FEATURE_COLUMNS, build_pre_match_features
+from football_prediction_lab.features.pre_match import (
+    build_pre_match_features,
+    feature_columns_for_window,
+)
 
 
-def audit_btts(frame: pd.DataFrame, indices: list[int]) -> list[dict[str, object]]:
-    original = build_pre_match_features(frame)
+def audit_btts(
+    frame: pd.DataFrame,
+    indices: list[int],
+    *,
+    window: int | None = None,
+) -> list[dict[str, object]]:
+    original = build_pre_match_features(frame, window=window)
+    feature_columns = (
+        feature_columns_for_window(window)
+        if window is not None
+        else feature_columns_for_window(5) + feature_columns_for_window(10)[-19:]
+    )
     results = []
     for index in indices:
         mutated = frame.copy()
         for column in ["home_goals", "away_goals", "btts", "home_shots_on_target", "away_corners"]:
             if column in mutated.columns:
                 mutated.loc[index, column] = 0 if mutated.loc[index, column] else 3
-        candidate = build_pre_match_features(mutated)
+        candidate = build_pre_match_features(mutated, window=window)
         match_id = frame.iloc[index]["match_id"]
-        left = original.loc[original["match_id"] == match_id, FEATURE_COLUMNS].iloc[0]
-        right = candidate.loc[candidate["match_id"] == match_id, FEATURE_COLUMNS].iloc[0]
+        left = original.loc[original["match_id"] == match_id, feature_columns].iloc[0]
+        right = candidate.loc[candidate["match_id"] == match_id, feature_columns].iloc[0]
         results.append({"match_id": match_id, "unchanged": bool(left.equals(right))})
     return results
 
@@ -60,13 +73,18 @@ def main() -> int:
     root = Path(__file__).resolve().parent
     matches = pd.read_csv(root / args.input, parse_dates=["kickoff_utc"])
     indices = sorted({0, len(matches) // 2, len(matches) - 1})
-    btts_results = audit_btts(matches, indices)
+    btts_results = {
+        str(window): audit_btts(matches, indices, window=window)
+        for window in (3, 5, 10)
+    }
     cards_results = audit_cards(matches, indices)
     result = {
         "rule": "mutating the current match must not change its pre-match feature vector",
         "btts": btts_results,
         "cards": cards_results,
-        "all_btts_unchanged": all(row["unchanged"] for row in btts_results),
+        "all_btts_unchanged": all(
+            row["unchanged"] for rows in btts_results.values() for row in rows
+        ),
         "all_cards_unchanged": all(row["unchanged"] for row in cards_results),
         "features_input_reference": args.features_input,
     }

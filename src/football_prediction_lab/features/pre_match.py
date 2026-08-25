@@ -41,6 +41,37 @@ FEATURE_COLUMNS = _ROLLING_COLUMNS + _DERIVED_COLUMNS + [
     "league_avg_goals_before",
 ]
 
+
+def feature_columns_for_window(window: int) -> list[str]:
+    """Return the expanded BTTS feature columns for exactly one rolling window."""
+
+    windows = _normalize_windows(window)
+    if len(windows) != 1:
+        raise ValueError("feature_columns_for_window requires exactly one window")
+    selected = windows[0]
+    rolling = [
+        f"{side}_{metric}_{selected}"
+        for side in ("home", "away")
+        for metric in _BASE_FEATURES
+    ]
+    derived = [
+        f"{name}_{selected}"
+        for name in (
+            "home_attack_signal",
+            "away_attack_signal",
+            "expected_total_goals",
+            "attack_product",
+            "btts_rate_product",
+        )
+    ]
+    return rolling + derived + [
+        "home_matches_before",
+        "away_matches_before",
+        "league_btts_rate_before",
+        "league_avg_goals_before",
+    ]
+
+
 HistoryEntry = tuple[float, float, float, float, float, float, float]
 
 
