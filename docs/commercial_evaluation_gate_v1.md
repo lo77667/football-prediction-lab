@@ -89,3 +89,8 @@
 أُضيف `selection_provenance.py` لبناء `SelectionProvenance` metadata-only يضم `policy_id` و`policy_sha256` وIDs وبصمات snapshots والسوق والمصدر ونوع odds. يتحقق builder من أن السياسة أُعلنت قبل أو عند أقدم capture، وأن كل snapshot يطابق السوق والمصدر ونوع السعر. لا يحتوي bundle على `actual` أو target أو outcome.
 
 يوفر `verify_selection_provenance` تحققًا fail-closed؛ فإذا تغيرت السياسة أو snapshot أو ترتيب الهوية، يفشل التحقق بدل قبول ledger غير قابل لإعادة البناء. بعد هذا التحسين اجتازت suite المحلية **101 اختبارًا**، مع استمرار عدم توفر benchmark اقتصادي حقيقي وعدم تنفيذ أي إجراء مالي.
+
+
+## آخر حالة CI
+
+الـcommit `d99da96` منشور على `main`، ونجحت الفحوص المحلية مع **101 اختبارًا**. انتهى `quality-gate` البعيد بحالة `failure` خلال ثوانٍ، والـjob `test-and-lint` يعرض `steps: []` دون سجل تنفيذ؛ ما يزال ذلك عطل runner أو تهيئة workflow غير قابل للتشخيص من metadata المتاحة، وليس دليلًا على فشل الاختبارات المحلية.
