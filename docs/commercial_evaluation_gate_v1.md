@@ -139,3 +139,8 @@
 أُضيف `decision_ledger.py` لإنشاء أحداث JSONL حتمية تربط `GateDecision` بحالة readiness وpolicy hash وبصمات snapshots. النموذج يفرض `financial_execution: false` و`outcome_recorded: false`، ويستخدم `extra="forbid"` لمنع إدخال `actual` أو `target` أو `roi` أو `stake` ضمن الحدث. يرفض الكاتب تكرار `event_id` ويرتب الأحداث حسب الهوية قبل الكتابة.
 
 هذا السجل مخصص للتدقيق وإعادة البناء فقط، ولا يمثل أمرًا ماليًا أو توصية. اختبارات الوحدة تثبت ثبات الترتيب وارتباط provenance وعدم وجود الحقول المالية، وبلغت suite المحلية **109 اختبارات** قبل التحقق الشامل.
+
+
+## حالة CI بعد decision ledger
+
+الـcommit `49d5ad7` منشور على `main`، ونجحت الفحوص المحلية مع **109 اختبارات**. فشل `quality-gate` البعيد خلال ثانيتين تقريبًا، والـjob ما يزال يعرض `steps: []` دون log؛ لذلك لا يوجد دليل على تنفيذ checkout أو preflight أو الاختبارات في GitHub، ولا يُنسب الفشل إلى الكود المحلي.
