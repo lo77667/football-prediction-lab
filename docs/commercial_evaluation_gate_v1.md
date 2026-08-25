@@ -164,3 +164,8 @@
 ## paired permutation significance check
 
 أضيف `paired_permutation_test` لاختبار فرق الخسارة بين النموذج و`baseline` أو السوق عبر تبديل الإشارة داخل كل `match_id`. يعيد p-value ثنائي الطرف ووسم `not_significant` أو `nominal_signal_not_proof`، ولا يختبر الربحية ولا يحدد stake. الـcommit `1ec511b` منشور على `main`، ونجحت الفحوص المحلية مع **114 اختبارًا**. فشل CI البعيد مجددًا قبل أي خطوة تنفيذ، مع `steps: []` وسجل runner فارغ.
+
+
+## توضيح تفسير paired significance
+
+أصبح خرج permutation يصرح بـ`null_model: paired_sign_flip` و`interpretation: descriptive_statistical_evidence_only`، مع بقاء `economic_claim_status: not_assessed`. الـcommit `4f3aec6` منشور على `main`، ونجحت الفحوص المحلية مع **114 اختبارًا**. فشل CI البعيد مجددًا قبل أي خطوة (`steps: []`) مع سجل runner فارغ.
