@@ -108,3 +108,10 @@
 أصبح `gate_prediction_with_source_policy` يطبق السياسة المعلنة أولًا، ثم يشغل بوابة المقارنة، ثم يرفق `SelectionProvenance` داخل `GateDecision` المقبول. بذلك يحمل القرار نفسه `policy_sha256` وsnapshot fingerprints، ولا يبقى الربط بين دفتر الاختيار والقرار مسؤولية المستدعي وحده.
 
 الـcommit `2806dcb` منشور على `main`. اجتازت suite المحلية **102 اختبارًا**، مع نجاح Ruff وcompileall وgit diff --check. فشل `quality-gate` البعيد مرة أخرى خلال ثوانٍ على job يعرض `steps: []` دون log قابل للقراءة؛ لم يتغير الاستنتاج البيئي، ولا توجد إشارة تنفيذية يمكن نسب الفشل إليها.
+
+
+## readiness no-go gate
+
+أُضيف `readiness.py` لإخراج قرار صريح من ثلاث حالات: `no_go` عند غياب تحقق المصدر، و`research_only` عند نقص العينة أو بقاء edge غير محسوم، و`conditional` عند اجتياز الشروط الوصفية فقط. حتى الحالة `conditional` تحمل `ready_for_financial_execution: false` دائمًا؛ فهي لا تعني ربحية ولا إذنًا بالمراهنة.
+
+يفشل gate إذا دخل موسم محمي، ويشترط حدًا أدنى معلنًا لصفوف المباريات، ويتطلب `edge_status` غير `indeterminate` أو `unavailable`. بعد إضافة هذه الطبقة اجتازت suite المحلية **106 اختبارات**، مع استمرار الفصل بين الدليل الإحصائي والقرار المالي.
