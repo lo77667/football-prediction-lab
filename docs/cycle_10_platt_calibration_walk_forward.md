@@ -40,3 +40,7 @@
 [1]: https://scikit-learn.org/stable/modules/calibration.html "scikit-learn User Guide: Probability calibration"
 [2]: https://scikit-learn.org/stable/modules/generated/sklearn.metrics.brier_score_loss.html "scikit-learn: brier_score_loss"
 [3]: https://scikit-learn.org/stable/auto_examples/model_selection/plot_nested_cross_validation_iris.html "scikit-learn: Nested versus non-nested cross-validation"
+
+## فحص إضافي مقابل baseline الثابت
+
+أعيدت المقارنة على نفس ثماني مواسم الاختبار وبنفس قاعدة قطع التدريب. بلغ baseline الثابت Brier قدره 0.2496004 وLog Loss قدره 0.6923479، بينما بلغ Platt Brier قدره 0.2494480 وLog Loss قدره 0.6920557. تفوق Platt في المقياسين معًا في 4 من 8 طيات، وقبلت البوابة المقارنة لأن التحسن المتوسط في Brier وLog Loss تحقق مع حد الطيات والصفوف. هذا تفوق احتمالي صغير، وليس دليلاً على منفعة مالية أو قابلية تشغيلية.
