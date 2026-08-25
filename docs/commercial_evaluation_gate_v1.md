@@ -159,3 +159,8 @@
 ## حالة CI بعد robustness
 
 الـcommit `9104853` منشور على `main`، ونجحت الفحوص المحلية مع **113 اختبارًا**. فشل `quality-gate` البعيد مجددًا خلال ثوانٍ مع `steps: []`، أي قبل تنفيذ preflight أو checkout أو أي اختبار؛ لم يتغير الاستنتاج بأن المشكلة خارجية في runner أو تهيئة GitHub.
+
+
+## paired permutation significance check
+
+أضيف `paired_permutation_test` لاختبار فرق الخسارة بين النموذج و`baseline` أو السوق عبر تبديل الإشارة داخل كل `match_id`. يعيد p-value ثنائي الطرف ووسم `not_significant` أو `nominal_signal_not_proof`، ولا يختبر الربحية ولا يحدد stake. الـcommit `1ec511b` منشور على `main`، ونجحت الفحوص المحلية مع **114 اختبارًا**. فشل CI البعيد مجددًا قبل أي خطوة تنفيذ، مع `steps: []` وسجل runner فارغ.
