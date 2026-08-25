@@ -1,5 +1,5 @@
 {
-  "generated_at_utc": "2026-08-25T22:50:50.826882+00:00",
+  "generated_at_utc": "2026-08-25T23:34:47.381431+00:00",
   "inputs": {
     "btts_source": {
       "path": "data/processed/epl_1516_2425_features.csv",
@@ -11,7 +11,7 @@
     }
   },
   "output_path": "reports/generated/cycle_36_candidate_evaluation.json",
-  "output_sha256": "f6e0fe7f0b164940b05239600a0843a1d242ed159391a9a4ec059c9696ed6ab0",
+  "output_sha256": "cbd0e19ff2d7dae5095421de8805a78bf4a633b197d6b0c6a5d5c49f3ffa73c4",
   "rows_after": 16,
   "schema_version": "cycle36-manifest-v1",
   "timezone": "UTC"

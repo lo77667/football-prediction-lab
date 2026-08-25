@@ -1,13 +1,13 @@
 {
-  "generated_at_utc": "2026-08-25T22:50:50.829695+00:00",
+  "generated_at_utc": "2026-08-25T23:34:47.383989+00:00",
   "inputs": {
     "evaluation": {
       "path": "reports/generated/cycle_36_candidate_evaluation.json",
-      "sha256": "f6e0fe7f0b164940b05239600a0843a1d242ed159391a9a4ec059c9696ed6ab0"
+      "sha256": "cbd0e19ff2d7dae5095421de8805a78bf4a633b197d6b0c6a5d5c49f3ffa73c4"
     }
   },
   "output_path": "configs/cycle36_future_holdout_policy.json",
-  "output_sha256": "f9659191f2414ba28b01efe6ed5515c96653174313e883c16bac106f3d88db38",
+  "output_sha256": "fdad09381a54bc7c90917f45dd084b0917124dc4974a1570faaafb48deb53742",
   "rows_after": 2,
   "schema_version": "cycle36-manifest-v1",
   "timezone": "UTC"

@@ -1,9 +1,9 @@
 {
-  "generated_at_utc": "2026-08-25T22:50:50.829346+00:00",
+  "generated_at_utc": "2026-08-25T23:34:47.383653+00:00",
   "inputs": {
     "evaluation": {
       "path": "reports/generated/cycle_36_candidate_evaluation.json",
-      "sha256": "f6e0fe7f0b164940b05239600a0843a1d242ed159391a9a4ec059c9696ed6ab0"
+      "sha256": "cbd0e19ff2d7dae5095421de8805a78bf4a633b197d6b0c6a5d5c49f3ffa73c4"
     }
   },
   "output_path": "reports/generated/cycle_36_fold_metrics.csv",
