@@ -1,0 +1,12 @@
+{
+  "input_path": "/home/ubuntu/football-prediction-lab/reports/generated/btts_ten_seasons_holdout.csv;/home/ubuntu/football-prediction-lab/reports/generated/cards_ten_seasons_holdout.csv",
+  "input_sha256": "2d5b8164482d8af9d32a2fe2239089c5c6ba69643914bab814357853ed5bb1f9",
+  "output_path": "/home/ubuntu/football-prediction-lab/reports/generated/cycle_31_commercial_evaluation.json",
+  "rows_before": 2280,
+  "rows_after": 2278,
+  "kickoff_utc_min": "2022-08-06 12:30:00+00:00",
+  "kickoff_utc_max": "2025-05-25 16:00:00+00:00",
+  "timezone": "UTC",
+  "feature_version": "commercial-evaluation-v1",
+  "generated_at_utc": "2026-08-25T16:01:47.094150+00:00"
+}

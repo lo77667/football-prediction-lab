@@ -6,7 +6,8 @@ from dataclasses import asdict, dataclass
 
 import numpy as np
 import pandas as pd
-from sklearn.metrics import accuracy_score, log_loss
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import accuracy_score, average_precision_score, log_loss, roc_auc_score
 
 
 @dataclass(frozen=True)
@@ -54,6 +55,65 @@ def evaluate_binary(
         mean_probability=float(probability_array.mean()),
         threshold=threshold,
     )
+
+
+def evaluate_binary_extended(
+    probabilities: pd.Series | np.ndarray,
+    actual: pd.Series | np.ndarray,
+    *,
+    baseline_probability: float | pd.Series | np.ndarray | None = None,
+    threshold: float = 0.5,
+    expected_rows: int | None = None,
+) -> dict[str, float | int | None]:
+    """Return core, discrimination, skill, calibration, and coverage diagnostics."""
+
+    result = evaluate_binary(probabilities, actual, threshold=threshold).as_dict()
+    probability_array = np.asarray(probabilities, dtype=float)
+    actual_array = np.asarray(actual, dtype=int)
+    classes = np.unique(actual_array)
+    if len(classes) == 2:
+        result["roc_auc"] = float(roc_auc_score(actual_array, probability_array))
+        result["average_precision"] = float(
+            average_precision_score(actual_array, probability_array)
+        )
+        logits = np.log(
+            np.clip(probability_array, 1e-15, 1 - 1e-15)
+            / np.clip(1 - probability_array, 1e-15, 1 - 1e-15)
+        )
+        calibration_model = LogisticRegression(solver="lbfgs", random_state=0)
+        calibration_model.fit(logits.reshape(-1, 1), actual_array)
+        result["calibration_slope"] = float(calibration_model.coef_[0, 0])
+        result["calibration_intercept"] = float(calibration_model.intercept_[0])
+    else:
+        result["roc_auc"] = None
+        result["average_precision"] = None
+        result["calibration_slope"] = None
+        result["calibration_intercept"] = None
+
+    if baseline_probability is None:
+        result["brier_skill_score"] = None
+        result["log_loss_skill_score"] = None
+    else:
+        if np.isscalar(baseline_probability):
+            baseline = np.full(len(actual_array), float(baseline_probability))
+        else:
+            baseline = np.asarray(baseline_probability, dtype=float)
+        baseline_metrics = evaluate_binary(baseline, actual_array)
+        result["brier_skill_score"] = (
+            None
+            if baseline_metrics.brier_score == 0
+            else float(1 - result["brier_score"] / baseline_metrics.brier_score)
+        )
+        result["log_loss_skill_score"] = (
+            None
+            if baseline_metrics.log_loss == 0
+            else float(1 - result["log_loss"] / baseline_metrics.log_loss)
+        )
+    result["valid_rows"] = int(len(actual_array))
+    result["coverage"] = (
+        1.0 if expected_rows is None else float(len(actual_array) / expected_rows)
+    )
+    return result
 
 
 def expected_calibration_error(
