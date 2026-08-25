@@ -1,6 +1,11 @@
 from datetime import UTC, datetime, timedelta
 
-from football_prediction_lab.evaluation.odds_quality import profile_odds_quality
+import pytest
+
+from football_prediction_lab.evaluation.odds_quality import (
+    profile_odds_quality,
+    verify_quality_profile,
+)
 from football_prediction_lab.evaluation.odds_schema import OddsSnapshot
 
 KICKOFF = datetime(2025, 8, 1, 12, tzinfo=UTC)
@@ -38,6 +43,16 @@ def test_profile_is_deterministic_and_counts_duplicate_identity() -> None:
     assert profile.capture_max_utc == "2025-08-01T11:00:00+00:00"
     assert profile.non_monotonic_match_captures == 1
     assert profile.profile_sha256 == profile_odds_quality([second, first, first]).profile_sha256
+
+
+def test_verify_quality_profile_fails_closed_on_mismatch() -> None:
+    first = make_snapshot("s-1", KICKOFF - timedelta(hours=2))
+    expected = profile_odds_quality([first])
+    assert verify_quality_profile([first], expected) == expected
+
+    changed = expected.model_copy(update={"rows": 2})
+    with pytest.raises(ValueError, match="does not match"):
+        verify_quality_profile([first], changed)
 
 
 def test_profile_empty_input_is_explicit() -> None:

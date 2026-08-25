@@ -31,6 +31,18 @@ class OddsQualityProfile(BaseModel):
     non_monotonic_match_captures: int = Field(ge=0)
 
 
+def verify_quality_profile(
+    snapshots: Iterable[OddsSnapshot],
+    expected: OddsQualityProfile,
+) -> OddsQualityProfile:
+    """Recompute and fail closed when a stored quality profile no longer matches."""
+
+    actual = profile_odds_quality(snapshots)
+    if actual != expected:
+        raise ValueError("odds quality profile does not match accepted snapshots")
+    return actual
+
+
 def profile_odds_quality(snapshots: Iterable[OddsSnapshot]) -> OddsQualityProfile:
     """Profile accepted snapshots deterministically, without inspecting outcomes."""
 
