@@ -10,6 +10,7 @@
 |---|---|
 | source commit قبل الإصلاح | `ed320db7ef3f639ca8457097708242cfe4886221` |
 | source commit بعد الإصلاح | `4814ec2162b4ef9979d2d673f9323606dd9324bd` |
+| artifact/report commit | `e8da8faad10a2f8a20ad3f9183504f37b88ee3f6` |
 | نطاق التعديل | bootstrap لمسار `src` + isolated import test |
 | تغيير منهج الاختيار | لا يوجد |
 | تغيير candidates أو metrics | لا يوجد |
@@ -70,7 +71,7 @@ env -u PYTHONPATH python3 scripts_evaluate_cycle36_candidates.py
 
 ## حالة CI
 
-يجب تقييم GitHub Actions من التنفيذ الفعلي فقط. ستُسجل حالة أحدث run بعد نشر commit 36.1 دون افتراض نجاح. إذا ظل job `test-and-lint` بلا خطوات تنفيذ، فسيُوصف ذلك كفشل runner/تهيئة لا كدليل فشل في كود Cycle 36.1.
+بعد نشر commit 36.1، اكتمل أحدث run `quality-gate` رقم `32911509886` على commit `e8da8faad10a2f8a20ad3f9183504f37b88ee3f6` بحالة `failure`. كان job `test-and-lint` بحالة failure مع `steps: []`، أي دون أي خطوات تنفيذ فعلية. لذلك لا يوجد دليل CI قابل للتحقق على فشل الاختبارات أو Ruff داخل الكود؛ الحالة توصف بدقة كفشل runner/تهيئة، بينما بقيت البوابات المحلية ناجحة.
 
 ## الملفات المعدلة في 36.1
 
