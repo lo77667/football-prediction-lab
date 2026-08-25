@@ -8,6 +8,7 @@ from football_prediction_lab.qualitative.contracts import (
     QualitativeFeatureSet,
     filter_events_before_cutoff,
 )
+from football_prediction_lab.qualitative.io import load_events_jsonl
 
 CUTOFF = datetime(2024, 8, 10, 14, 0, tzinfo=UTC)
 
@@ -67,6 +68,15 @@ def test_feature_set_rejects_events_for_another_match() -> None:
             cutoff_utc=CUTOFF,
             events=[make_event("wrong", 13, match_id="m2")],
         )
+
+
+def test_jsonl_loader_rejects_duplicate_event_ids(tmp_path) -> None:
+    event = make_event("duplicate", 13).model_dump_json()
+    path = tmp_path / "events.jsonl"
+    path.write_text(f"{event}\n{event}\n", encoding="utf-8")
+
+    with pytest.raises(ValueError, match="duplicate qualitative event_id"):
+        load_events_jsonl(path)
 
 
 def test_feature_set_returns_only_available_events() -> None:

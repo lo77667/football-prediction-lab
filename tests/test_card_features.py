@@ -43,6 +43,27 @@ def test_card_market_target_is_over_three_point_five() -> None:
     assert result.loc[0, "total_yellows_over_3_5"] == 1
 
 
+def test_missing_referee_uses_unknown_fallback() -> None:
+    matches = pd.DataFrame(
+        {
+            "match_id": ["m1"],
+            "kickoff_utc": ["2024-01-01T15:00:00Z"],
+            "home_team": ["A"],
+            "away_team": ["B"],
+            "home_yellows": [1],
+            "away_yellows": [1],
+            "home_reds": [0],
+            "away_reds": [0],
+            "referee": [pd.NA],
+        }
+    )
+
+    result = build_card_features(matches)
+
+    assert result.loc[0, "referee_matches_before"] == 0
+    assert result.loc[0, "referee_avg_yellows_10"] == 0.0
+
+
 def test_referee_history_excludes_current_match() -> None:
     matches = pd.DataFrame(
         {

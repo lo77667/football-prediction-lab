@@ -23,7 +23,11 @@ class TotalYellowCardsBaseline:
         *,
         random_state: int = 42,
         feature_columns: Sequence[str] | None = None,
+        c_value: float = 1.0,
+        class_weight: str | None = "balanced",
     ) -> None:
+        if c_value <= 0:
+            raise ValueError("c_value must be positive")
         self.feature_columns = list(feature_columns or CARD_FEATURE_COLUMNS)
         self.pipeline = Pipeline(
             steps=[
@@ -32,7 +36,8 @@ class TotalYellowCardsBaseline:
                     "classifier",
                     LogisticRegression(
                         max_iter=1_000,
-                        class_weight="balanced",
+                        C=c_value,
+                        class_weight=class_weight,
                         random_state=random_state,
                     ),
                 ),

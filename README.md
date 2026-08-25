@@ -14,7 +14,7 @@
 
 ## نطاق الإصدار الحالي
 
-يتضمن الإصدار الحالي مسارًا كميًا لـBTTS على عينة EPL من سبعة مواسم (`1819` إلى `2425`) بإجمالي 2660 مباراة، ونسخة بحثية منفصلة لسوق أكثر من 3.5 بطاقة صفراء. تستخدم الميزات الكمية تاريخ المباريات السابقة فقط، وتحتفظ بالطابع الزمني `Date + Time`، وتدعم مقارنة legacy بالموسعة على تقسيم زمني لا يخلط المستقبل بالماضي.
+يتضمن الإصدار الحالي مسارًا كميًا لـBTTS على عينة EPL من عشرة مواسم (`1516` إلى `2425`) بإجمالي 3800 مباراة محليًا، ونسخة بحثية منفصلة لسوق أكثر من 3.5 بطاقة صفراء. تستخدم الميزات الكمية تاريخ المباريات السابقة فقط، وتحتفظ بالطابع الزمني `Date + Time`، وتدعم مقارنة legacy بالموسعة على تقسيم زمني لا يخلط المستقبل بالماضي.
 
 أُضيفت ميزات حكم تاريخية لسوق البطاقات، لكنها لا تُعتمد بوصفها تحسينًا عامًا إلا بعد مراجعة نتائج التحقق والاختبار المستقلين. وتُحفظ تقارير المقارنة المحلية في `reports/generated/` ولا تُرفع ملفات البيانات الكبيرة إلى Git.
 
@@ -42,18 +42,34 @@ ruff check .
 لبناء عينة EPL متعددة المواسم وإعادة إنتاج ميزاتها:
 
 ```bash
-for season in 1819 1920 2021 2122 2223 2324 2425; do
+for season in 1516 1617 1718 1819 1920 2021 2122 2223 2324 2425; do
   python scripts_download_initial.py --season "$season" --competition E0
 done
-python scripts_combine_seasons.py
+python scripts_combine_seasons.py \
+  --output data/processed/epl_1516_2425.csv
 python scripts_build_features.py \
-  --input data/processed/epl_1819_2425.csv \
-  --output data/processed/epl_1819_2425_features.csv
-python scripts_compare_btts_multiseason.py
-python scripts_compare_cards_multiseason.py
+  --input data/processed/epl_1516_2425.csv \
+  --output data/processed/epl_1516_2425_features.csv
+python scripts_compare_btts_multiseason.py \
+  --input data/processed/epl_1516_2425_features.csv
+python scripts_compare_cards_multiseason.py \
+  --input data/processed/epl_1516_2425.csv
+python scripts_walk_forward.py \
+  --input data/processed/epl_1516_2425_features.csv \
+  --cards-input data/processed/epl_1516_2425.csv
+python scripts_walk_forward_tuned.py \
+  --input data/processed/epl_1516_2425_features.csv \
+  --cards-input data/processed/epl_1516_2425.csv
 ```
 
-في الإصدار الأول ستعمل المكونات الأساسية دون مفتاح API. ويجب مراجعة ترخيص كل مصدر قبل إعادة توزيع البيانات أو تشغيل خدمة عامة.
+لتشغيل مقارنة الكمي بالهجين، يجب توفير ملف JSONL حقيقي مصدره موثق ومسموح استخدامه؛ لا يُنشأ هذا الملف من نص مولد أو من نتيجة المباراة:
+
+```bash
+python scripts_compare_btts_hybrid.py \\
+  --qualitative-events path/to/verified_events.jsonl
+```
+
+في الإصدار الحالي تعمل المكونات الأساسية دون مفتاح API. ويجب مراجعة ترخيص كل مصدر قبل إعادة توزيع البيانات أو تشغيل خدمة عامة. ويظل `scripts_compare_btts_hybrid.py` مسارًا اختياريًا لا يعمل دون أحداث نوعية حقيقية متحققة زمنيًا.
 
 ## معيار الانتقال بين المراحل
 

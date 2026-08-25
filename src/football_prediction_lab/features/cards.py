@@ -67,7 +67,12 @@ def build_card_features(
     for row in ordered.itertuples(index=False):
         home_history = history[row.home_team]
         away_history = history[row.away_team]
-        referee = str(getattr(row, "referee", "unknown") or "unknown")
+        referee_value = getattr(row, "referee", "unknown")
+        referee = (
+            "unknown"
+            if pd.isna(referee_value) or not str(referee_value).strip()
+            else str(referee_value).strip()
+        )
         referee_entries = referee_history[referee]
         home_yellows = _number_or_zero(row.home_yellows)
         away_yellows = _number_or_zero(row.away_yellows)
