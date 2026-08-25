@@ -9,7 +9,7 @@ import pandas as pd
 
 from football_prediction_lab.qualitative.contracts import (
     QualitativeEvent,
-    filter_events_before_cutoff,
+    filter_events_for_training,
 )
 
 QUALITATIVE_CATEGORIES = (
@@ -51,7 +51,7 @@ def build_qualitative_features(
     for row in ordered.itertuples(index=False):
         cutoff = getattr(row, cutoff_column)
         cutoff = _as_aware_datetime(cutoff)
-        available = filter_events_before_cutoff(by_match.get(row.match_id, []), cutoff)
+        available = filter_events_for_training(by_match.get(row.match_id, []), cutoff)
         record: dict[str, object] = {
             "match_id": row.match_id,
             "qualitative_event_count_before": len(available),

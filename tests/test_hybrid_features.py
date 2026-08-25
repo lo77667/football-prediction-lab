@@ -17,11 +17,29 @@ def make_event(event_id: str, match_id: str, hour: int, category: str) -> Qualit
         match_id=match_id,
         available_at_utc=datetime(2024, 8, 10, hour, tzinfo=UTC),
         source_id="official-source",
+        provenance={
+            "source_id": "official-source",
+            "accessed_at_utc": datetime(2024, 8, 10, 12, tzinfo=UTC),
+            "rights_status": "research_permitted",
+            "rights_reviewed_at_utc": datetime(2024, 8, 10, 12, tzinfo=UTC),
+            "snapshot_sha256": "a" * 64,
+        },
         category=category,
         normalized_value={"status": "confirmed"},
         confidence=0.8,
         evidence="Archived source evidence",
     )
+
+
+def test_event_without_provenance_is_not_trainable() -> None:
+    matches = pd.DataFrame(
+        {"match_id": ["m1"], "kickoff_utc": ["2024-08-10T14:00:00Z"]}
+    )
+    event = make_event("e1", "m1", 13, "lineup").model_copy(update={"provenance": None})
+
+    result = build_qualitative_features(matches, [event])
+
+    assert result.loc[0, "qualitative_event_count_before"] == 0
 
 
 def test_hybrid_features_apply_match_specific_cutoff() -> None:

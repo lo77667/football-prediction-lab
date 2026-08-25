@@ -77,3 +77,9 @@ available_at_utc <= cutoff_utc
 [3]: https://www.football-data.co.uk/disclaimer.php "Football-Data.co.uk Liability Disclaimer"
 
 [4]: https://www.premierleague.com/en/news "Premier League News"
+
+## تشديد provenance
+
+أصبح `SourceProvenance` جزءًا من العقد البرمجي. ويتطلب `accessed_at_utc` و`rights_reviewed_at_utc` و`rights_status` و` snapshot_sha256` بطول SHA-256 الصحيح، إضافة إلى معرف المصدر أو رابطه. الأحداث التي تملك مصدرًا نصيًا فقط من دون provenance كامل قد تُحفظ للمراجعة، لكنها لا تدخل الميزات التدريبية؛ يطبق `filter_events_for_training` هذا الفصل آليًا.
+
+بهذا أصبح مسار «المصدر موجود» منفصلًا عن مسار «المصدر صالح للتدريب». وجود رابط عام أو دليل نصي لا يثبت وحده حق التخزين أو الاستخدام أو سلامة النسخة الزمنية.

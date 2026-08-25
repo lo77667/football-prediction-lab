@@ -17,6 +17,26 @@ QualitativeCategory = Literal[
     "weather",
     "other",
 ]
+RightsStatus = Literal["public_domain", "research_permitted", "permission_recorded"]
+
+
+class SourceProvenance(BaseModel):
+    """Rights and retrieval metadata required before a qualitative event is trainable."""
+
+    model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
+
+    source_url: HttpUrl | None = None
+    source_id: str | None = Field(default=None, min_length=1)
+    accessed_at_utc: AwareDatetime
+    rights_status: RightsStatus
+    rights_reviewed_at_utc: AwareDatetime
+    snapshot_sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
+
+    @model_validator(mode="after")
+    def validate_source_identity(self) -> SourceProvenance:
+        if self.source_url is None and self.source_id is None:
+            raise ValueError("at least one provenance source_url or source_id is required")
+        return self
 
 
 class QualitativeEvent(BaseModel):
@@ -30,6 +50,7 @@ class QualitativeEvent(BaseModel):
     observed_at_utc: AwareDatetime | None = None
     source_url: HttpUrl | None = None
     source_id: str | None = Field(default=None, min_length=1)
+    provenance: SourceProvenance | None = None
     category: QualitativeCategory
     normalized_value: dict[str, Any] = Field(min_length=1)
     confidence: float = Field(ge=0.0, le=1.0)
@@ -52,6 +73,11 @@ class QualitativeEvent(BaseModel):
         if cutoff_utc.tzinfo is None or cutoff_utc.utcoffset() is None:
             raise ValueError("cutoff_utc must be timezone-aware")
         return self.available_at_utc <= cutoff_utc
+
+    def is_training_eligible(self) -> bool:
+        """Return whether rights and source retrieval metadata are complete."""
+
+        return self.provenance is not None
 
 
 class QualitativeFeatureSet(BaseModel):
@@ -86,7 +112,7 @@ class QualitativeFeatureSet(BaseModel):
 def filter_events_before_cutoff(
     events: list[QualitativeEvent], cutoff_utc: datetime
 ) -> list[QualitativeEvent]:
-    """Apply the point-in-time filter used before qualitative model training."""
+    """Apply the point-in-time availability filter."""
 
     if cutoff_utc.tzinfo is None or cutoff_utc.utcoffset() is None:
         raise ValueError("cutoff_utc must be timezone-aware")
@@ -94,3 +120,15 @@ def filter_events_before_cutoff(
         (event for event in events if event.is_available_at(cutoff_utc)),
         key=lambda event: (event.available_at_utc, event.event_id),
     )
+
+
+def filter_events_for_training(
+    events: list[QualitativeEvent], cutoff_utc: datetime
+) -> list[QualitativeEvent]:
+    """Return only cutoff-safe events with recorded provenance and rights metadata."""
+
+    return [
+        event
+        for event in filter_events_before_cutoff(events, cutoff_utc)
+        if event.is_training_eligible()
+    ]
