@@ -22,6 +22,7 @@ sources:
           - "2223"
           - "2324"
           - "2425"
+          - "2526"
         filename: "{season}/E0.csv"
   openfootball:
     name: OpenFootball
