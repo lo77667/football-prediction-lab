@@ -22,3 +22,5 @@ jobs:
         run: pytest -q
       - name: Run lint
         run: ruff check .
+      - name: Compile Python sources
+        run: python -m compileall -q src scripts_*.py
