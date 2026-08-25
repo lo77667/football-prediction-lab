@@ -9,6 +9,7 @@ from typing import Any
 from pydantic import BaseModel, ConfigDict, Field
 
 from football_prediction_lab.data.provenance import sha256_file, write_manifest
+from football_prediction_lab.evaluation.odds_quality import profile_odds_quality
 from football_prediction_lab.evaluation.odds_schema import MatchReference, OddsSnapshot
 
 
@@ -27,6 +28,9 @@ class IngestionManifest(BaseModel):
     rows_rejected: int = Field(ge=0)
     rejected_by_reason: dict[str, int]
     protected_holdout_rows: int = Field(ge=0)
+    quality_profile_sha256: str = Field(pattern=r"^[0-9a-f]{64}$")
+    quality_duplicate_identity_rows: int = Field(ge=0)
+    quality_non_monotonic_match_captures: int = Field(ge=0)
 
 
 def ingest_jsonl_snapshots(
@@ -84,6 +88,7 @@ def ingest_jsonl_snapshots(
                 reject(f"invalid_row:{type(error).__name__}")
                 continue
 
+    quality = profile_odds_quality(accepted)
     manifest = IngestionManifest(
         input_path=str(path),
         input_sha256=file_hash,
@@ -95,6 +100,9 @@ def ingest_jsonl_snapshots(
         rows_rejected=sum(reasons.values()),
         rejected_by_reason=dict(sorted(reasons.items())),
         protected_holdout_rows=protected_count,
+        quality_profile_sha256=quality.profile_sha256,
+        quality_duplicate_identity_rows=quality.duplicate_identity_rows,
+        quality_non_monotonic_match_captures=quality.non_monotonic_match_captures,
     )
     if manifest_path is not None:
         write_manifest(manifest.model_dump(mode="json"), manifest_path)
