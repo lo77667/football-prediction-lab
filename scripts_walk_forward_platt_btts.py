@@ -10,7 +10,10 @@ import pandas as pd
 
 from football_prediction_lab.evaluation.metrics import evaluate_binary, expected_calibration_error
 from football_prediction_lab.learning.calibration import platt_calibrate
-from football_prediction_lab.models.btts import BttsLogisticBaseline
+from football_prediction_lab.models.btts import (
+    LEGACY_FEATURE_COLUMNS,
+    BttsLogisticBaseline,
+)
 from scripts_calibrate_btts_holdout import SELECTED_FEATURES
 
 
@@ -19,11 +22,12 @@ def evaluate_fold(
     train_seasons: list[str],
     calibration_season: str,
     test_season: str,
+    feature_columns: list[str],
 ) -> dict[str, object]:
     train = frame[frame["season"].astype(str).isin(train_seasons)]
     calibration = frame[frame["season"].astype(str) == calibration_season]
     test = frame[frame["season"].astype(str) == test_season]
-    model = BttsLogisticBaseline(feature_columns=SELECTED_FEATURES).fit(train)
+    model = BttsLogisticBaseline(feature_columns=feature_columns).fit(train)
     calibration_probability = model.predict_probability(calibration)
     test_probability = model.predict_probability(test)
     calibrated = platt_calibrate(
@@ -64,17 +68,22 @@ def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--input", default="data/processed/epl_1516_2425_features.csv")
     parser.add_argument("--output", default="reports/generated/walk_forward_platt_btts.json")
+    parser.add_argument("--feature-set", choices=("selected", "legacy"), default="selected")
     args = parser.parse_args()
 
     root = Path(__file__).resolve().parent
     frame = pd.read_csv(root / args.input, parse_dates=["kickoff_utc"])
     seasons = sorted(frame["season"].astype(str).unique())
+    feature_columns = (
+        SELECTED_FEATURES if args.feature_set == "selected" else LEGACY_FEATURE_COLUMNS
+    )
     folds = [
         evaluate_fold(
             frame,
             seasons[: index - 1],
             seasons[index - 1],
             seasons[index],
+            feature_columns,
         )
         for index in range(2, len(seasons))
     ]
@@ -84,6 +93,7 @@ def main() -> int:
             "season, and test on the next season"
         ),
         "calibration_method": "platt_sigmoid_logit_logistic_regression",
+        "feature_set": args.feature_set,
         "folds": folds,
         "summary": {
             "base": average(folds, "base"),
