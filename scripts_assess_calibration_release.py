@@ -24,12 +24,38 @@ def main() -> int:
         report["summary"]["base"],
         report["summary"]["calibrated"],
     )
+    folds = report["folds"]
+    fold_comparison = {
+        "brier_wins": sum(
+            float(fold["calibrated"]["brier_score"])
+            < float(fold["base"]["brier_score"])
+            for fold in folds
+        ),
+        "log_loss_wins": sum(
+            float(fold["calibrated"]["log_loss"])
+            < float(fold["base"]["log_loss"])
+            for fold in folds
+        ),
+        "joint_probability_metric_wins": sum(
+            float(fold["calibrated"]["brier_score"])
+            < float(fold["base"]["brier_score"])
+            and float(fold["calibrated"]["log_loss"])
+            < float(fold["base"]["log_loss"])
+            for fold in folds
+        ),
+        "ece_wins": sum(
+            float(fold["calibrated_ece_10"]) <= float(fold["base_ece_10"])
+            for fold in folds
+        ),
+        "total_folds": len(folds),
+    }
     result = {
         "input": args.input,
         "accepted": decision.accepted,
         "reason": decision.reason,
         "baseline": report["summary"]["base"],
         "candidate": report["summary"]["calibrated"],
+        "fold_comparison": fold_comparison,
     }
     output = root / args.output
     output.parent.mkdir(parents=True, exist_ok=True)
