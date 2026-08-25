@@ -120,3 +120,10 @@
 ## حالة CI الأخيرة بعد readiness gate
 
 الـcommit `35fc131` مرفوع على `main`، ونجحت الفحوص المحلية مع **106 اختبارات**. ما يزال workflow `quality-gate` البعيد يفشل قبل إنشاء أي خطوة تنفيذ؛ job `test-and-lint` يظهر `steps: []` وسجلًا فارغًا. لذلك القرار الحالي: **الكود اجتاز التحقق المحلي، لكن CI البعيد غير قابل للإثبات بسبب runner/تهيئة خارجية**.
+
+
+## فرض provenance كشرط readiness
+
+أصبح `assess_commercial_readiness` يرفض الحالة `conditional` ويعيد `no_go` إذا غاب `SelectionProvenance`، حتى لو كانت العينة كبيرة والمصدر معلنًا. بهذا لا يمكن للـreadiness أن يتجاوز طبقة الهوية المصدرية، ولا يمكن تفسير `conditional` كإذن مالي؛ ما زال `ready_for_financial_execution` يساوي `false` دائمًا.
+
+الـcommit `1b1b261` منشور على `main`. اجتازت الفحوص المحلية **107 اختبارات** مع Ruff وcompileall وgit diff --check. فشل CI البعيد مجددًا قبل أي خطوات تنفيذ (`steps: []`)، وهو نمط runner/تهيئة موثق لا يمكن تشخيصه من metadata المتاحة.
