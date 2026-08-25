@@ -1,0 +1,12 @@
+{
+  "input_path": "data/processed/epl_1516_2425_features.csv",
+  "input_sha256": "ebaec5d28231129a4a88bcd810a3e227c7b0c0d2c66239bb209c27c52eff490e",
+  "output_path": "/home/ubuntu/football-prediction-lab/reports/generated/cycle_33_fold_metrics.csv",
+  "rows_before": 3800,
+  "rows_after": 64,
+  "kickoff_utc_min": null,
+  "kickoff_utc_max": null,
+  "timezone": "UTC",
+  "feature_version": "cycle33-walk-forward-v1",
+  "generated_at_utc": "2026-08-25T21:41:17.403308+00:00"
+}
