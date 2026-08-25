@@ -1,0 +1,72 @@
+warehouse:
+  name: youth_player_hybrid_v1
+  timezone: UTC
+  player_id_strategy: opaque_uuid
+  raw_identity_store: separate_permissioned_vault
+  forbid_raw_minor_data_in_git: true
+  point_in_time_required: true
+
+qualitative:
+  taxonomy_version: psych_markers_v1
+  traits:
+    - confidence
+    - communication
+    - coachability
+    - attention
+    - recovery_mindset
+    - competitive_response
+    - readiness
+  recency_lambda: 0.08
+  minimum_extraction_confidence_for_auto_feature: 0.70
+  human_review_required_for:
+    - safeguarding
+    - health_disclosure
+    - contradictory_notes
+    - adverse_decision
+
+features:
+  feature_set_version: player_hybrid_features_v1
+  cutoff_granularity: daily
+  include_missingness_flags: true
+  include_source_diversity: true
+  include_evidence_counts: true
+  exclude_columns:
+    - player_name
+    - email
+    - phone
+    - date_of_birth
+    - future_outcome
+    - post_match_statistics_not_available_at_cutoff
+
+modeling:
+  baseline_models:
+    - logistic
+    - random_forest
+    - hist_gradient_boosting
+  split: temporal_holdout
+  test_fraction: 0.20
+  random_seed: 42
+  calibration_required: true
+  ablation_required:
+    - quantitative_only
+    - qualitative_only
+    - hybrid
+  minimum_subgroup_n: 20
+  model_decision_role: decision_support_only
+
+governance:
+  dashboard_default_excludes_raw_narratives: true
+  export_requires_role_check: true
+  consent_purposes:
+    - performance_development
+    - sports_science
+    - wellness
+    - research
+    - safeguarding
+  retention_days:
+    raw_audio: 90
+    transcript: 180
+    raw_note: 365
+    derived_feature: 730
+    prediction: 730
+    access_audit: 2555
