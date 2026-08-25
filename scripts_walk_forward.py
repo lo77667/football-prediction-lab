@@ -35,6 +35,23 @@ def evaluate_btts(
     }
 
 
+def evaluate_constant(
+    frame: pd.DataFrame,
+    target_column: str,
+    train_seasons: list[str],
+    test_season: str,
+) -> dict[str, float | int | str]:
+    train = frame[frame["season"].astype(str).isin(train_seasons)]
+    test = frame[frame["season"].astype(str) == test_season]
+    train_rate = float(train[target_column].mean())
+    probability = pd.Series(train_rate, index=test.index)
+    return evaluate_binary(probability, test[target_column]).as_dict() | {
+        "test_season": test_season,
+        "train_seasons": train_seasons,
+        "train_rate": train_rate,
+    }
+
+
 def evaluate_cards(
     frame: pd.DataFrame,
     feature_columns: list[str],
@@ -74,12 +91,16 @@ def main() -> int:
     btts_frame = pd.read_csv(root / args.input, parse_dates=["kickoff_utc"])
     seasons = sorted(btts_frame["season"].astype(str).unique())
     btts_results: dict[str, list[dict[str, object]]] = {
+        "constant_train_rate": [],
         "legacy": [],
         "expanded": [],
     }
     for index in range(1, len(seasons)):
         train_seasons = seasons[:index]
         test_season = seasons[index]
+        btts_results["constant_train_rate"].append(
+            evaluate_constant(btts_frame, "btts", train_seasons, test_season)
+        )
         btts_results["legacy"].append(
             evaluate_btts(btts_frame, LEGACY_FEATURE_COLUMNS, train_seasons, test_season)
         )
@@ -96,12 +117,21 @@ def main() -> int:
         validate="one_to_one",
     )
     card_results: dict[str, list[dict[str, object]]] = {
+        "constant_train_rate": [],
         "legacy": [],
         "referee_enhanced": [],
     }
     for index in range(1, len(seasons)):
         train_seasons = seasons[:index]
         test_season = seasons[index]
+        card_results["constant_train_rate"].append(
+            evaluate_constant(
+                cards_frame,
+                "total_yellows_over_3_5",
+                train_seasons,
+                test_season,
+            )
+        )
         card_results["legacy"].append(
             evaluate_cards(
                 cards_frame,

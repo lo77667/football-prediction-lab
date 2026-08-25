@@ -18,10 +18,28 @@ def main() -> int:
     root = Path(__file__).resolve().parent
     report = json.loads((root / args.input).read_text(encoding="utf-8"))
     assessments = {
-        "btts": _assess(report["btts"]["summary"], "legacy", "expanded"),
-        "cards": _assess(
-            report["cards"]["summary"], "legacy", "referee_enhanced"
-        ),
+        "btts": {
+            "expanded_vs_legacy": _assess(
+                report["btts"]["summary"], "legacy", "expanded"
+            ),
+            "legacy_vs_constant": _assess(
+                report["btts"]["summary"], "constant_train_rate", "legacy"
+            ),
+            "expanded_vs_constant": _assess(
+                report["btts"]["summary"], "constant_train_rate", "expanded"
+            ),
+        },
+        "cards": {
+            "referee_enhanced_vs_legacy": _assess(
+                report["cards"]["summary"], "legacy", "referee_enhanced"
+            ),
+            "legacy_vs_constant": _assess(
+                report["cards"]["summary"], "constant_train_rate", "legacy"
+            ),
+            "referee_enhanced_vs_constant": _assess(
+                report["cards"]["summary"], "constant_train_rate", "referee_enhanced"
+            ),
+        },
     }
     result = {
         "policy": {
@@ -29,6 +47,7 @@ def main() -> int:
             "minimum_rows": 500,
             "required_metrics": ["brier_score_mean", "log_loss_mean"],
             "accuracy_is_not_sufficient": True,
+            "constant_train_rate_is_required_reference": True,
         },
         "assessments": assessments,
     }
