@@ -40,3 +40,7 @@
 أضيفت مقارنة عائلات على نفس temporal split: legacy، rolling_only، rolling_plus_context، وfull_expanded. اختارت validation عائلة `rolling_plus_context`، إذ بلغ Brier `0.2505` وLog Loss `0.6943`، مقابل `0.2517/0.6967` للنسخة الموسعة الكاملة. بعد دمج train وvalidation، بلغ اختبار العائلة المختارة Brier `0.2478` وLog Loss `0.6887` على 570 صفًا.
 
 هذه نتيجة تجربة واحدة وفق قاعدة اختيار معلنة، وليست إعلان تفوق عام؛ لا تزال تحتاج إلى walk-forward مستقل، ومقارنة معدل التدريب الثابت، وفواصل عدم اليقين قبل أي اعتماد.
+
+## ablation لسوق البطاقات
+
+قورنت عائلات `legacy` و`team_context` و`referee_enhanced` على نفس temporal split. اختارت validation النسخة `referee_enhanced`، إذ بلغ Brier `0.2476` وLog Loss `0.6882`، ثم بلغ holdout المختار Brier `0.2444` وLog Loss `0.6818`. هذه النتيجة ليست كافية لاعتماد الحكم عامًا؛ فالاختيار جرى على split واحد، ونتائج walk-forward السابقة أظهرت تدهور النسخة المعززة في المتوسط مقارنة بالـlegacy والثابت. لذلك سُجلت كتجربة ablation فقط.
