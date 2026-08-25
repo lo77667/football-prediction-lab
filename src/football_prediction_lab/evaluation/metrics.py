@@ -56,6 +56,24 @@ def evaluate_binary(
     )
 
 
+def expected_calibration_error(
+    probabilities: pd.Series | np.ndarray,
+    actual: pd.Series | np.ndarray,
+    *,
+    bins: int = 10,
+) -> float:
+    """Return weighted absolute calibration gap across equal-width bins."""
+
+    table = reliability_table(probabilities, actual, bins=bins)
+    non_empty = table.dropna(subset=["mean_probability", "observed_rate"])
+    if non_empty.empty:
+        return 0.0
+    weights = non_empty["rows"] / non_empty["rows"].sum()
+    return float(
+        (weights * (non_empty["mean_probability"] - non_empty["observed_rate"]).abs()).sum()
+    )
+
+
 def reliability_table(
     probabilities: pd.Series | np.ndarray,
     actual: pd.Series | np.ndarray,

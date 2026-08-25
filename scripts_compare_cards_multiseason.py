@@ -8,7 +8,11 @@ from pathlib import Path
 
 import pandas as pd
 
-from football_prediction_lab.evaluation.metrics import evaluate_binary, reliability_table
+from football_prediction_lab.evaluation.metrics import (
+    evaluate_binary,
+    expected_calibration_error,
+    reliability_table,
+)
 from football_prediction_lab.features.cards import (
     CARD_FEATURE_COLUMNS,
     LEGACY_CARD_FEATURE_COLUMNS,
@@ -26,6 +30,9 @@ def summarize(probability: pd.Series, actual: pd.Series) -> dict[str, object]:
     reliability["bucket"] = reliability["bucket"].astype(str)
     return {
         "metrics": evaluation.as_dict(),
+        "expected_calibration_error_10": expected_calibration_error(
+            probability, actual, bins=10
+        ),
         "reliability": reliability.to_dict(orient="records"),
     }
 

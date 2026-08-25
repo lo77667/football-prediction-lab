@@ -11,7 +11,11 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
 
-from football_prediction_lab.evaluation.metrics import evaluate_binary, reliability_table
+from football_prediction_lab.evaluation.metrics import (
+    evaluate_binary,
+    expected_calibration_error,
+    reliability_table,
+)
 from football_prediction_lab.features.pre_match import FEATURE_COLUMNS
 from football_prediction_lab.models.btts import LEGACY_FEATURE_COLUMNS, temporal_split
 
@@ -49,6 +53,9 @@ def summarize(probability: pd.Series, actual: pd.Series) -> dict[str, object]:
     reliability["bucket"] = reliability["bucket"].astype(str)
     return {
         "metrics": evaluation.as_dict(),
+        "expected_calibration_error_10": expected_calibration_error(
+            probability, actual, bins=10
+        ),
         "reliability": reliability.to_dict(orient="records"),
     }
 

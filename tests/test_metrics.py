@@ -1,7 +1,11 @@
 import numpy as np
 import pytest
 
-from football_prediction_lab.evaluation.metrics import evaluate_binary, reliability_table
+from football_prediction_lab.evaluation.metrics import (
+    evaluate_binary,
+    expected_calibration_error,
+    reliability_table,
+)
 
 
 def test_evaluate_binary_returns_probabilistic_metrics() -> None:
@@ -25,6 +29,15 @@ def test_reliability_table_has_requested_buckets() -> None:
     assert len(table) == 4
     assert {"rows", "mean_probability", "observed_rate"}.issubset(table.columns)
     assert int(table["rows"].sum()) == 4
+
+
+def test_expected_calibration_error_is_bounded() -> None:
+    value = expected_calibration_error(
+        probabilities=np.array([0.1, 0.2, 0.7, 0.8]),
+        actual=np.array([0, 0, 1, 0]),
+        bins=4,
+    )
+    assert 0 <= value <= 1
 
 
 def test_evaluate_binary_rejects_invalid_probability() -> None:
