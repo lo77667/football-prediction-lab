@@ -1,4 +1,5 @@
 import pandas as pd
+import pytest
 
 from football_prediction_lab.learning.calibration import platt_calibrate
 
@@ -16,3 +17,13 @@ def test_platt_calibrate_returns_bounded_probabilities() -> None:
 
     assert list(calibrated.index) == [4, 5, 6]
     assert ((calibrated > 0) & (calibrated < 1)).all()
+
+
+def test_platt_calibrate_rejects_non_positive_c() -> None:
+    with pytest.raises(ValueError, match="c_value must be positive"):
+        platt_calibrate(
+            pd.Series([0.2, 0.8]),
+            pd.Series([0, 1]),
+            pd.Series([0.5]),
+            c_value=0,
+        )

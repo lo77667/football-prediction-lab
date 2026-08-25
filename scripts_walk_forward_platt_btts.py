@@ -23,6 +23,7 @@ def evaluate_fold(
     calibration_season: str,
     test_season: str,
     feature_columns: list[str],
+    c_value: float,
 ) -> dict[str, object]:
     train = frame[frame["season"].astype(str).isin(train_seasons)]
     calibration = frame[frame["season"].astype(str) == calibration_season]
@@ -34,6 +35,7 @@ def evaluate_fold(
         calibration_probability,
         calibration["btts"],
         test_probability,
+        c_value=c_value,
     )
     return {
         "test_season": test_season,
@@ -69,6 +71,7 @@ def main() -> int:
     parser.add_argument("--input", default="data/processed/epl_1516_2425_features.csv")
     parser.add_argument("--output", default="reports/generated/walk_forward_platt_btts.json")
     parser.add_argument("--feature-set", choices=("selected", "legacy"), default="selected")
+    parser.add_argument("--c-value", type=float, default=1.0)
     args = parser.parse_args()
 
     root = Path(__file__).resolve().parent
@@ -84,6 +87,7 @@ def main() -> int:
             seasons[index - 1],
             seasons[index],
             feature_columns,
+            args.c_value,
         )
         for index in range(2, len(seasons))
     ]
@@ -94,6 +98,7 @@ def main() -> int:
         ),
         "calibration_method": "platt_sigmoid_logit_logistic_regression",
         "feature_set": args.feature_set,
+        "c_value": args.c_value,
         "folds": folds,
         "summary": {
             "base": average(folds, "base"),
