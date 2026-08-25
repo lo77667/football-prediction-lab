@@ -128,6 +128,56 @@
   "real_odds_eligible": false,
   "recommendation": false,
   "source_name": "Football-Data.co.uk",
+  "source_selection": {
+    "economic_claim_status": "not_assessed",
+    "protected_seasons": [
+      "2526"
+    ],
+    "rejected_files": [
+      {
+        "path": "/home/ubuntu/football-prediction-lab/data/raw/1516_E0.csv",
+        "reason": "missing_manifest"
+      },
+      {
+        "path": "/home/ubuntu/football-prediction-lab/data/raw/1617_E0.csv",
+        "reason": "missing_manifest"
+      },
+      {
+        "path": "/home/ubuntu/football-prediction-lab/data/raw/1718_E0.csv",
+        "reason": "missing_manifest"
+      },
+      {
+        "path": "/home/ubuntu/football-prediction-lab/data/raw/1819_E0.csv",
+        "reason": "missing_manifest"
+      },
+      {
+        "path": "/home/ubuntu/football-prediction-lab/data/raw/1920_E0.csv",
+        "reason": "missing_manifest"
+      },
+      {
+        "path": "/home/ubuntu/football-prediction-lab/data/raw/2021_E0.csv",
+        "reason": "missing_manifest"
+      },
+      {
+        "path": "/home/ubuntu/football-prediction-lab/data/raw/2122_E0.csv",
+        "reason": "missing_manifest"
+      },
+      {
+        "path": "/home/ubuntu/football-prediction-lab/data/raw/2223_E0.csv",
+        "reason": "missing_manifest"
+      },
+      {
+        "path": "/home/ubuntu/football-prediction-lab/data/raw/2324_E0.csv",
+        "reason": "missing_manifest"
+      },
+      {
+        "path": "/home/ubuntu/football-prediction-lab/data/raw/2425_E0.csv",
+        "reason": "missing_manifest"
+      }
+    ],
+    "selected_files": [],
+    "selection_status": "no_go"
+  },
   "source_status": "raw historical odds-like columns found; standardized snapshots unavailable",
   "stake_sizing": false,
   "standardized_snapshot_rows": 0
