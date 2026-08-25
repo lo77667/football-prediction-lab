@@ -1,0 +1,39 @@
+project:
+  name: football-prediction-lab
+  version: "0.1.0"
+  target_market: btts
+  prediction_horizon: pre_match
+
+sources:
+  historical_results:
+    name: football-data.co.uk
+    url: https://www.football-data.co.uk/
+    access: downloadable_csv
+  public_results:
+    name: openfootball
+    url: https://openfootball.github.io/
+    access: public_repository
+
+validation:
+  required_columns:
+    - date
+    - home_team
+    - away_team
+    - home_goals
+    - away_goals
+  target_definition: "1 when home_goals > 0 and away_goals > 0, otherwise 0"
+  as_of_policy: "features must be computable using data available no later than match kickoff"
+  minimum_history_matches_per_team: 5
+  missing_data_policy: reject_signal
+
+model:
+  name: logistic_baseline
+  random_state: 42
+  probability_threshold: 0.5
+
+experiment:
+  train_fraction: 0.7
+  validation_fraction: 0.15
+  test_fraction: 0.15
+  time_ordered: true
+  random_shuffle: false
