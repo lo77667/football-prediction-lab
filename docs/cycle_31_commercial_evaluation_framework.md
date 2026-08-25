@@ -105,3 +105,7 @@
 [3]: https://scikit-learn.org/stable/modules/generated/sklearn.metrics.average_precision_score.html "scikit-learn Average Precision"
 
 [4]: https://github.com/lo77667/football-prediction-lab "football-prediction-lab repository"
+
+## حالة GitHub Actions
+
+أُرسل commit `cb152f0` إلى `main` بنجاح. اجتازت الفحوص المحلية 79 اختبارًا وRuff وcompileall، لكن تشغيل `quality-gate` على GitHub انتهى بفشل بيئي سريع مع `steps: []` وبدون سجل تنفيذ، ثم تكرر الفشل نفسه عند إعادة التشغيل. لذلك لا أصف CI بأنه ناجح؛ السبب الظاهر من metadata هو عدم بدء خطوات runner، وليس إخفاق اختبار أو lint يمكن نسبته إلى الكود. يبقى هذا بند متابعة تشغيليًا في الدورة التالية، مع إعادة تشغيل workflow بعد توفر سجل runner قابل للقراءة.
