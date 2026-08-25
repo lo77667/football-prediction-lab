@@ -101,3 +101,10 @@
 أصبح التقرير المجمّع يعيد `edge_status` مستقلًا عن `skill_status`: `indeterminate` عند عبور فاصل bootstrap للصفر، و`positive_association_not_profitability` عند ابتعاد الفاصل عن الصفر في الاتجاه الموجب، مع `economic_claim_status: not_assessed` دائمًا في هذه الطبقة. هذا يمنع تحويل edge وصفي إلى ادعاء ربحية.
 
 الـcommit `7f4046b` منشور على `main`، ونجحت الفحوص المحلية مع **101 اختبارًا**. فشل GitHub Actions مرة أخرى على job بلا خطوات (`steps: []`) وبلا log runner؛ لذلك تبقى الحالة البيئية موثقة وغير محسومة من جهة GitHub، بينما نتائج التحقق المحلي ناجحة.
+
+
+## ربط provenance بقرار Gate
+
+أصبح `gate_prediction_with_source_policy` يطبق السياسة المعلنة أولًا، ثم يشغل بوابة المقارنة، ثم يرفق `SelectionProvenance` داخل `GateDecision` المقبول. بذلك يحمل القرار نفسه `policy_sha256` وsnapshot fingerprints، ولا يبقى الربط بين دفتر الاختيار والقرار مسؤولية المستدعي وحده.
+
+الـcommit `2806dcb` منشور على `main`. اجتازت suite المحلية **102 اختبارًا**، مع نجاح Ruff وcompileall وgit diff --check. فشل `quality-gate` البعيد مرة أخرى خلال ثوانٍ على job يعرض `steps: []` دون log قابل للقراءة؛ لم يتغير الاستنتاج البيئي، ولا توجد إشارة تنفيذية يمكن نسب الفشل إليها.
