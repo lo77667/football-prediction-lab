@@ -10,6 +10,7 @@ from pydantic import BaseModel, ConfigDict, Field
 from football_prediction_lab.evaluation.commercial_report import (
     assert_no_protected_holdout,
 )
+from football_prediction_lab.evaluation.selection_provenance import SelectionProvenance
 
 
 class ReadinessDecision(BaseModel):
@@ -30,6 +31,7 @@ def assess_commercial_readiness(
     minimum_rows: int = 100,
     protected_seasons: set[str] | None = None,
     edge_status: str | None = None,
+    provenance: SelectionProvenance | None = None,
 ) -> ReadinessDecision:
     """Return a no-go or research-only decision unless all evidence gates pass."""
 
@@ -39,12 +41,18 @@ def assess_commercial_readiness(
     reasons: list[str] = []
     if not source_verified:
         reasons.append("source_not_verified")
+    if provenance is None:
+        reasons.append("selection_provenance_required")
     if len(frame) < minimum_rows:
         reasons.append("insufficient_match_rows")
     if edge_status in {"indeterminate", "unavailable"}:
         reasons.append("edge_uncertainty_not_resolved")
     if reasons:
-        status = "no_go" if "source_not_verified" in reasons else "research_only"
+        status = (
+            "no_go"
+            if {"source_not_verified", "selection_provenance_required"}.intersection(reasons)
+            else "research_only"
+        )
         return ReadinessDecision(status=status, rows=len(frame), reasons=reasons)
     return ReadinessDecision(
         status="conditional",
