@@ -8,6 +8,8 @@ from pathlib import Path
 
 import pandas as pd
 
+from football_prediction_lab.learning.future_holdout import is_future_holdout_available
+
 
 def main() -> int:
     parser = argparse.ArgumentParser()
@@ -21,7 +23,11 @@ def main() -> int:
     frame = pd.read_csv(root / args.input, usecols=["season"])
     observed = sorted(frame["season"].astype(str).unique())
     requested = str(args.future_season)
-    is_future = requested in observed and requested > str(args.historical_through)
+    is_future = is_future_holdout_available(
+        observed,
+        historical_through=str(args.historical_through),
+        requested_future_season=requested,
+    )
     result = {
         "requested_future_season": requested,
         "latest_observed_season": observed[-1],
