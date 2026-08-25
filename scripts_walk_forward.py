@@ -71,13 +71,21 @@ def evaluate_cards(
 
 
 def average_metrics(results: list[dict[str, object]]) -> dict[str, float | int]:
-    return {
+    metrics = {
+        "accuracy": [float(result["accuracy"]) for result in results],
+        "brier_score": [float(result["brier_score"]) for result in results],
+        "log_loss": [float(result["log_loss"]) for result in results],
+    }
+    summary: dict[str, float | int] = {
         "folds": len(results),
         "rows": sum(int(result["rows"]) for result in results),
-        "accuracy_mean": sum(float(result["accuracy"]) for result in results) / len(results),
-        "brier_score_mean": sum(float(result["brier_score"]) for result in results) / len(results),
-        "log_loss_mean": sum(float(result["log_loss"]) for result in results) / len(results),
     }
+    for name, values in metrics.items():
+        summary[f"{name}_mean"] = sum(values) / len(values)
+        summary[f"{name}_min"] = min(values)
+        summary[f"{name}_max"] = max(values)
+        summary[f"{name}_std"] = float(pd.Series(values).std(ddof=0))
+    return summary
 
 
 def main() -> int:
