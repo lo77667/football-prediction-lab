@@ -127,3 +127,8 @@
 أصبح `assess_commercial_readiness` يرفض الحالة `conditional` ويعيد `no_go` إذا غاب `SelectionProvenance`، حتى لو كانت العينة كبيرة والمصدر معلنًا. بهذا لا يمكن للـreadiness أن يتجاوز طبقة الهوية المصدرية، ولا يمكن تفسير `conditional` كإذن مالي؛ ما زال `ready_for_financial_execution` يساوي `false` دائمًا.
 
 الـcommit `1b1b261` منشور على `main`. اجتازت الفحوص المحلية **107 اختبارات** مع Ruff وcompileall وgit diff --check. فشل CI البعيد مجددًا قبل أي خطوات تنفيذ (`steps: []`)، وهو نمط runner/تهيئة موثق لا يمكن تشخيصه من metadata المتاحة.
+
+
+## تشخيص CI
+
+أُضيفت صلاحيات `contents: read` و`timeout-minutes: 10` وخطوة `Runner preflight` التي تطبع Python وpip وحالة Git قبل التثبيت. بعد رفع commit `3cb4074` ما زال التشغيل ينتهي خلال ثانيتين مع `steps: []`، أي قبل تنفيذ checkout أو preflight أو الاختبارات. هذا يعزز أن العطل خارجي في runner أو تهيئة GitHub، وليس فشلًا في quality gate المحلي. الفحوص المحلية بقيت عند **107 اختبارات ناجحة**.
