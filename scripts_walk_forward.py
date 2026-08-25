@@ -88,6 +88,37 @@ def average_metrics(results: list[dict[str, object]]) -> dict[str, float | int]:
     return summary
 
 
+def compare_to_constant(
+    variants: dict[str, list[dict[str, object]]],
+) -> dict[str, dict[str, int | float]]:
+    constant = variants["constant_train_rate"]
+    comparisons: dict[str, dict[str, int | float]] = {}
+    for name, results in variants.items():
+        if name == "constant_train_rate":
+            continue
+        brier_wins = sum(
+            float(candidate["brier_score"]) < float(reference["brier_score"])
+            for candidate, reference in zip(results, constant)
+        )
+        log_loss_wins = sum(
+            float(candidate["log_loss"]) < float(reference["log_loss"])
+            for candidate, reference in zip(results, constant)
+        )
+        joint_wins = sum(
+            float(candidate["brier_score"]) < float(reference["brier_score"])
+            and float(candidate["log_loss"]) < float(reference["log_loss"])
+            for candidate, reference in zip(results, constant)
+        )
+        comparisons[name] = {
+            "brier_wins": int(brier_wins),
+            "log_loss_wins": int(log_loss_wins),
+            "joint_probability_metric_wins": int(joint_wins),
+            "total_folds": len(constant),
+            "joint_win_rate": joint_wins / len(constant),
+        }
+    return comparisons
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--input", default="data/processed/epl_1819_2425_features.csv")
@@ -165,12 +196,14 @@ def main() -> int:
             "summary": {
                 name: average_metrics(values) for name, values in btts_results.items()
             },
+            "comparison_to_constant": compare_to_constant(btts_results),
         },
         "cards": {
             "variants": card_results,
             "summary": {
                 name: average_metrics(values) for name, values in card_results.items()
             },
+            "comparison_to_constant": compare_to_constant(card_results),
         },
     }
     output = root / args.output
