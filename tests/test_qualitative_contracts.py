@@ -33,6 +33,27 @@ def test_filter_events_by_availability_time() -> None:
     assert [event.event_id for event in available] == ["early"]
 
 
+def test_event_rejects_mismatched_provenance_source() -> None:
+    with pytest.raises(ValueError, match="source_id"):
+        QualitativeEvent(
+            event_id="e1",
+            match_id="m1",
+            available_at_utc=datetime(2024, 8, 10, 12, tzinfo=UTC),
+            source_id="source-a",
+            provenance={
+                "source_id": "source-b",
+                "accessed_at_utc": datetime(2024, 8, 10, 11, tzinfo=UTC),
+                "rights_status": "research_permitted",
+                "rights_reviewed_at_utc": datetime(2024, 8, 10, 11, tzinfo=UTC),
+                "snapshot_sha256": "b" * 64,
+            },
+            category="news",
+            normalized_value={"status": "confirmed"},
+            confidence=0.8,
+            evidence="source evidence",
+        )
+
+
 def test_event_requires_a_source() -> None:
     with pytest.raises(ValidationError, match="source_url or source_id"):
         QualitativeEvent(

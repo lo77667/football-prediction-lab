@@ -65,6 +65,20 @@ class QualitativeEvent(BaseModel):
             and self.observed_at_utc > self.available_at_utc
         ):
             raise ValueError("observed_at_utc cannot be later than available_at_utc")
+        if (
+            self.provenance is not None
+            and self.source_id is not None
+            and self.provenance.source_id is not None
+            and self.source_id != self.provenance.source_id
+        ):
+            raise ValueError("event source_id must match provenance source_id")
+        if (
+            self.provenance is not None
+            and self.source_url is not None
+            and self.provenance.source_url is not None
+            and self.source_url != self.provenance.source_url
+        ):
+            raise ValueError("event source_url must match provenance source_url")
         return self
 
     def is_available_at(self, cutoff_utc: datetime) -> bool:
