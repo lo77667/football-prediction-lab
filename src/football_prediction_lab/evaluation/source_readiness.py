@@ -6,6 +6,8 @@ import json
 from pathlib import Path
 from typing import Any
 
+from football_prediction_lab.data.provenance import sha256_file
+
 REQUIRED_MANIFEST_FIELDS = {
     "input_sha256",
     "feature_version",
@@ -43,6 +45,14 @@ def select_manifested_source_files(
             continue
         if manifest.get("license_policy") not in {"redistributable", "internal_licensed"}:
             rejected.append({"path": str(path), "reason": "unverified_license_policy"})
+            continue
+        try:
+            actual_sha256 = sha256_file(path)
+        except OSError:
+            rejected.append({"path": str(path), "reason": "unreadable_source"})
+            continue
+        if manifest.get("input_sha256") != actual_sha256:
+            rejected.append({"path": str(path), "reason": "input_sha256_mismatch"})
             continue
         if not manifest.get("first_datetime") or not manifest.get("last_datetime"):
             rejected.append({"path": str(path), "reason": "missing_datetime_range"})
