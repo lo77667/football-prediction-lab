@@ -1,0 +1,14 @@
+{
+  "generated_at_utc": "2026-08-25T22:50:50.829346+00:00",
+  "inputs": {
+    "evaluation": {
+      "path": "reports/generated/cycle_36_candidate_evaluation.json",
+      "sha256": "f6e0fe7f0b164940b05239600a0843a1d242ed159391a9a4ec059c9696ed6ab0"
+    }
+  },
+  "output_path": "reports/generated/cycle_36_fold_metrics.csv",
+  "output_sha256": "8ca82ebc40a5fdbd7841f9797d4326f27e7ab54e976650d6e8cf1dc4156d70ca",
+  "rows_after": 16,
+  "schema_version": "cycle36-manifest-v1",
+  "timezone": "UTC"
+}

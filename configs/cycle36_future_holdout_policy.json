@@ -1,0 +1,66 @@
+{
+  "artifact_hashes": {
+    "input_btts": "ebaec5d28231129a4a88bcd810a3e227c7b0c0d2c66239bb209c27c52eff490e",
+    "input_cards": "06a7f19d9f3ada3fe21c6b45c2baaa9b09cc3017abdfc7d33685b8e95957bac3"
+  },
+  "commercial_release": false,
+  "created_at_utc": "2026-08-25T22:50:50.821178+00:00",
+  "development_seasons": [
+    "1516",
+    "1617",
+    "1718",
+    "1819",
+    "1920",
+    "2021",
+    "2122",
+    "2223",
+    "2324",
+    "2425"
+  ],
+  "economic_benchmark_status": "deferred",
+  "exposed_seasons": [
+    "2526"
+  ],
+  "financial_execution": false,
+  "future_holdout": [
+    "2627"
+  ],
+  "future_holdout_status": "reserved_not_available_and_not_evaluated",
+  "markets": {
+    "btts": {
+      "calibration_policy": "none_selected_in_this_cycle",
+      "candidate_selection_counts": {
+        "constant_train_rate": 3,
+        "logistic_expanded": 1,
+        "logistic_legacy": 2,
+        "poisson_goals_btts": 2
+      },
+      "feature_version": "pre-match-cycle36-btts-v1",
+      "model_version": "cycle36-candidate-suite-v1",
+      "selected_candidate_policy": "constant_train_rate",
+      "threshold": 0.5
+    },
+    "cards": {
+      "calibration_policy": "none_selected_in_this_cycle",
+      "candidate_selection_counts": {
+        "cards_logistic_legacy": 1,
+        "cards_logistic_referee_enhanced": 1,
+        "constant_train_rate": 4,
+        "poisson_cards_rate": 2
+      },
+      "feature_version": "pre-match-cycle36-cards-v1",
+      "model_version": "cycle36-candidate-suite-v1",
+      "selected_candidate_policy": "constant_train_rate",
+      "threshold": 0.5
+    }
+  },
+  "policy_version": "cycle36-future-2627-policy-v1",
+  "schema_version": "cycle36-future-holdout-policy-v1",
+  "selection_rule": {
+    "deployment_aggregation": "modal_selected_candidate_then_fixed_complexity_tiebreak",
+    "outer_test_used": false,
+    "scope": "inner_validation_only",
+    "selection_used_2526": false,
+    "version": "inner_brier_then_log_loss_then_ece_then_simplicity-v1"
+  }
+}

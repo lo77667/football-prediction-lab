@@ -1,0 +1,18 @@
+{
+  "generated_at_utc": "2026-08-25T22:50:50.826882+00:00",
+  "inputs": {
+    "btts_source": {
+      "path": "data/processed/epl_1516_2425_features.csv",
+      "sha256": "ebaec5d28231129a4a88bcd810a3e227c7b0c0d2c66239bb209c27c52eff490e"
+    },
+    "cards_source": {
+      "path": "data/processed/epl_1516_2425.csv",
+      "sha256": "06a7f19d9f3ada3fe21c6b45c2baaa9b09cc3017abdfc7d33685b8e95957bac3"
+    }
+  },
+  "output_path": "reports/generated/cycle_36_candidate_evaluation.json",
+  "output_sha256": "f6e0fe7f0b164940b05239600a0843a1d242ed159391a9a4ec059c9696ed6ab0",
+  "rows_after": 16,
+  "schema_version": "cycle36-manifest-v1",
+  "timezone": "UTC"
+}
