@@ -7,6 +7,9 @@ from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
+Market = Literal["btts", "total_yellows_over_3_5"]
+
+
 
 class MatchRecord(BaseModel):
     """A normalized football match record."""
@@ -39,7 +42,7 @@ class PredictionRecord(BaseModel):
 
     prediction_id: str = Field(min_length=1)
     match_id: str = Field(min_length=1)
-    market: Literal["btts"]
+    market: Market
     predicted_at_utc: datetime
     model_version: str = Field(min_length=1)
     feature_version: str = Field(min_length=1)
@@ -56,7 +59,7 @@ class OutcomeRecord(BaseModel):
 
     prediction_id: str = Field(min_length=1)
     match_id: str = Field(min_length=1)
-    market: Literal["btts"]
+    market: Market
     revealed_at_utc: datetime
     actual_yes: bool
     result_source: str = Field(min_length=1)
@@ -68,7 +71,7 @@ class EvaluationRecord(BaseModel):
     model_config = ConfigDict(extra="forbid")
 
     prediction_id: str = Field(min_length=1)
-    market: Literal["btts"]
+    market: Market
     probability_yes: float = Field(ge=0.0, le=1.0)
     actual_yes: bool
     brier_score: float = Field(ge=0.0, le=1.0)

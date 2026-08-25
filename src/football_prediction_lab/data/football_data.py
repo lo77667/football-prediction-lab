@@ -53,6 +53,10 @@ def normalize_football_data_csv(
             "away_team": frame["AwayTeam"].astype("string").str.strip(),
             "home_goals": goals_home,
             "away_goals": goals_away,
+            "home_yellows": _optional_numeric(frame, "HY"),
+            "away_yellows": _optional_numeric(frame, "AY"),
+            "home_reds": _optional_numeric(frame, "HR"),
+            "away_reds": _optional_numeric(frame, "AR"),
             "source": source,
         }
     )
@@ -63,6 +67,9 @@ def normalize_football_data_csv(
     normalized["away_goals"] = normalized["away_goals"].astype(int)
     if (normalized[["home_goals", "away_goals"]] < 0).any().any():
         raise ValueError("Goals cannot be negative")
+    for column in ("home_yellows", "away_yellows", "home_reds", "away_reds"):
+        normalized[column] = pd.to_numeric(normalized[column], errors="coerce").astype("Int64")
+    normalized["total_yellows"] = normalized["home_yellows"] + normalized["away_yellows"]
 
     normalized["match_id"] = normalized.apply(_match_id, axis=1)
     normalized["btts"] = (
@@ -77,10 +84,21 @@ def normalize_football_data_csv(
         "away_team",
         "home_goals",
         "away_goals",
+        "home_yellows",
+        "away_yellows",
+        "home_reds",
+        "away_reds",
+        "total_yellows",
         "btts",
         "source",
     ]
     return normalized[columns].sort_values("kickoff_utc").reset_index(drop=True)
+
+
+def _optional_numeric(frame: pd.DataFrame, column: str) -> pd.Series:
+    if column not in frame.columns:
+        return pd.Series(pd.NA, index=frame.index, dtype="Int64")
+    return pd.to_numeric(frame[column], errors="coerce")
 
 
 def _match_id(row: pd.Series) -> str:
