@@ -231,3 +231,9 @@
 أضيف `evaluation/odds_quality.py` كملف profiling حتمي للـsnapshots المقبولة. يسجل عدد الصفوف، المباريات الفريدة، الصفوف المتكررة وفق canonical identity، مجموعات السوق/المصدر، نطاق الالتقاط UTC، والحالات غير الرتيبة زمنيًا لكل مباراة. تُحسب بصمة SHA-256 من الملخص القانوني، ولا يحتوي الملف على outcome أو target أو ROI أو stake.
 
 اختُبرت الحتمية، واكتشاف التكرار، والنطاق الزمني، والمدخل الفارغ. أصبحت suite المحلية **132 اختبارًا ناجحًا** مع Ruff وcompileall ناجحين. لا يغير profiler قرار readiness ولا يفتح benchmark اقتصاديًا؛ يظل غياب مصدر مرخص ذي timestamps قابلة لإعادة التحقق سببًا كافيًا لـ`no_go`، ويظل `2526` محميًا.
+
+## تحقق integrity للـquality profile
+
+أضيف `verify_quality_profile` لإعادة حساب profile من snapshots المقبولة ومقارنته بالنموذج المتوقع. عند اختلاف أي حقل، يفشل التحقق صراحةً برسالة `odds quality profile does not match accepted snapshots` بدل قبول manifest قديم أو provenance متغير. أضيف اختبار المطابقة واختبار mismatch، فأصبحت suite المحلية **133 اختبارًا ناجحًا** مع Ruff وcompileall و`git diff --check` ناجحة.
+
+آخر commit للكود هو `c595327`. أحدث GitHub Actions على هذا commit فشل في job `test-and-lint` مع `steps: 0`؛ لذلك لا يزال فشل runner/تهيئة خارجيًا وليس نتيجة تنفيذ الاختبارات. يبقى القرار التشغيلي `Research-Only / no_go`، ولا تُستخدم 2526 في الضبط أو الاختيار أو أي claim.
