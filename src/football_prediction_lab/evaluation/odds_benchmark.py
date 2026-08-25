@@ -121,3 +121,60 @@ def paired_bootstrap_comparison(
         "unit": "match_id",
         "intervals": intervals,
     }
+
+
+def paired_permutation_test(
+    frame: pd.DataFrame,
+    *,
+    reference_column: str = "baseline_probability",
+    metric: str = "brier_score",
+    actual_column: str = "actual",
+    n_permutations: int = 2_000,
+    seed: int = 42,
+) -> dict[str, float | int | str]:
+    """Test paired loss differences by sign permutation, never a profitability test."""
+
+    required = {"match_id", "model_probability", reference_column, actual_column}
+    missing = required.difference(frame.columns)
+    if missing:
+        raise ValueError(f"missing permutation columns: {sorted(missing)}")
+    if frame.empty or frame["match_id"].duplicated().any():
+        raise ValueError("paired permutation expects one non-empty row per match")
+    if metric not in {"brier_score", "log_loss"}:
+        raise ValueError("metric must be brier_score or log_loss")
+    if n_permutations < 100:
+        raise ValueError("n_permutations must be at least 100")
+    model = np.clip(frame["model_probability"].to_numpy(dtype=float), 1e-15, 1 - 1e-15)
+    reference = np.clip(frame[reference_column].to_numpy(dtype=float), 1e-15, 1 - 1e-15)
+    actual = frame[actual_column].to_numpy(dtype=int)
+    if not np.isin(actual, [0, 1]).all():
+        raise ValueError("actual values must be binary")
+    if metric == "brier_score":
+        model_loss = (model - actual) ** 2
+        reference_loss = (reference - actual) ** 2
+    else:
+        model_loss = -(actual * np.log(model) + (1 - actual) * np.log(1 - model))
+        reference_loss = -(actual * np.log(reference) + (1 - actual) * np.log(1 - reference))
+    differences = reference_loss - model_loss
+    observed = float(differences.mean())
+    rng = np.random.default_rng(seed)
+    null_means = np.empty(n_permutations, dtype=float)
+    for index in range(n_permutations):
+        signs = rng.choice(np.array([-1.0, 1.0]), size=len(differences))
+        null_means[index] = float((differences * signs).mean())
+    p_value = float(
+        (1 + np.count_nonzero(np.abs(null_means) >= abs(observed)))
+        / (n_permutations + 1)
+    )
+    return {
+        "metric": metric,
+        "reference": reference_column,
+        "match_rows": int(len(frame)),
+        "unit": "match_id",
+        "observed_loss_improvement": observed,
+        "p_value_two_sided": p_value,
+        "n_permutations": n_permutations,
+        "seed": seed,
+        "status": "not_significant" if p_value >= 0.05 else "nominal_signal_not_proof",
+        "economic_claim_status": "not_assessed",
+    }

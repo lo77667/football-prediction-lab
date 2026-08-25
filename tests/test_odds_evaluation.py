@@ -4,7 +4,10 @@ import pandas as pd
 import pytest
 from pydantic import ValidationError
 
-from football_prediction_lab.evaluation.odds_benchmark import paired_bootstrap_comparison
+from football_prediction_lab.evaluation.odds_benchmark import (
+    paired_bootstrap_comparison,
+    paired_permutation_test,
+)
 from football_prediction_lab.evaluation.odds_schema import (
     MatchReference,
     OddsSnapshot,
@@ -123,7 +126,23 @@ def test_binary_overround_rejects_non_binary_market_silently() -> None:
         remove_binary_overround_from_snapshots([yes])
 
 
-def test_paired_bootstrap_is_deterministic_and_match_scoped() -> None:
+def test_paired_permutation_is_deterministic_and_non_financial() -> None:
+    frame = pd.DataFrame(
+        {
+            "match_id": ["m-1", "m-2", "m-3", "m-4"],
+            "model_probability": [0.2, 0.8, 0.4, 0.6],
+            "baseline_probability": [0.5, 0.5, 0.5, 0.5],
+            "actual": [0, 1, 1, 0],
+        }
+    )
+    first = paired_permutation_test(frame, n_permutations=100, seed=9)
+    second = paired_permutation_test(frame, n_permutations=100, seed=9)
+    assert first == second
+    assert first["unit"] == "match_id"
+    assert first["economic_claim_status"] == "not_assessed"
+
+
+def test_bootstrap_is_deterministic_and_match_paired() -> None:
     frame = pd.DataFrame(
         {
             "match_id": [f"m-{index}" for index in range(12)],
