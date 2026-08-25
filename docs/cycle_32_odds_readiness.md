@@ -7,9 +7,9 @@
 
 ## القرار التنفيذي
 
-فحصت الدورة ملفات Football-Data.co.uk المحلية. تحتوي الملفات الخام على أعمدة odds تاريخية مثل `B365H/B365D/B365A` و`AvgH/AvgD/AvgA`، لكن هذه الأعمدة ليست snapshots مستقلة؛ فلا يوجد لكل quote داخل الملف `captured_at` وtimezone و`provenance_id` و`input_sha256` وسياسة ترخيص مرتبطة بالصف. كما أن ملاحظات المصدر تصف الحقول بأنها **pre-closing odds** وتفرق closing odds باللاحقة `C`، لكنها لا توفر في الملفات المحلية سجلًا زمنيًا مستقلًا لكل تغير في السعر [1].
+فحصت الدورة ملفات Football-Data.co.uk المحلية. عثرت على **94 عمودًا تاريخيًا شبيهًا بـodds** مثل `B365H/B365D/B365A` و`AvgH/AvgD/AvgA`، لكن هذه الأعمدة ليست snapshots مستقلة؛ فلا يوجد لكل quote داخل الملف `captured_at` وtimezone و`provenance_id` و`input_sha256` وسياسة ترخيص مرتبطة بالصف. كما أن ملاحظات المصدر تصف الحقول بأنها **pre-closing odds** وتفرق closing odds باللاحقة `C`، لكنها لا توفر في الملفات المحلية سجلًا زمنيًا مستقلًا لكل تغير في السعر [1].
 
-لذلك لم أتعامل مع الأعمدة الخام على أنها بيانات benchmark اقتصادي حقيقية. الناتج المعتمد هو **readiness report** يثبت سبب التأجيل، مع تنفيذ كامل للعقد والـvalidator وfixtures الاختبارية فقط. لا توجد أرقام edge أو EV حقيقية في التقرير الرئيسي، ولم تُستخدم أي بيانات اصطناعية لقياس الأداء.
+لذلك لم أتعامل مع الأعمدة الخام على أنها بيانات benchmark اقتصادي حقيقية. لم تُحوّل الأعمدة الـ94 إلى snapshots، وبلغ عدد snapshots الخام **0**، والصالح **0**، والمرفوض **0**. أسباب عدم الأهلية تخص source/column metadata وليست rows. لا توجد أرقام edge أو EV حقيقية في التقرير الرئيسي، ولم تُستخدم أي بيانات اصطناعية لقياس الأداء.
 
 ## نتائج فحص المصدر
 
@@ -17,8 +17,11 @@
 |---|---|
 | المصدر المحلي المرشح | Football-Data.co.uk |
 | ملفات المواسم التاريخية المفحوصة | 10 ملفات، مع استبعاد `2526` |
-| أعمدة odds-like موجودة | نعم، بصيغة أعمدة تاريخية مجمعة |
-| snapshots ذات `captured_at` لكل quote | غير متاحة |
+| أعمدة odds-like موجودة | نعم، **94 عمودًا تاريخيًا** |
+| عدد snapshots الخام | **0** |
+| snapshots ذات `captured_at` لكل quote | غير متاحة؛ لم تُحوّل الأعمدة إلى snapshots |
+| عدد snapshots الصالحة | **0** |
+| عدد snapshots المرفوضة | **0** |
 | provenance/hash/license لكل snapshot | غير متاح |
 | بيانات قابلة لإدخال benchmark pre-match | صفر |
 | حالة benchmark الاقتصادي | مؤجل حتى توفير مصدر مرخص ومؤرخ |
@@ -37,7 +40,7 @@
 
 تبدأ المطابقة بـ`match_id` ثم تتحقق من تطابق `match_kickoff_utc` المصدر مع kickoff المرجعي ضمن tolerance افتراضية قدرها 60 ثانية. لا توجد مطابقة بالفرق وحدها. بعد ذلك يُطبق protocol معلن: `latest_pre_match` يحتفظ بآخر snapshot قبل kickoff، و`opening` يحتفظ بأول snapshot، مع تسجيل الصفوف التي أُزيلت وسبب الإزالة. لا يُستخدم forward-fill، ولا يمكن للصف اللاحق أن يملأ سعرًا مفقودًا لمباراة أخرى.
 
-ينتج `OddsAuditResult` قائمة accepted وقائمة `discarded_rows` تتضمن سببًا صريحًا، إضافة إلى `raw_snapshots` و`valid_snapshots` وcounts حسب السبب وcoverage حسب الموسم وأول وآخر وقت التقاط وprotocol المستخدم.
+ينتج `OddsAuditResult` قائمة accepted وقائمة `discarded_rows` تتضمن سببًا صريحًا، إضافة إلى `raw_snapshots` و`valid_snapshots` وcounts حسب السبب وcoverage حسب الموسم وأول وآخر وقت التقاط وprotocol المستخدم. أما readiness report الخاص بالدورة فيستخدم `discarded_snapshot_rows` و`discarded_by_reason` للـsnapshot rows فقط؛ وتُحفظ ملاحظات المصدر في `source_observations`، مع `schema_version` صريح.
 
 ## تعريف الاحتمال السوقي
 
@@ -56,7 +59,7 @@
 - `reports/generated/cycle_32_odds_readiness.json`
 - `reports/generated/manifests/cycle_32_odds_readiness.manifest.json`
 
-ويسجل التقرير صراحة أن عدد standardized snapshots يساوي صفرًا، وأن أرقام edge/EV الحقيقية مؤجلة. ويضم manifest SHA-256 مركبًا للملفات الخام المفحوصة، وعدد الملفات، والنطاق الزمني الفارغ للـsnapshots، ونسخة طبقة readiness.
+ويسجل التقرير صراحة أن عدد snapshots الخام يساوي صفرًا، وعدد standardized snapshots يساوي صفرًا، وعدد discarded snapshots يساوي صفرًا، وأن أرقام edge/EV الحقيقية مؤجلة. كما يسجل `odds_like_columns_count: 94` داخل source observations، ويضم manifest SHA-256 مركبًا للملفات الخام المفحوصة، وعدد الملفات، والنطاق الزمني الفارغ للـsnapshots، ونسخة طبقة readiness. ويُرفق `cycle_32_test_summary.json` المحتوي على `collected_count` و`passed_count` و`timestamp_utc` و`commit`.
 
 ## مراجعة التسرب والأدوار الستة
 
@@ -73,8 +76,8 @@
 
 | الفحص | النتيجة |
 |---|---|
-| اختبارات المشروع الكاملة | 85 اختبارًا ناجحًا |
-| اختبارات Cycle 32 الجديدة | ناجحة |
+| اختبارات المشروع الكاملة | **139 اختبارًا ناجحًا**؛ العدد مولد في `cycle_32_test_summary.json` |
+| اختبارات invariant لتقرير readiness | 5 ناجحة |
 | Ruff | ناجح |
 | `python -m compileall -q src scripts_*.py` | ناجح |
 | `git diff --check` | ناجح |
@@ -82,7 +85,7 @@
 | بيانات odds حقيقية مؤهلة | 0 |
 | تنفيذ مالي أو توصية | غير موجود |
 
-حالة CI البعيد لا تُعلن ناجحة إلا بعد تشغيل فعلي. في آخر دورة منشورة كان GitHub Actions قد فشل على runner سريع مع `steps: []` ومن دون سجل تنفيذ؛ ستُحدّث الحالة بعد رفع Cycle 32 والتحقق من التشغيل الجديد. الفحوص المحلية أعلاه ناجحة ولا تعادل نجاح CI البعيد.
+حالة CI البعيد لا تُعلن ناجحة إلا بعد تشغيل فعلي. أحدث تشغيل قابل للتحقق قبل رفع هذا الإصلاح فشل في `test-and-lint` مع `steps: 0` ومن دون تنفيذ اختبارات أو lint؛ لا يُنسب ذلك إلى الكود. الفحوص المحلية أعلاه ناجحة ولا تعادل نجاح CI البعيد، وسيُسجل رقم التشغيل الجديد بعد الرفع دون افتراض نجاحه.
 
 ## الملفات الجديدة
 
@@ -93,8 +96,11 @@
 | `tests/test_odds_evaluation.py` | اختبارات schema والزمن والـduplicates والـbootstrap |
 | `scripts_audit_odds_readiness.py` | تقرير توفر البيانات دون اعتماد odds الخام |
 | `docs/cycle_32_source_findings.md` | نتائج البحث المحلي والرسمي في المصدر |
-| `reports/generated/cycle_32_odds_readiness.json` | نتيجة readiness المولدة |
+| `reports/generated/cycle_32_odds_readiness.json` | نتيجة readiness المولدة، schema v2 وفصل source/snapshot |
+| `reports/generated/cycle_32_test_summary.json` | عدد الاختبارات المولد مع timestamp وcommit |
 | `reports/generated/manifests/cycle_32_odds_readiness.manifest.json` | manifest وبصمة المدخلات |
+| `scripts_test_summary.py` | مولد test summary fail-closed |
+| `tests/test_odds_readiness_report.py` | اختبارات invariants لعدادات snapshots |
 
 ## المراجع
 
