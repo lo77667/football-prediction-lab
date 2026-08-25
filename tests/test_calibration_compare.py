@@ -31,10 +31,26 @@ def test_raw_vs_platt_is_point_in_time_and_descriptive() -> None:
     assert report["holdout_protected"] is True
 
 
+def test_calibration_compare_rejects_invalid_training_values() -> None:
+    train = frame(CUTOFF - timedelta(days=20), 20)
+    train.loc[0, "actual"] = 2
+    test = frame(CUTOFF + timedelta(days=1), 20)
+    with pytest.raises(ValueError, match="train actual values must be binary"):
+        compare_raw_and_platt(train, test, cutoff=CUTOFF)
+
+
 def test_calibration_compare_rejects_future_training_rows() -> None:
     train = frame(CUTOFF + timedelta(days=1), 20)
     test = frame(CUTOFF + timedelta(days=2), 20)
     with pytest.raises(ValueError, match="before cutoff"):
+        compare_raw_and_platt(train, test, cutoff=CUTOFF)
+
+
+def test_calibration_compare_rejects_nonfinite_probabilities() -> None:
+    train = frame(CUTOFF - timedelta(days=20), 20)
+    train.loc[0, "model_probability"] = float("nan")
+    test = frame(CUTOFF + timedelta(days=1), 20)
+    with pytest.raises(ValueError, match="train probabilities"):
         compare_raw_and_platt(train, test, cutoff=CUTOFF)
 
 

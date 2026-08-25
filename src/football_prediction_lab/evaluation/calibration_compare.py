@@ -43,12 +43,27 @@ def compare_raw_and_platt(
     if not (test_kickoff >= cutoff_utc).all():
         raise ValueError("test rows must be on or after cutoff")
 
-    train_probability = np.clip(train[probability_column].to_numpy(dtype=float), 1e-15, 1 - 1e-15)
-    test_probability = np.clip(test[probability_column].to_numpy(dtype=float), 1e-15, 1 - 1e-15)
+    train_probability_raw = train[probability_column].to_numpy(dtype=float)
+    test_probability_raw = test[probability_column].to_numpy(dtype=float)
+    train_actual = train[actual_column].to_numpy(dtype=int)
+    test_actual = test[actual_column].to_numpy(dtype=int)
+    for name, probabilities, actual in (
+        ("train", train_probability_raw, train_actual),
+        ("test", test_probability_raw, test_actual),
+    ):
+        if (
+            not np.isfinite(probabilities).all()
+            or ((probabilities < 0) | (probabilities > 1)).any()
+        ):
+            raise ValueError(f"{name} probabilities must be finite and within [0, 1]")
+        if not np.isin(actual, [0, 1]).all():
+            raise ValueError(f"{name} actual values must be binary")
+    train_probability = np.clip(train_probability_raw, 1e-15, 1 - 1e-15)
+    test_probability = np.clip(test_probability_raw, 1e-15, 1 - 1e-15)
     train_logits = np.log(train_probability / (1 - train_probability))
     test_logits = np.log(test_probability / (1 - test_probability))
     calibrator = LogisticRegression(solver="lbfgs", random_state=0)
-    calibrator.fit(train_logits.reshape(-1, 1), train[actual_column].to_numpy(dtype=int))
+    calibrator.fit(train_logits.reshape(-1, 1), train_actual)
     platt_probability = calibrator.predict_proba(test_logits.reshape(-1, 1))[:, 1]
     actual = test[actual_column]
     raw_metrics = evaluate_binary_extended(test_probability, actual)
