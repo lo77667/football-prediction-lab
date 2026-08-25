@@ -94,6 +94,19 @@ def test_paired_uncertainty_gate_rejects_interval_crossing_zero() -> None:
     assert "Brier" in decision.reason
 
 
+def test_paired_uncertainty_gate_rejects_log_loss_interval_crossing_zero() -> None:
+    decision = decide_paired_uncertainty_retraining(
+        {
+            "folds": 8,
+            "rows": 3_040,
+            "brier_delta_percentile_97_5": -0.0001,
+            "log_loss_delta_percentile_97_5": 0.0002,
+        }
+    )
+    assert decision.accepted is False
+    assert "Log Loss" in decision.reason
+
+
 def test_paired_uncertainty_gate_accepts_strictly_negative_bounds() -> None:
     decision = decide_paired_uncertainty_retraining(
         {
