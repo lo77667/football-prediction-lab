@@ -103,3 +103,7 @@
 [2]: https://www.football-data.co.uk/notes.txt "Football-Data.co.uk notes and odds field definitions"
 
 [3]: https://www.football-data.co.uk/disclaimer.php "Football-Data.co.uk disclaimer"
+
+## حالة GitHub Actions النهائية
+
+بعد رفع commit `aee2bb1` إلى `main`، شُغّل workflow `quality-gate` وانتهى بالحالة `failure` بسرعة، كما حدث في الدورات السابقة. لم تظهر خطوات تنفيذ أو سجلات runner قابلة للقراءة في metadata، ولذلك لا يمكن نسب الفشل إلى pytest أو Ruff أو compileall. تبقى الفحوص المحلية هي المرجع المتاح: **85 اختبارًا ناجحًا**، وRuff وcompileall و`git diff --check` ناجحة. لا يُعتبر CI البعيد ناجحًا دون تنفيذ فعلي قابل للتحقق.
