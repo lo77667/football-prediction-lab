@@ -106,6 +106,15 @@ def test_audit_rejects_duplicate_outcome_and_market_definition_mismatch() -> Non
     assert "market_definition_mismatch" in reasons
 
 
+def test_binary_overround_rejects_mixed_snapshot_context() -> None:
+    yes = OddsSnapshot(**snapshot("yes", "yes"))
+    no = OddsSnapshot(
+        **snapshot("no", "no", captured_at=KICKOFF - timedelta(minutes=20))
+    )
+    with pytest.raises(ValueError, match="one snapshot context"):
+        remove_binary_overround_from_snapshots([yes, no])
+
+
 def test_binary_overround_rejects_non_binary_market_silently() -> None:
     yes = OddsSnapshot(**snapshot("yes", "yes"))
     no = OddsSnapshot(**snapshot("no", "no"))

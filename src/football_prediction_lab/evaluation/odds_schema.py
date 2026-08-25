@@ -243,10 +243,27 @@ def remove_binary_overround_from_snapshots(
         raise ValueError("binary overround requires exactly two selections from one market")
     if snapshots[0].selection == snapshots[1].selection:
         raise ValueError("binary selections must be distinct")
+    contexts = {
+        (
+            snapshot.match_id,
+            snapshot.market,
+            snapshot.market_definition,
+            snapshot.odds_type,
+            _as_utc(snapshot.captured_at).isoformat(),
+            snapshot.source_name,
+        )
+        for snapshot in snapshots
+    }
+    if len(contexts) != 1:
+        raise ValueError("binary selections must share one snapshot context")
     implied = [market_implied_probability(snapshot.decimal_odds) for snapshot in snapshots]
     total = sum(implied)
+    fair_a = implied[0] / total
+    fair_b = implied[1] / total
+    if abs((fair_a + fair_b) - 1.0) > 1e-12:
+        raise ValueError("normalized binary probabilities must sum to one")
     return {
         "overround": total,
-        "fair_probability_a": implied[0] / total,
-        "fair_probability_b": implied[1] / total,
+        "fair_probability_a": fair_a,
+        "fair_probability_b": fair_b,
     }
