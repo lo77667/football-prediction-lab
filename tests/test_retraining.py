@@ -1,5 +1,6 @@
 from football_prediction_lab.evaluation.metrics import BinaryEvaluation
 from football_prediction_lab.learning.retraining import (
+    decide_calibration_retraining,
     decide_retraining,
     decide_walk_forward_retraining,
 )
@@ -74,6 +75,47 @@ def test_walk_forward_gate_accepts_both_probability_improvements() -> None:
             "accuracy_mean": 0.5,
             "brier_score_mean": 0.20,
             "log_loss_mean": 0.65,
+        },
+    )
+    assert decision.accepted is True
+
+
+def test_calibration_gate_rejects_log_loss_regression() -> None:
+    decision = decide_calibration_retraining(
+        {
+            "folds": 8,
+            "rows": 3_000,
+            "brier_score_mean": 0.255,
+            "log_loss_mean": 0.705,
+            "ece_10_mean": 0.072,
+        },
+        {
+            "folds": 8,
+            "rows": 3_000,
+            "brier_score_mean": 0.252,
+            "log_loss_mean": 0.856,
+            "ece_10_mean": 0.045,
+        },
+    )
+    assert decision.accepted is False
+    assert "Log Loss" in decision.reason
+
+
+def test_calibration_gate_accepts_all_required_improvements() -> None:
+    decision = decide_calibration_retraining(
+        {
+            "folds": 8,
+            "rows": 3_000,
+            "brier_score_mean": 0.255,
+            "log_loss_mean": 0.705,
+            "ece_10_mean": 0.072,
+        },
+        {
+            "folds": 8,
+            "rows": 3_000,
+            "brier_score_mean": 0.252,
+            "log_loss_mean": 0.700,
+            "ece_10_mean": 0.045,
         },
     )
     assert decision.accepted is True

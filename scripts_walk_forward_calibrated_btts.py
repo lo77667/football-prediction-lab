@@ -49,6 +49,7 @@ def average(results: list[dict[str, object]], key: str) -> dict[str, float | int
     metrics = [result[key] for result in results]
     return {
         "folds": len(metrics),
+        "rows": sum(int(metric["rows"]) for metric in metrics),
         "brier_score_mean": sum(float(metric["brier_score"]) for metric in metrics)
         / len(metrics),
         "log_loss_mean": sum(float(metric["log_loss"]) for metric in metrics)

@@ -38,6 +38,31 @@ def decide_walk_forward_retraining(
     return RetrainingDecision(True, "candidate improved both aggregate probability metrics")
 
 
+def decide_calibration_retraining(
+    baseline: dict[str, float | int],
+    candidate: dict[str, float | int],
+    *,
+    minimum_folds: int = 3,
+    minimum_rows: int = 500,
+) -> RetrainingDecision:
+    """Accept calibration only if probability metrics improve and ECE does not worsen."""
+
+    if int(candidate.get("folds", 0)) < minimum_folds:
+        return RetrainingDecision(False, f"calibration has fewer than {minimum_folds} folds")
+    if int(candidate.get("rows", 0)) < minimum_rows:
+        return RetrainingDecision(False, f"calibration has fewer than {minimum_rows} rows")
+    if float(candidate["brier_score_mean"]) >= float(baseline["brier_score_mean"]):
+        return RetrainingDecision(False, "calibration did not improve mean Brier Score")
+    if float(candidate["log_loss_mean"]) >= float(baseline["log_loss_mean"]):
+        return RetrainingDecision(False, "calibration did not improve mean Log Loss")
+    if float(candidate["ece_10_mean"]) > float(baseline["ece_10_mean"]):
+        return RetrainingDecision(False, "calibration worsened mean ECE")
+    return RetrainingDecision(
+        True,
+        "calibration improved Brier and Log Loss without worsening ECE",
+    )
+
+
 def decide_retraining(
     baseline: BinaryEvaluation,
     candidate: BinaryEvaluation,
