@@ -5,7 +5,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from pydantic import BaseModel, ConfigDict, Field
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 from football_prediction_lab.evaluation.commercial_gate import GateDecision
 from football_prediction_lab.evaluation.readiness import ReadinessDecision
@@ -27,6 +27,16 @@ class DecisionLedgerEvent(BaseModel):
     snapshot_fingerprints: list[str]
     financial_execution: bool = False
     outcome_recorded: bool = False
+
+    @field_validator("reasons")
+    @classmethod
+    def reject_financial_claims(cls, reasons: list[str]) -> list[str]:
+        prohibited = {"roi", "stake", "profit", "wager", "bet", "odds recommendation"}
+        if any(
+            any(term in reason.casefold() for term in prohibited) for reason in reasons
+        ):
+            raise ValueError("decision ledger cannot contain financial claims")
+        return reasons
 
 
 def build_decision_ledger_event(

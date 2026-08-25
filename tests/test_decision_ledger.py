@@ -4,6 +4,7 @@ import pytest
 
 from football_prediction_lab.evaluation.commercial_gate import GateDecision
 from football_prediction_lab.evaluation.decision_ledger import (
+    DecisionLedgerEvent,
     build_decision_ledger_event,
     write_decision_ledger,
 )
@@ -50,6 +51,20 @@ def test_event_links_provenance_without_outcome_fields() -> None:
     assert event.outcome_recorded is False
     assert "actual" not in event.model_dump()
     assert "roi" not in event.model_dump()
+
+
+def test_ledger_rejects_financial_claims_in_reasons() -> None:
+    with pytest.raises(ValueError, match="financial claims"):
+        DecisionLedgerEvent(
+            event_id="event-1",
+            prediction_id="pred-1",
+            match_id="match-1",
+            market="btts",
+            gate_accepted=False,
+            readiness_status="no_go",
+            reasons=["profit signal"],
+            snapshot_fingerprints=[],
+        )
 
 
 def test_ledger_write_is_deterministic_and_rejects_duplicate_ids(tmp_path: Path) -> None:
