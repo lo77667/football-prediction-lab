@@ -111,6 +111,8 @@ def build_grouped_market_report(
                 "comparison": comparison,
                 "uncertainty": uncertainty,
                 "skill_status": skill_status,
+                "edge_status": _status(uncertainty["intervals"].get("mean_raw_edge")),
+                "economic_claim_status": "not_assessed",
             }
         )
     return {

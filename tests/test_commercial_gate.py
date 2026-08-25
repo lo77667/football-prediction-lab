@@ -107,6 +107,8 @@ def test_grouped_report_is_descriptive_and_rejects_holdout() -> None:
     report = build_grouped_market_report(frame, n_resamples=100, seed=3)
     assert report["financial_execution"] is False
     assert report["groups"][0]["uncertainty"]["unit"] == "match_id"
+    assert report["groups"][0]["edge_status"] == "indeterminate"
+    assert report["groups"][0]["economic_claim_status"] == "not_assessed"
     assert_no_protected_holdout(frame)
     frame.loc[0, "season"] = "2526"
     with pytest.raises(ValueError, match="protected"):
