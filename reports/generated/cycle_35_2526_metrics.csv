@@ -1,0 +1,3 @@
+market,rows,coverage,selected_variant,baseline_probability,accuracy,brier_score,log_loss,roc_auc,average_precision,ece_10,brier_interval_status,log_loss_interval_status,commercial_release
+btts,380,1.0,constant_train_rate,0.5234210526315789,0.5605263157894737,0.24771336565096957,0.6885709644975664,0.5,0.5605263157894737,0.03710526315789475,inconclusive,inconclusive,False
+cards,380,1.0,constant_train_rate,0.45710526315789474,0.4473684210526316,0.2563551939058171,0.7058934295756748,0.5,0.5526315789473685,0.09552631578947379,inconclusive,inconclusive,False

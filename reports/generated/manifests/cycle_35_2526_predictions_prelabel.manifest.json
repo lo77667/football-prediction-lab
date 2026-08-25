@@ -1,0 +1,22 @@
+{
+  "generated_at_utc": "2026-08-25T22:24:29.987026+00:00",
+  "inputs": {
+    "btts_source": {
+      "path": "data/processed/epl_1516_2526_features.csv",
+      "sha256": "c43b3a24fbe2bde2a866fdac31ff16af83c812c45935e7a97066ce648c54e5b0"
+    },
+    "cards_source": {
+      "path": "data/processed/epl_1516_2526.csv",
+      "sha256": "56dec1c614d174c6f584f347d3610ae5888c4404766573234ea139eaacc0005f"
+    },
+    "policy_lock": {
+      "path": "configs/cycle35_policy_lock.json",
+      "sha256": "8fd0d5d3f073cd80a7b99b7c51f7b29ae66ef78ceda5a8743d785215f94ffe23"
+    }
+  },
+  "output_path": "reports/generated/cycle_35_2526_predictions_prelabel.json",
+  "output_sha256": "e8867fb36872928a786ed6d5411abf1160926c9a70ca1c8fcfe45fe2719e3fa7",
+  "rows_after": 760,
+  "schema_version": "cycle35-artifact-manifest-v1",
+  "timezone": "UTC"
+}

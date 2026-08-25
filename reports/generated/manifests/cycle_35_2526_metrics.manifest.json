@@ -1,0 +1,14 @@
+{
+  "generated_at_utc": "2026-08-25T22:24:29.990534+00:00",
+  "inputs": {
+    "evaluation": {
+      "path": "reports/generated/cycle_35_2526_evaluation.json",
+      "sha256": "ece524b651609af685987aa07acef2824787d6533bd05a3245aea1c574d67378"
+    }
+  },
+  "output_path": "reports/generated/cycle_35_2526_metrics.csv",
+  "output_sha256": "88b3081d7b882b729640bd4375ad714ce9ca1b30c40a188be414d7039fc3f822",
+  "rows_after": 2,
+  "schema_version": "cycle35-artifact-manifest-v1",
+  "timezone": "UTC"
+}

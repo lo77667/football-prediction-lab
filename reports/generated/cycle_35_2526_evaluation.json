@@ -1,0 +1,204 @@
+{
+  "bootstrap": {
+    "confidence": 0.95,
+    "replicates": 1000,
+    "seed": 3501,
+    "status": "descriptive_only",
+    "unit": "match_id"
+  },
+  "commercial_release": false,
+  "cycle": 35,
+  "economic_benchmark_status": "deferred",
+  "evaluation_invalidated": false,
+  "evaluation_runs": 1,
+  "evaluation_valid": true,
+  "financial_execution": false,
+  "freeze_guards": {
+    "policy_lock_present_and_valid": true,
+    "policy_lock_unchanged_after_predictions": true,
+    "post_match_features_excluded": true,
+    "prediction_artifact_has_no_targets": true,
+    "prediction_timestamps_precede_kickoff": true,
+    "reproducible_constant_probabilities": true,
+    "selection_used_2526_labels": false,
+    "training_cutoff_precedes_kickoff": true,
+    "unique_2526_matches_per_market": true
+  },
+  "holdout_evaluated": true,
+  "markets": {
+    "btts": {
+      "baseline": {
+        "metrics": {
+          "accuracy": 0.5605263157894737,
+          "actual_rate": 0.5605263157894737,
+          "average_precision": 0.5605263157894737,
+          "brier_score": 0.24771336565096957,
+          "brier_skill_score": null,
+          "calibration_intercept": 0.24114843860932458,
+          "calibration_slope": 0.022371348304134606,
+          "coverage": 1.0,
+          "log_loss": 0.6885709644975664,
+          "log_loss_skill_score": null,
+          "mean_probability": 0.5234210526315789,
+          "roc_auc": 0.5,
+          "rows": 380,
+          "threshold": 0.5,
+          "valid_rows": 380
+        },
+        "probability": 0.5234210526315789,
+        "type": "frozen_historical_rate_before_2526"
+      },
+      "bootstrap_vs_baseline": {
+        "brier_score": {
+          "delta_mean": 0.0,
+          "interval_status": "inconclusive",
+          "lower_95": 0.0,
+          "replicates": 1000,
+          "seed": 3501,
+          "status": "ok",
+          "unit": "match_id",
+          "upper_95": 0.0
+        },
+        "interpretation": "descriptive_only; no_economic_inference",
+        "log_loss": {
+          "delta_mean": 0.0,
+          "interval_status": "inconclusive",
+          "lower_95": 0.0,
+          "replicates": 1000,
+          "seed": 3501,
+          "status": "ok",
+          "unit": "match_id",
+          "upper_95": 0.0
+        },
+        "replicates": 1000,
+        "seed": 3501,
+        "unit": "match_id"
+      },
+      "coverage": 1.0,
+      "excluded_data": [
+        "odds",
+        "roi",
+        "ev",
+        "stake_sizing",
+        "post_match_fields"
+      ],
+      "holdout_metrics": {
+        "accuracy": 0.5605263157894737,
+        "actual_rate": 0.5605263157894737,
+        "average_precision": 0.5605263157894737,
+        "brier_score": 0.24771336565096957,
+        "brier_skill_score": 0.0,
+        "calibration_intercept": 0.24114843860932458,
+        "calibration_slope": 0.022371348304134606,
+        "coverage": 1.0,
+        "ece_10": 0.03710526315789475,
+        "log_loss": 0.6885709644975664,
+        "log_loss_skill_score": 0.0,
+        "mean_probability": 0.5234210526315789,
+        "roc_auc": 0.5,
+        "rows": 380,
+        "threshold": 0.5,
+        "valid_rows": 380
+      },
+      "market": "btts",
+      "market_definition": "both_teams_to_score_at_least_one_goal",
+      "rows": 380,
+      "status": {
+        "brier": "inconclusive",
+        "interpretation": "directional_or_inconclusive_descriptive_only",
+        "log_loss": "inconclusive"
+      }
+    },
+    "cards": {
+      "baseline": {
+        "metrics": {
+          "accuracy": 0.4473684210526316,
+          "actual_rate": 0.5526315789473685,
+          "average_precision": 0.5526315789473685,
+          "brier_score": 0.2563551939058171,
+          "brier_skill_score": null,
+          "calibration_intercept": 0.20521405725172712,
+          "calibration_slope": -0.0349352190767391,
+          "coverage": 1.0,
+          "log_loss": 0.7058934295756748,
+          "log_loss_skill_score": null,
+          "mean_probability": 0.45710526315789485,
+          "roc_auc": 0.5,
+          "rows": 380,
+          "threshold": 0.5,
+          "valid_rows": 380
+        },
+        "probability": 0.45710526315789474,
+        "type": "frozen_historical_rate_before_2526"
+      },
+      "bootstrap_vs_baseline": {
+        "brier_score": {
+          "delta_mean": 0.0,
+          "interval_status": "inconclusive",
+          "lower_95": 0.0,
+          "replicates": 1000,
+          "seed": 3501,
+          "status": "ok",
+          "unit": "match_id",
+          "upper_95": 0.0
+        },
+        "interpretation": "descriptive_only; no_economic_inference",
+        "log_loss": {
+          "delta_mean": 0.0,
+          "interval_status": "inconclusive",
+          "lower_95": 0.0,
+          "replicates": 1000,
+          "seed": 3501,
+          "status": "ok",
+          "unit": "match_id",
+          "upper_95": 0.0
+        },
+        "replicates": 1000,
+        "seed": 3501,
+        "unit": "match_id"
+      },
+      "coverage": 1.0,
+      "excluded_data": [
+        "odds",
+        "roi",
+        "ev",
+        "stake_sizing",
+        "post_match_fields"
+      ],
+      "holdout_metrics": {
+        "accuracy": 0.4473684210526316,
+        "actual_rate": 0.5526315789473685,
+        "average_precision": 0.5526315789473685,
+        "brier_score": 0.2563551939058171,
+        "brier_skill_score": 0.0,
+        "calibration_intercept": 0.20521405725172712,
+        "calibration_slope": -0.0349352190767391,
+        "coverage": 1.0,
+        "ece_10": 0.09552631578947379,
+        "log_loss": 0.7058934295756748,
+        "log_loss_skill_score": 0.0,
+        "mean_probability": 0.45710526315789485,
+        "roc_auc": 0.5,
+        "rows": 380,
+        "threshold": 0.5,
+        "valid_rows": 380
+      },
+      "market": "cards",
+      "market_definition": "total_yellow_cards_over_3_5",
+      "rows": 380,
+      "status": {
+        "brier": "inconclusive",
+        "interpretation": "directional_or_inconclusive_descriptive_only",
+        "log_loss": "inconclusive"
+      }
+    }
+  },
+  "policy_lock_sha256": "8fd0d5d3f073cd80a7b99b7c51f7b29ae66ef78ceda5a8743d785215f94ffe23",
+  "policy_locked": true,
+  "policy_version": "cycle35-deployment-policy-v1",
+  "prediction_artifact_sha256": "e8867fb36872928a786ed6d5411abf1160926c9a70ca1c8fcfe45fe2719e3fa7",
+  "protected_holdout": [
+    "2526"
+  ],
+  "schema_version": "cycle35-final-holdout-evaluation-v1"
+}

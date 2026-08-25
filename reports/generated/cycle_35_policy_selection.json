@@ -1,0 +1,73 @@
+{
+  "commercial_release": false,
+  "cycle": 35,
+  "policy_lock_sha256": "8fd0d5d3f073cd80a7b99b7c51f7b29ae66ef78ceda5a8743d785215f94ffe23",
+  "schema_version": "cycle35-policy-selection-v1",
+  "selected_variants": {
+    "btts": "constant_train_rate",
+    "cards": "constant_train_rate"
+  },
+  "selection_counts": {
+    "btts": {
+      "constant_train_rate": 3,
+      "expanded": 1,
+      "legacy": 3,
+      "platt_expanded": 1
+    },
+    "cards": {
+      "constant_train_rate": 5,
+      "platt_referee_enhanced": 2,
+      "referee_enhanced": 1
+    }
+  },
+  "selection_decisions": {
+    "btts": {
+      "max_count": 3,
+      "rule": "modal_cycle34_variant_then_fixed_simplicity_tiebreak",
+      "selected_variant": "constant_train_rate",
+      "tie_break_order": [
+        "constant_train_rate",
+        "legacy",
+        "expanded",
+        "referee_enhanced",
+        "platt_expanded",
+        "platt_referee_enhanced"
+      ],
+      "tied_variants": [
+        "constant_train_rate",
+        "legacy"
+      ]
+    },
+    "cards": {
+      "max_count": 5,
+      "rule": "modal_cycle34_variant_then_fixed_simplicity_tiebreak",
+      "selected_variant": "constant_train_rate",
+      "tie_break_order": [
+        "constant_train_rate",
+        "legacy",
+        "expanded",
+        "referee_enhanced",
+        "platt_expanded",
+        "platt_referee_enhanced"
+      ],
+      "tied_variants": [
+        "constant_train_rate"
+      ]
+    }
+  },
+  "selection_rule": {
+    "fallback": "constant_train_rate_if_safety_contract_fails",
+    "metric_scope": "selection counts only; no 2526 labels",
+    "source": "cycle34_nested_walk_forward.json",
+    "tie_break_order": [
+      "constant_train_rate",
+      "legacy",
+      "expanded",
+      "referee_enhanced",
+      "platt_expanded",
+      "platt_referee_enhanced"
+    ]
+  },
+  "selection_used_2526_labels": false,
+  "source_cycle": 34
+}
