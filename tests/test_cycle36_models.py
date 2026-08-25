@@ -1,5 +1,7 @@
 import inspect
 import json
+import subprocess
+import sys
 from pathlib import Path
 
 import numpy as np
@@ -173,6 +175,22 @@ def test_bootstrap_is_deterministic_and_grouped_by_match_id() -> None:
     second = paired_bootstrap(actual, candidate, baseline, match_ids, replicates=50)
     assert first == second
     assert first["unit"] == "match_id"
+
+
+def test_cycle36_script_imports_in_isolated_python() -> None:
+    result = subprocess.run(
+        [
+            sys.executable,
+            "-I",
+            "-c",
+            "import runpy; runpy.run_path('scripts_evaluate_cycle36_candidates.py')",
+        ],
+        cwd=ROOT,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    assert result.returncode == 0, result.stderr
 
 
 def test_cycle36_artifacts_exclude_2526_and_2627_evaluation() -> None:

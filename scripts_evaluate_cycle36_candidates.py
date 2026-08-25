@@ -4,16 +4,20 @@ from __future__ import annotations
 
 import csv
 import json
+import sys
 from collections import Counter
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
-import numpy as np
-import pandas as pd
+PROJECT_ROOT = Path(__file__).resolve().parent
+sys.path.insert(0, str(PROJECT_ROOT / "src"))
 
-from football_prediction_lab.data.provenance import sha256_file
-from football_prediction_lab.evaluation.cycle36_model_selection import (
+import numpy as np  # noqa: E402
+import pandas as pd  # noqa: E402
+
+from football_prediction_lab.data.provenance import sha256_file  # noqa: E402
+from football_prediction_lab.evaluation.cycle36_model_selection import (  # noqa: E402
     BOOTSTRAP_REPLICATES,
     BOOTSTRAP_SEED,
     CANDIDATE_COMPLEXITY,
@@ -27,7 +31,7 @@ from football_prediction_lab.evaluation.cycle36_model_selection import (
     summarize_stability,
     target_for_market,
 )
-from football_prediction_lab.features.cards import build_card_features
+from football_prediction_lab.features.cards import build_card_features  # noqa: E402
 
 ROOT = Path(__file__).resolve().parent
 PROCESSED = ROOT / "data" / "processed"
