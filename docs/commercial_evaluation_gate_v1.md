@@ -169,3 +169,8 @@
 ## توضيح تفسير paired significance
 
 أصبح خرج permutation يصرح بـ`null_model: paired_sign_flip` و`interpretation: descriptive_statistical_evidence_only`، مع بقاء `economic_claim_status: not_assessed`. الـcommit `4f3aec6` منشور على `main`، ونجحت الفحوص المحلية مع **114 اختبارًا**. فشل CI البعيد مجددًا قبل أي خطوة (`steps: []`) مع سجل runner فارغ.
+
+
+## slice stability audit
+
+أضيف `slice_stability.py` لمقارنة Brier Skill وROC-AUC عبر شرائح زمنية معلنة مثل الموسم. يعيد التقرير `stable_descriptive` فقط عندما تتوافر شريحتان مؤهلتان على الأقل وتبقى فروق المقاييس ضمن حدود معلنة؛ وإلا يعيد `unstable` أو `insufficient_evidence`. لا يعني الاستقرار الوصفي ربحية، وتبقى `economic_claim_status: not_assessed`. يرفض التقرير موسم `2526` المحمي قبل أي تجميع.
