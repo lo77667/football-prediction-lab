@@ -236,4 +236,4 @@
 
 أضيف `verify_quality_profile` لإعادة حساب profile من snapshots المقبولة ومقارنته بالنموذج المتوقع. عند اختلاف أي حقل، يفشل التحقق صراحةً برسالة `odds quality profile does not match accepted snapshots` بدل قبول manifest قديم أو provenance متغير. أضيف اختبار المطابقة واختبار mismatch، فأصبحت suite المحلية **133 اختبارًا ناجحًا** مع Ruff وcompileall و`git diff --check` ناجحة.
 
-آخر commit للكود هو `c595327`. أحدث GitHub Actions على هذا commit فشل في job `test-and-lint` مع `steps: 0`؛ لذلك لا يزال فشل runner/تهيئة خارجيًا وليس نتيجة تنفيذ الاختبارات. يبقى القرار التشغيلي `Research-Only / no_go`، ولا تُستخدم 2526 في الضبط أو الاختيار أو أي claim.
+آخر commit للكود في هذه الدورة هو `7b4f52a`، بينما أضيف verifier integrity في `c595327`. أحدث GitHub Actions على هذا commit فشل في job `test-and-lint` مع `steps: 0`؛ لذلك لا يزال فشل runner/تهيئة خارجيًا وليس نتيجة تنفيذ الاختبارات. يبقى القرار التشغيلي `Research-Only / no_go`، ولا تُستخدم 2526 في الضبط أو الاختيار أو أي claim.
