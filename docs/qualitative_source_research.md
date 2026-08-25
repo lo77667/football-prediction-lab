@@ -27,3 +27,15 @@
 [2]: https://github.com/hudl/open-data "StatsBomb Open Data repository and terms"
 
 [3]: https://www.premierleague.com/en/news "Premier League News"
+
+## تدقيق إضافي لشروط الاستخدام
+
+توضح شروط استخدام موقع Premier League أن حقوق الموقع وتطبيقه مملوكة للدوري ومورديه، وأن التنزيل والطباعة مسموحان للاستخدام الشخصي، بينما إعادة الإنتاج أو إعادة الاستخدام أو إعادة التوزيع أو إنشاء قاعدة بيانات من المحتوى تتطلب موافقة كتابية مسبقة [[4]](#المراجع). لذلك لا يُستخدم الموقع مصدرًا مجمعًا للأحداث النوعية في هذا المختبر دون إذن واضح وحفظ نسخة قانونية من الموافقة.
+
+في المقابل، يذكر مستودع `openfootball/england` أن بيانات football.db ومخططها وسكربتاتها مخصصة للملك العام، ويعرض تغطية EPL من 2000/01 حتى المواسم الحديثة [[5]](#المراجع). لكنه يظل مصدر جداول ونتائج وتشكيلات تاريخية ثابتة، وليس سجلًا مؤرخًا لوقت نشر إصابة أو خبر قبل المباراة؛ لذلك لا يحول وحده المسار الكمي إلى مسار نوعي.
+
+### المراجع الإضافية
+
+[4]: https://www.premierleague.com/en/terms-and-conditions "Premier League Terms of Use"
+
+[5]: https://github.com/openfootball/england "OpenFootball England repository and public-domain statement"
