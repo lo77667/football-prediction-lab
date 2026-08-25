@@ -20,13 +20,13 @@ from scripts_calibrate_btts_holdout import SELECTED_FEATURES
 def evaluate_fold(
     frame: pd.DataFrame,
     train_seasons: list[str],
-    calibration_season: str,
+    calibration_seasons: list[str],
     test_season: str,
     feature_columns: list[str],
     c_value: float,
 ) -> dict[str, object]:
     train = frame[frame["season"].astype(str).isin(train_seasons)]
-    calibration = frame[frame["season"].astype(str) == calibration_season]
+    calibration = frame[frame["season"].astype(str).isin(calibration_seasons)]
     test = frame[frame["season"].astype(str) == test_season]
     model = BttsLogisticBaseline(feature_columns=feature_columns).fit(train)
     calibration_probability = model.predict_probability(calibration)
@@ -40,7 +40,7 @@ def evaluate_fold(
     return {
         "test_season": test_season,
         "train_seasons": train_seasons,
-        "calibration_season": calibration_season,
+        "calibration_seasons": calibration_seasons,
         "base": evaluate_binary(test_probability, test["btts"]).as_dict(),
         "base_ece_10": expected_calibration_error(
             test_probability, test["btts"], bins=10
@@ -72,8 +72,11 @@ def main() -> int:
     parser.add_argument("--output", default="reports/generated/walk_forward_platt_btts.json")
     parser.add_argument("--feature-set", choices=("selected", "legacy"), default="selected")
     parser.add_argument("--c-value", type=float, default=1.0)
+    parser.add_argument("--calibration-seasons", type=int, default=1)
     args = parser.parse_args()
 
+    if args.calibration_seasons < 1:
+        parser.error("--calibration-seasons must be positive")
     root = Path(__file__).resolve().parent
     frame = pd.read_csv(root / args.input, parse_dates=["kickoff_utc"])
     seasons = sorted(frame["season"].astype(str).unique())
@@ -83,13 +86,13 @@ def main() -> int:
     folds = [
         evaluate_fold(
             frame,
-            seasons[: index - 1],
-            seasons[index - 1],
+            seasons[: index - args.calibration_seasons],
+            seasons[index - args.calibration_seasons : index],
             seasons[index],
             feature_columns,
             args.c_value,
         )
-        for index in range(2, len(seasons))
+        for index in range(args.calibration_seasons + 1, len(seasons))
     ]
     report = {
         "rule": (
@@ -99,6 +102,7 @@ def main() -> int:
         "calibration_method": "platt_sigmoid_logit_logistic_regression",
         "feature_set": args.feature_set,
         "c_value": args.c_value,
+        "calibration_seasons_count": args.calibration_seasons,
         "folds": folds,
         "summary": {
             "base": average(folds, "base"),
