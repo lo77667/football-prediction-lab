@@ -1,0 +1,12 @@
+{
+  "input_path": "data/raw/1516_E0.csv;data/raw/1617_E0.csv;data/raw/1718_E0.csv;data/raw/1819_E0.csv;data/raw/1920_E0.csv;data/raw/2021_E0.csv;data/raw/2122_E0.csv;data/raw/2223_E0.csv;data/raw/2324_E0.csv;data/raw/2425_E0.csv",
+  "input_sha256": "8216c62ccd67278db56139a2efeb1c75e676f8f86b3678615ef601fe229eef98",
+  "output_path": "/home/ubuntu/football-prediction-lab/reports/generated/cycle_32_odds_readiness.json",
+  "rows_before": 10,
+  "rows_after": 0,
+  "kickoff_utc_min": null,
+  "kickoff_utc_max": null,
+  "timezone": "UTC",
+  "feature_version": "odds-readiness-v1",
+  "generated_at_utc": "2026-08-25T16:38:40.678430+00:00"
+}
