@@ -38,6 +38,28 @@ def decide_walk_forward_retraining(
     return RetrainingDecision(True, "candidate improved both aggregate probability metrics")
 
 
+def decide_paired_uncertainty_retraining(
+    summary: dict[str, float | int],
+    *,
+    minimum_folds: int = 3,
+    minimum_rows: int = 500,
+) -> RetrainingDecision:
+    """Accept only if paired bootstrap upper bounds favor the candidate on both losses."""
+
+    if int(summary.get("folds", 0)) < minimum_folds:
+        return RetrainingDecision(False, f"paired uncertainty has fewer than {minimum_folds} folds")
+    if int(summary.get("rows", 0)) < minimum_rows:
+        return RetrainingDecision(False, f"paired uncertainty has fewer than {minimum_rows} rows")
+    if float(summary["brier_delta_percentile_97_5"]) >= 0:
+        return RetrainingDecision(False, "Brier paired interval crosses zero")
+    if float(summary["log_loss_delta_percentile_97_5"]) >= 0:
+        return RetrainingDecision(False, "Log Loss paired interval crosses zero")
+    return RetrainingDecision(
+        True,
+        "paired uncertainty interval favors the candidate on both probability metrics",
+    )
+
+
 def decide_calibration_retraining(
     baseline: dict[str, float | int],
     candidate: dict[str, float | int],

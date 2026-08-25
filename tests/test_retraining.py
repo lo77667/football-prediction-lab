@@ -1,6 +1,7 @@
 from football_prediction_lab.evaluation.metrics import BinaryEvaluation
 from football_prediction_lab.learning.retraining import (
     decide_calibration_retraining,
+    decide_paired_uncertainty_retraining,
     decide_retraining,
     decide_walk_forward_retraining,
 )
@@ -78,6 +79,44 @@ def test_walk_forward_gate_accepts_both_probability_improvements() -> None:
         },
     )
     assert decision.accepted is True
+
+
+def test_paired_uncertainty_gate_rejects_interval_crossing_zero() -> None:
+    decision = decide_paired_uncertainty_retraining(
+        {
+            "folds": 8,
+            "rows": 3_040,
+            "brier_delta_percentile_97_5": 0.0009,
+            "log_loss_delta_percentile_97_5": 0.0019,
+        }
+    )
+    assert decision.accepted is False
+    assert "Brier" in decision.reason
+
+
+def test_paired_uncertainty_gate_accepts_strictly_negative_bounds() -> None:
+    decision = decide_paired_uncertainty_retraining(
+        {
+            "folds": 8,
+            "rows": 3_040,
+            "brier_delta_percentile_97_5": -0.0001,
+            "log_loss_delta_percentile_97_5": -0.0002,
+        }
+    )
+    assert decision.accepted is True
+
+
+def test_paired_uncertainty_gate_rejects_small_sample() -> None:
+    decision = decide_paired_uncertainty_retraining(
+        {
+            "folds": 2,
+            "rows": 100,
+            "brier_delta_percentile_97_5": -0.01,
+            "log_loss_delta_percentile_97_5": -0.01,
+        }
+    )
+    assert decision.accepted is False
+    assert "fewer" in decision.reason
 
 
 def test_calibration_gate_rejects_log_loss_regression() -> None:
