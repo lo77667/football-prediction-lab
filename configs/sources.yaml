@@ -1,0 +1,47 @@
+sources:
+  football_data_uk:
+    name: Football-Data.co.uk
+    homepage: https://www.football-data.co.uk/
+    download_base: https://www.football-data.co.uk/mmz4281/
+    format: csv
+    access: direct_download
+    api_key_required: false
+    subscription_required: false
+    notes: "Historical match results, selected match statistics, and historical odds. Verify reuse terms before public redistribution."
+    initial_competitions:
+      - code: E0
+        name: English Premier League
+        seasons:
+          - "1920"
+          - "2021"
+          - "2122"
+          - "2223"
+          - "2324"
+          - "2425"
+        filename: "{season}/E0.csv"
+  openfootball:
+    name: OpenFootball
+    homepage: https://openfootball.github.io/
+    repository: https://github.com/openfootball/europe
+    format: football_txt
+    access: public_repository
+    api_key_required: false
+    subscription_required: false
+    notes: "Public-domain-oriented results and fixtures; validate the repository's current coverage before use."
+  statsbomb_open_data:
+    name: StatsBomb Open Data
+    homepage: https://github.com/hudl/open-data
+    format: json
+    access: public_repository
+    api_key_required: false
+    subscription_required: false
+    notes: "Selected competitions and matches; attribution and repository license terms apply."
+  openligadb:
+    name: OpenLigaDB
+    homepage: https://www.openligadb.de/
+    api_base: https://api.openligadb.de/
+    format: json
+    access: public_endpoint
+    api_key_required: false
+    subscription_required: false
+    notes: "Community-maintained results under ODbL; coverage is strongest for German competitions."

@@ -1,0 +1,95 @@
+"""Download and normalize historical Football-Data.co.uk CSV files."""
+
+from __future__ import annotations
+
+import hashlib
+from pathlib import Path
+from urllib.request import Request, urlopen
+
+import pandas as pd
+
+REQUIRED_SOURCE_COLUMNS = {"Date", "HomeTeam", "AwayTeam", "FTHG", "FTAG"}
+
+
+def download_csv(url: str, destination: Path, timeout: int = 30) -> Path:
+    """Download a public CSV using a standard HTTP request and return its path."""
+
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    request = Request(url, headers={"User-Agent": "football-prediction-lab/0.1"})
+    with urlopen(request, timeout=timeout) as response:  # noqa: S310 - URL is configured by the project
+        destination.write_bytes(response.read())
+    return destination
+
+
+def normalize_football_data_csv(
+    csv_path: Path,
+    *,
+    competition: str,
+    season: str,
+    source: str = "football-data.co.uk",
+) -> pd.DataFrame:
+    """Normalize a Football-Data CSV while preserving rows with parseable outcomes."""
+
+    frame = pd.read_csv(csv_path)
+    missing = REQUIRED_SOURCE_COLUMNS.difference(frame.columns)
+    if missing:
+        raise ValueError(f"Missing required source columns: {sorted(missing)}")
+
+    raw_dates = frame["Date"].astype("string").str.strip()
+    kickoff = pd.to_datetime(raw_dates, format="%d/%m/%y", errors="coerce", utc=True)
+    missing_dates = kickoff.isna()
+    if missing_dates.any():
+        kickoff.loc[missing_dates] = pd.to_datetime(
+            raw_dates.loc[missing_dates], format="%d/%m/%Y", errors="coerce", utc=True
+        )
+    goals_home = pd.to_numeric(frame["FTHG"], errors="coerce")
+    goals_away = pd.to_numeric(frame["FTAG"], errors="coerce")
+    normalized = pd.DataFrame(
+        {
+            "kickoff_utc": kickoff,
+            "competition": competition,
+            "season": season,
+            "home_team": frame["HomeTeam"].astype("string").str.strip(),
+            "away_team": frame["AwayTeam"].astype("string").str.strip(),
+            "home_goals": goals_home,
+            "away_goals": goals_away,
+            "source": source,
+        }
+    )
+    normalized = normalized.dropna(
+        subset=["kickoff_utc", "home_team", "away_team", "home_goals", "away_goals"]
+    ).copy()
+    normalized["home_goals"] = normalized["home_goals"].astype(int)
+    normalized["away_goals"] = normalized["away_goals"].astype(int)
+    if (normalized[["home_goals", "away_goals"]] < 0).any().any():
+        raise ValueError("Goals cannot be negative")
+
+    normalized["match_id"] = normalized.apply(_match_id, axis=1)
+    normalized["btts"] = (
+        (normalized["home_goals"] > 0) & (normalized["away_goals"] > 0)
+    ).astype("int8")
+    columns = [
+        "match_id",
+        "kickoff_utc",
+        "competition",
+        "season",
+        "home_team",
+        "away_team",
+        "home_goals",
+        "away_goals",
+        "btts",
+        "source",
+    ]
+    return normalized[columns].sort_values("kickoff_utc").reset_index(drop=True)
+
+
+def _match_id(row: pd.Series) -> str:
+    value = "|".join(
+        [
+            row["kickoff_utc"].isoformat(),
+            row["home_team"],
+            row["away_team"],
+            row["competition"],
+        ]
+    )
+    return hashlib.sha256(value.encode("utf-8")).hexdigest()[:16]
