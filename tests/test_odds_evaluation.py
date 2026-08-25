@@ -140,6 +140,8 @@ def test_paired_permutation_is_deterministic_and_non_financial() -> None:
     assert first == second
     assert first["unit"] == "match_id"
     assert first["economic_claim_status"] == "not_assessed"
+    assert first["null_model"] == "paired_sign_flip"
+    assert first["interpretation"] == "descriptive_statistical_evidence_only"
 
 
 def test_bootstrap_is_deterministic_and_match_paired() -> None:

@@ -171,10 +171,12 @@ def paired_permutation_test(
         "reference": reference_column,
         "match_rows": int(len(frame)),
         "unit": "match_id",
+        "null_model": "paired_sign_flip",
         "observed_loss_improvement": observed,
         "p_value_two_sided": p_value,
         "n_permutations": n_permutations,
         "seed": seed,
         "status": "not_significant" if p_value >= 0.05 else "nominal_signal_not_proof",
         "economic_claim_status": "not_assessed",
+        "interpretation": "descriptive_statistical_evidence_only",
     }
