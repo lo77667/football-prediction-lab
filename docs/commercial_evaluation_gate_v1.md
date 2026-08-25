@@ -209,3 +209,8 @@
 ## fail-closed source readiness
 
 أضيف `source_readiness.py` ليمنع اختيار ملف مصدر لأي benchmark ما لم يوجد manifest كامل يحوي hash ونطاقًا زمنيًا وسياسة ترخيص موثقة. تُرفض الملفات المحمية مثل `2526`، والملفات بلا manifest، والـlicense غير الموثق. الـcommit `da8f1b9` منشور على `main`، ونجحت الفحوص المحلية مع **129 اختبارًا**. فشل CI البعيد كالعادة قبل تنفيذ أي خطوة (`steps: []`) مع سجل runner فارغ.
+
+
+## ربط source readiness بالمسار التشغيلي
+
+يربط `scripts_audit_odds_readiness.py` الآن تقرير readiness بحارس `select_manifested_source_files`. لذلك يسجل التقرير الملفات المقبولة والمرفوضة وأسباب الرفض، ويعيد `no_go` تلقائيًا إذا غاب manifest أو كانت سياسة الترخيص غير موثقة. لا يؤدي وجود أعمدة odds الخام إلى قبولها كسوق أو benchmark، ولا يتغير استبعاد `2526`.

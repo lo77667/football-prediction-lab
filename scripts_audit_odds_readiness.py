@@ -11,6 +11,9 @@ from pathlib import Path
 import pandas as pd
 
 from football_prediction_lab.data.provenance import build_manifest, sha256_file, write_manifest
+from football_prediction_lab.evaluation.source_readiness import (
+    select_manifested_source_files,
+)
 
 ROOT = Path(__file__).resolve().parent
 RAW = ROOT / "data" / "raw"
@@ -33,6 +36,9 @@ def main() -> None:
             column for column in header if any(marker in column for marker in ODDS_MARKERS)
         )
 
+    source_selection = select_manifested_source_files(
+        [ROOT / relative_path for relative_path in files]
+    )
     report = {
         "cycle": 32,
         "source_name": "Football-Data.co.uk",
@@ -41,6 +47,7 @@ def main() -> None:
         ),
         "real_odds_eligible": False,
         "economic_benchmark_status": "deferred_pending_licensed_timestamped_snapshots",
+        "source_selection": source_selection,
         "raw_files_examined": len(files),
         "raw_files": files,
         "odds_like_columns_found": sorted(odds_columns),
