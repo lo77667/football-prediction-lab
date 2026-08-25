@@ -1,28 +1,22 @@
 import pandas as pd
 import pytest
 
+from football_prediction_lab.features.pre_match import FEATURE_COLUMNS
 from football_prediction_lab.models.btts import BttsLogisticBaseline, temporal_split
 
 
 def _frame(rows: int = 20) -> pd.DataFrame:
     values = []
     for index in range(rows):
-        values.append(
-            {
-                "match_id": f"m{index:03d}",
-                "kickoff_utc": pd.Timestamp("2024-01-01", tz="UTC")
-                + pd.Timedelta(value=index, unit="D"),
-                "btts": index % 2,
-                "home_avg_scored": float(index % 4),
-                "home_avg_conceded": float((index + 1) % 3),
-                "home_btts_rate": float(index % 5) / 5,
-                "away_avg_scored": float((index + 2) % 4),
-                "away_avg_conceded": float((index + 3) % 3),
-                "away_btts_rate": float((index + 1) % 5) / 5,
-                "home_matches_before": min(index, 5),
-                "away_matches_before": min(index, 5),
-            }
-        )
+        row: dict[str, object] = {
+            "match_id": f"m{index:03d}",
+            "kickoff_utc": pd.Timestamp("2024-01-01", tz="UTC")
+            + pd.Timedelta(value=index, unit="D"),
+            "btts": index % 2,
+        }
+        for feature_index, feature in enumerate(FEATURE_COLUMNS):
+            row[feature] = float((index + feature_index) % 7) / 7
+        values.append(row)
     return pd.DataFrame(values)
 
 

@@ -1,6 +1,8 @@
-"""Baseline probabilistic model for total yellow cards over 3.5."""
+"""Probabilistic model for total yellow cards over 3.5."""
 
 from __future__ import annotations
+
+from collections.abc import Sequence
 
 import pandas as pd
 from sklearn.linear_model import LogisticRegression
@@ -11,12 +13,18 @@ from football_prediction_lab.features.cards import CARD_FEATURE_COLUMNS
 
 
 class TotalYellowCardsBaseline:
-    """A separate model for the total-yellow-cards-over-3.5 market."""
+    """A separate probabilistic model for the total-yellow-cards market."""
 
-    model_version = "cards-logistic-v0.1"
-    feature_version = "card-rolling-v0.1"
+    model_version = "cards-logistic-v0.2"
+    feature_version = "card-team-referee-rolling-v0.2"
 
-    def __init__(self, *, random_state: int = 42) -> None:
+    def __init__(
+        self,
+        *,
+        random_state: int = 42,
+        feature_columns: Sequence[str] | None = None,
+    ) -> None:
+        self.feature_columns = list(feature_columns or CARD_FEATURE_COLUMNS)
         self.pipeline = Pipeline(
             steps=[
                 ("scale", StandardScaler()),
@@ -33,23 +41,23 @@ class TotalYellowCardsBaseline:
         self._fitted = False
 
     def fit(self, frame: pd.DataFrame) -> TotalYellowCardsBaseline:
-        _validate_frame(frame)
-        self.pipeline.fit(frame[CARD_FEATURE_COLUMNS], frame["total_yellows_over_3_5"])
+        _validate_frame(frame, self.feature_columns)
+        self.pipeline.fit(frame[self.feature_columns], frame["total_yellows_over_3_5"])
         self._fitted = True
         return self
 
     def predict_probability(self, frame: pd.DataFrame) -> pd.Series:
         if not self._fitted:
             raise RuntimeError("model must be fitted before prediction")
-        missing = set(CARD_FEATURE_COLUMNS).difference(frame.columns)
+        missing = set(self.feature_columns).difference(frame.columns)
         if missing:
             raise ValueError(f"Missing card features: {sorted(missing)}")
-        values = self.pipeline.predict_proba(frame[CARD_FEATURE_COLUMNS])[:, 1]
+        values = self.pipeline.predict_proba(frame[self.feature_columns])[:, 1]
         return pd.Series(values, index=frame.index, name="probability_yes")
 
 
-def _validate_frame(frame: pd.DataFrame) -> None:
-    missing = set(CARD_FEATURE_COLUMNS).difference(frame.columns)
+def _validate_frame(frame: pd.DataFrame, feature_columns: Sequence[str]) -> None:
+    missing = set(feature_columns).difference(frame.columns)
     if "total_yellows_over_3_5" not in frame.columns:
         missing.add("total_yellows_over_3_5")
     if missing:

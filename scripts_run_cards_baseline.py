@@ -1,5 +1,8 @@
-"""Build and evaluate the initial total-yellow-cards baseline."""
+"""Build and evaluate the referee-aware total-yellow-cards baseline."""
 
+from __future__ import annotations
+
+import argparse
 from pathlib import Path
 
 import pandas as pd
@@ -11,14 +14,18 @@ from football_prediction_lab.models.cards import TotalYellowCardsBaseline
 
 
 def main() -> int:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--input", default="data/processed/2425_E0.csv")
+    parser.add_argument("--output", default="reports/generated/cards_baseline_holdout.csv")
+    args = parser.parse_args()
+
     root = Path(__file__).resolve().parent
-    input_path = root / "data" / "processed" / "2425_E0.csv"
-    report_dir = root / "reports" / "generated"
-    report_dir.mkdir(parents=True, exist_ok=True)
-    output_path = report_dir / "cards_baseline_holdout.csv"
+    input_path = root / args.input
+    output_path = root / args.output
+    output_path.parent.mkdir(parents=True, exist_ok=True)
 
     matches = pd.read_csv(input_path, parse_dates=["kickoff_utc"])
-    features = build_card_features(matches, window=5)
+    features = build_card_features(matches)
     split = temporal_split(features, train_fraction=0.7, validation_fraction=0.15)
     model = TotalYellowCardsBaseline().fit(split.train)
     holdout = pd.concat([split.validation, split.test], ignore_index=True)

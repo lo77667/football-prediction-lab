@@ -10,6 +10,7 @@ def test_normalize_football_data_csv(tmp_path: Path) -> None:
     pd.DataFrame(
         {
             "Date": ["16/08/24", "17/08/24"],
+            "Time": ["20:00", "15:30"],
             "HomeTeam": [" Home A ", "Home B"],
             "AwayTeam": ["Away A", "Away B"],
             "FTHG": [2, 0],
@@ -27,3 +28,4 @@ def test_normalize_football_data_csv(tmp_path: Path) -> None:
     assert list(result["btts"]) == [1, 0]
     assert result["match_id"].is_unique
     assert str(result["kickoff_utc"].dtype).startswith("datetime64[ns, UTC]")
+    assert result.loc[0, "kickoff_utc"].hour == 20

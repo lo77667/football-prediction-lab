@@ -1,7 +1,7 @@
 project:
   name: football-prediction-lab
-  version: "0.1.0"
-  target_market: btts
+  version: "0.2.0"
+  target_market: btts_and_cards_research
   prediction_horizon: pre_match
 
 sources:
@@ -14,6 +14,12 @@ sources:
     url: https://openfootball.github.io/
     access: public_repository
 
+qualitative:
+  enabled_for_training: false
+  contract: src/football_prediction_lab/qualitative/contracts.py
+  cutoff_field: available_at_utc
+  required_source: true
+
 validation:
   required_columns:
     - date
@@ -24,6 +30,8 @@ validation:
   target_definition: "1 when home_goals > 0 and away_goals > 0, otherwise 0"
   as_of_policy: "features must be computable using data available no later than match kickoff"
   minimum_history_matches_per_team: 5
+  card_market_target_definition: "1 when total_yellows > 3.5, otherwise 0"
+  referee_history_window: 10
   missing_data_policy: reject_signal
 
 model:

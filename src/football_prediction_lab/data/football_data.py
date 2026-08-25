@@ -36,11 +36,29 @@ def normalize_football_data_csv(
         raise ValueError(f"Missing required source columns: {sorted(missing)}")
 
     raw_dates = frame["Date"].astype("string").str.strip()
-    kickoff = pd.to_datetime(raw_dates, format="%d/%m/%y", errors="coerce", utc=True)
-    missing_dates = kickoff.isna()
-    if missing_dates.any():
-        kickoff.loc[missing_dates] = pd.to_datetime(
-            raw_dates.loc[missing_dates], format="%d/%m/%Y", errors="coerce", utc=True
+    raw_times = (
+        frame["Time"].astype("string").str.strip()
+        if "Time" in frame.columns
+        else pd.Series("", index=frame.index, dtype="string")
+    )
+    date_time = (raw_dates + " " + raw_times).str.strip()
+    kickoff = pd.to_datetime(
+        date_time, format="%d/%m/%Y %H:%M", errors="coerce", utc=True
+    )
+    missing_time = kickoff.isna()
+    if missing_time.any():
+        kickoff.loc[missing_time] = pd.to_datetime(
+            date_time.loc[missing_time], format="%d/%m/%y %H:%M", errors="coerce", utc=True
+        )
+    missing_datetime = kickoff.isna()
+    if missing_datetime.any():
+        kickoff.loc[missing_datetime] = pd.to_datetime(
+            raw_dates.loc[missing_datetime], format="%d/%m/%Y", errors="coerce", utc=True
+        )
+    missing_short_date = kickoff.isna()
+    if missing_short_date.any():
+        kickoff.loc[missing_short_date] = pd.to_datetime(
+            raw_dates.loc[missing_short_date], format="%d/%m/%y", errors="coerce", utc=True
         )
     goals_home = pd.to_numeric(frame["FTHG"], errors="coerce")
     goals_away = pd.to_numeric(frame["FTAG"], errors="coerce")
@@ -57,6 +75,15 @@ def normalize_football_data_csv(
             "away_yellows": _optional_numeric(frame, "AY"),
             "home_reds": _optional_numeric(frame, "HR"),
             "away_reds": _optional_numeric(frame, "AR"),
+            "home_shots": _optional_numeric(frame, "HS"),
+            "away_shots": _optional_numeric(frame, "AS"),
+            "home_shots_on_target": _optional_numeric(frame, "HST"),
+            "away_shots_on_target": _optional_numeric(frame, "AST"),
+            "home_corners": _optional_numeric(frame, "HC"),
+            "away_corners": _optional_numeric(frame, "AC"),
+            "home_fouls": _optional_numeric(frame, "HF"),
+            "away_fouls": _optional_numeric(frame, "AF"),
+            "referee": _optional_text(frame, "Referee"),
             "source": source,
         }
     )
@@ -88,11 +115,27 @@ def normalize_football_data_csv(
         "away_yellows",
         "home_reds",
         "away_reds",
+        "home_shots",
+        "away_shots",
+        "home_shots_on_target",
+        "away_shots_on_target",
+        "home_corners",
+        "away_corners",
+        "home_fouls",
+        "away_fouls",
+        "referee",
         "total_yellows",
         "btts",
         "source",
     ]
     return normalized[columns].sort_values("kickoff_utc").reset_index(drop=True)
+
+
+def _optional_text(frame: pd.DataFrame, column: str) -> pd.Series:
+    if column not in frame.columns:
+        return pd.Series("unknown", index=frame.index, dtype="string")
+    values = frame[column].astype("string").str.strip()
+    return values.fillna("unknown").replace("", "unknown")
 
 
 def _optional_numeric(frame: pd.DataFrame, column: str) -> pd.Series:

@@ -1,7 +1,8 @@
-"""Baseline BTTS model and time-ordered evaluation helpers."""
+"""Probabilistic BTTS model and time-ordered evaluation helpers."""
 
 from __future__ import annotations
 
+from collections.abc import Sequence
 from dataclasses import dataclass
 
 import pandas as pd
@@ -10,6 +11,17 @@ from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
 
 from football_prediction_lab.features.pre_match import FEATURE_COLUMNS
+
+LEGACY_FEATURE_COLUMNS = [
+    "home_avg_scored_5",
+    "home_avg_conceded_5",
+    "home_btts_rate_5",
+    "away_avg_scored_5",
+    "away_avg_conceded_5",
+    "away_btts_rate_5",
+    "home_matches_before",
+    "away_matches_before",
+]
 
 
 @dataclass(frozen=True)
@@ -49,10 +61,16 @@ def temporal_split(
 class BttsLogisticBaseline:
     """A reproducible probabilistic baseline for the BTTS market."""
 
-    model_version = "btts-logistic-v0.1"
-    feature_version = "pre-match-rolling-v0.1"
+    model_version = "btts-logistic-v0.2"
+    feature_version = "pre-match-rolling-v0.2"
 
-    def __init__(self, *, random_state: int = 42) -> None:
+    def __init__(
+        self,
+        *,
+        random_state: int = 42,
+        feature_columns: Sequence[str] | None = None,
+    ) -> None:
+        self.feature_columns = list(feature_columns or FEATURE_COLUMNS)
         self.pipeline = Pipeline(
             steps=[
                 ("scale", StandardScaler()),
@@ -69,28 +87,28 @@ class BttsLogisticBaseline:
         self._fitted = False
 
     def fit(self, frame: pd.DataFrame) -> BttsLogisticBaseline:
-        _validate_training_frame(frame)
-        self.pipeline.fit(frame[FEATURE_COLUMNS], frame["btts"])
+        _validate_training_frame(frame, self.feature_columns)
+        self.pipeline.fit(frame[self.feature_columns], frame["btts"])
         self._fitted = True
         return self
 
     def predict_probability(self, frame: pd.DataFrame) -> pd.Series:
         if not self._fitted:
             raise RuntimeError("model must be fitted before prediction")
-        _validate_feature_frame(frame)
-        probabilities = self.pipeline.predict_proba(frame[FEATURE_COLUMNS])[:, 1]
+        _validate_feature_frame(frame, self.feature_columns)
+        probabilities = self.pipeline.predict_proba(frame[self.feature_columns])[:, 1]
         return pd.Series(probabilities, index=frame.index, name="probability_yes")
 
 
-def _validate_training_frame(frame: pd.DataFrame) -> None:
-    _validate_feature_frame(frame)
+def _validate_training_frame(frame: pd.DataFrame, feature_columns: Sequence[str]) -> None:
+    _validate_feature_frame(frame, feature_columns)
     if "btts" not in frame.columns:
         raise ValueError("training frame requires btts target")
     if frame["btts"].nunique() < 2:
         raise ValueError("training target must contain both BTTS classes")
 
 
-def _validate_feature_frame(frame: pd.DataFrame) -> None:
-    missing = set(FEATURE_COLUMNS).difference(frame.columns)
+def _validate_feature_frame(frame: pd.DataFrame, feature_columns: Sequence[str]) -> None:
+    missing = set(feature_columns).difference(frame.columns)
     if missing:
         raise ValueError(f"Missing model features: {sorted(missing)}")
