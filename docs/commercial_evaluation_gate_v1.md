@@ -179,3 +179,8 @@
 ## حالة CI بعد slice stability
 
 الـcommit `3971359` منشور على `main`، ونجحت الفحوص المحلية مع **117 اختبارًا**. فشل `quality-gate` البعيد مجددًا قبل أي خطوة تنفيذ، مع `steps: []` وسجل runner فارغ؛ لم يتغير الفصل بين صحة الكود محليًا ومشكلة البنية الخارجية.
+
+
+## calibration drift audit
+
+أضيف `calibration_drift.py` لمقارنة slope وintercept للمعايرة عبر الشرائح الزمنية. يعيد `stable_descriptive` إذا بقي نطاقا المعايرة ضمن thresholds معلنة، و`drift_detected` عند تجاوزها، و`insufficient_evidence` عند نقص الصفوف أو الفئات. لا يمثل ذلك توقعًا للربحية، ويعيد دائمًا `economic_claim_status: not_assessed`، مع رفض موسم `2526` قبل التجميع.
