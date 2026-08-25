@@ -55,6 +55,18 @@ def test_policy_keeps_only_predeclared_source_and_type() -> None:
     }
 
 
+def test_policy_rejects_snapshot_before_declaration() -> None:
+    result = apply_source_selection_policy(
+        [snapshot("source-a")],
+        policy(declared_at=datetime(2025, 8, 1, 11, 30, tzinfo=UTC)),
+        kickoff_utc=KICKOFF,
+    )
+    assert result.accepted == []
+    assert result.discarded_rows == [
+        {"snapshot_id": "source-a-pre_match", "reason": "captured_before_policy"}
+    ]
+
+
 def test_policy_rejects_declaration_at_or_after_kickoff() -> None:
     with pytest.raises(ValueError, match="before kickoff"):
         apply_source_selection_policy(

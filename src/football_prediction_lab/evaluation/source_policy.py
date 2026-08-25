@@ -77,6 +77,11 @@ def apply_source_selection_policy(
                 {"snapshot_id": snapshot.snapshot_id, "reason": "captured_at_not_before_kickoff"}
             )
             continue
+        if snapshot.captured_at < policy.declared_at:
+            discarded.append(
+                {"snapshot_id": snapshot.snapshot_id, "reason": "captured_before_policy"}
+            )
+            continue
         accepted.append(snapshot)
     accepted.sort(key=lambda item: (item.captured_at, item.snapshot_id))
     return SourcePolicyResult(
