@@ -214,3 +214,8 @@
 ## ربط source readiness بالمسار التشغيلي
 
 يربط `scripts_audit_odds_readiness.py` الآن تقرير readiness بحارس `select_manifested_source_files`. لذلك يسجل التقرير الملفات المقبولة والمرفوضة وأسباب الرفض، ويعيد `no_go` تلقائيًا إذا غاب manifest أو كانت سياسة الترخيص غير موثقة. لا يؤدي وجود أعمدة odds الخام إلى قبولها كسوق أو benchmark، ولا يتغير استبعاد `2526`.
+
+
+## readiness report التشغيلي
+
+يعرض readiness report الآن `source_selection.selection_status: no_go` ويثبت أن الملفات التاريخية المفحوصة بلا manifests مؤهلة، مع تسجيل أسباب الرفض لكل ملف واستبعاد `2526`. الـcommit `ca2020a` منشور على `main`، ونجحت الفحوص المحلية سابقًا مع **129 اختبارًا**. فشل CI البعيد مجددًا عند runner قبل أي خطوة (`steps: []`) مع سجل فارغ.
