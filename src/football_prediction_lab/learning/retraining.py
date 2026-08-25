@@ -13,6 +13,31 @@ class RetrainingDecision:
     reason: str
 
 
+def decide_walk_forward_retraining(
+    baseline: dict[str, float | int],
+    candidate: dict[str, float | int],
+    *,
+    minimum_folds: int = 3,
+    minimum_rows: int = 500,
+    require_accuracy_non_decrease: bool = False,
+) -> RetrainingDecision:
+    """Accept a candidate only when aggregate future folds improve probability scores."""
+
+    if int(candidate.get("folds", 0)) < minimum_folds:
+        return RetrainingDecision(False, f"walk-forward has fewer than {minimum_folds} folds")
+    if int(candidate.get("rows", 0)) < minimum_rows:
+        return RetrainingDecision(False, f"walk-forward has fewer than {minimum_rows} rows")
+    if float(candidate["brier_score_mean"]) >= float(baseline["brier_score_mean"]):
+        return RetrainingDecision(False, "candidate did not improve mean Brier Score")
+    if float(candidate["log_loss_mean"]) >= float(baseline["log_loss_mean"]):
+        return RetrainingDecision(False, "candidate did not improve mean Log Loss")
+    if require_accuracy_non_decrease and float(candidate["accuracy_mean"]) < float(
+        baseline["accuracy_mean"]
+    ):
+        return RetrainingDecision(False, "candidate accuracy mean decreased")
+    return RetrainingDecision(True, "candidate improved both aggregate probability metrics")
+
+
 def decide_retraining(
     baseline: BinaryEvaluation,
     candidate: BinaryEvaluation,

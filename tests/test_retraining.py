@@ -1,5 +1,8 @@
 from football_prediction_lab.evaluation.metrics import BinaryEvaluation
-from football_prediction_lab.learning.retraining import decide_retraining
+from football_prediction_lab.learning.retraining import (
+    decide_retraining,
+    decide_walk_forward_retraining,
+)
 
 
 def _evaluation(*, rows: int, brier: float, log_loss: float) -> BinaryEvaluation:
@@ -12,6 +15,68 @@ def _evaluation(*, rows: int, brier: float, log_loss: float) -> BinaryEvaluation
         mean_probability=0.5,
         threshold=0.5,
     )
+
+
+def test_walk_forward_gate_rejects_small_fold_count() -> None:
+    decision = decide_walk_forward_retraining(
+        {
+            "folds": 3,
+            "rows": 600,
+            "accuracy_mean": 0.5,
+            "brier_score_mean": 0.25,
+            "log_loss_mean": 0.69,
+        },
+        {
+            "folds": 2,
+            "rows": 600,
+            "accuracy_mean": 0.6,
+            "brier_score_mean": 0.20,
+            "log_loss_mean": 0.65,
+        },
+    )
+    assert decision.accepted is False
+    assert "folds" in decision.reason
+
+
+def test_walk_forward_gate_requires_both_probability_metrics() -> None:
+    decision = decide_walk_forward_retraining(
+        {
+            "folds": 3,
+            "rows": 600,
+            "accuracy_mean": 0.5,
+            "brier_score_mean": 0.25,
+            "log_loss_mean": 0.69,
+        },
+        {
+            "folds": 3,
+            "rows": 600,
+            "accuracy_mean": 0.6,
+            "brier_score_mean": 0.20,
+            "log_loss_mean": 0.70,
+        },
+    )
+    assert decision.accepted is False
+    assert "Log Loss" in decision.reason
+
+
+def test_walk_forward_gate_accepts_both_probability_improvements() -> None:
+    decision = decide_walk_forward_retraining(
+        {
+            "folds": 3,
+            "rows": 600,
+            "accuracy_mean": 0.5,
+            "brier_score_mean": 0.25,
+            "log_loss_mean": 0.69,
+        },
+        {
+            "folds": 3,
+            "rows": 600,
+            "accuracy_mean": 0.5,
+            "brier_score_mean": 0.20,
+            "log_loss_mean": 0.65,
+        },
+    )
+    assert decision.accepted is True
 
 
 def test_retraining_rejects_small_test_window() -> None:
