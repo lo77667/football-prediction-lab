@@ -46,6 +46,9 @@ def test_ingestion_enriches_file_hash_and_writes_manifest(tmp_path: Path) -> Non
     assert len(accepted) == 1
     assert accepted[0].input_sha256 == result.input_sha256
     assert result.rows_valid == 1
+    assert result.quality_duplicate_identity_rows == 0
+    assert len(result.quality_profile_sha256) == 64
+    assert result.quality_non_monotonic_match_captures == 0
     assert manifest.exists()
 
 
