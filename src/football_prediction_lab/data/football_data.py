@@ -128,7 +128,9 @@ def normalize_football_data_csv(
         "btts",
         "source",
     ]
-    return normalized[columns].sort_values("kickoff_utc").reset_index(drop=True)
+    return normalized[columns].sort_values(
+        ["kickoff_utc", "match_id"]
+    ).reset_index(drop=True)
 
 
 def _optional_text(frame: pd.DataFrame, column: str) -> pd.Series:

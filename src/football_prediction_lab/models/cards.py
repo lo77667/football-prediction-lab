@@ -9,6 +9,7 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import StandardScaler
 
+from football_prediction_lab.data.schema import validate_pre_match_feature_columns
 from football_prediction_lab.features.cards import CARD_FEATURE_COLUMNS
 
 
@@ -29,6 +30,7 @@ class TotalYellowCardsBaseline:
         if c_value <= 0:
             raise ValueError("c_value must be positive")
         self.feature_columns = list(feature_columns or CARD_FEATURE_COLUMNS)
+        validate_pre_match_feature_columns(self.feature_columns)
         self.pipeline = Pipeline(
             steps=[
                 ("scale", StandardScaler()),
@@ -54,6 +56,7 @@ class TotalYellowCardsBaseline:
     def predict_probability(self, frame: pd.DataFrame) -> pd.Series:
         if not self._fitted:
             raise RuntimeError("model must be fitted before prediction")
+        validate_pre_match_feature_columns(self.feature_columns)
         missing = set(self.feature_columns).difference(frame.columns)
         if missing:
             raise ValueError(f"Missing card features: {sorted(missing)}")
@@ -62,6 +65,7 @@ class TotalYellowCardsBaseline:
 
 
 def _validate_frame(frame: pd.DataFrame, feature_columns: Sequence[str]) -> None:
+    validate_pre_match_feature_columns(feature_columns)
     missing = set(feature_columns).difference(frame.columns)
     if "total_yellows_over_3_5" not in frame.columns:
         missing.add("total_yellows_over_3_5")

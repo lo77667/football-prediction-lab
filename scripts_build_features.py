@@ -7,6 +7,12 @@ from pathlib import Path
 
 import pandas as pd
 
+from football_prediction_lab.data.provenance import (
+    assert_identity_columns_match,
+    build_manifest,
+    sha256_file,
+    write_manifest,
+)
 from football_prediction_lab.features.pre_match import FEATURE_COLUMNS, build_pre_match_features
 
 PASSTHROUGH_COLUMNS = (
@@ -49,6 +55,7 @@ def main() -> int:
     output_path = root / args.output
     frame = pd.read_csv(input_path, parse_dates=["kickoff_utc"])
     features = build_pre_match_features(frame)
+    assert_identity_columns_match(frame, features)
     passthrough = [
         column
         for column in PASSTHROUGH_COLUMNS
@@ -63,10 +70,22 @@ def main() -> int:
         )
     output_path.parent.mkdir(parents=True, exist_ok=True)
     features.to_csv(output_path, index=False)
+    manifest_path = output_path.with_suffix(output_path.suffix + ".manifest.json")
+    manifest = build_manifest(
+        input_path=str(input_path),
+        input_sha256=sha256_file(input_path),
+        output_path=str(output_path),
+        rows_before=len(frame),
+        rows_after=len(features),
+        frame=features,
+        feature_version="pre-match-rolling-v0.3",
+    )
+    write_manifest(manifest, manifest_path)
     print(f"rows={len(features)}")
     print(f"feature_count={len(FEATURE_COLUMNS)}")
     print(f"passthrough_count={len(passthrough)}")
     print(f"output_path={output_path}")
+    print(f"manifest_path={manifest_path}")
     return 0
 
 

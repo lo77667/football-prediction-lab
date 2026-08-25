@@ -1,13 +1,30 @@
-"""Validate a normalized season file before using it as a future holdout."""
+"""Validate a normalized season file and emit auditable metadata."""
 
 from __future__ import annotations
 
 import argparse
-import hashlib
 import json
 from pathlib import Path
 
 import pandas as pd
+
+from football_prediction_lab.data.provenance import sha256_file
+from football_prediction_lab.evaluation.data_quality import profile_dataset
+
+REQUIRED_COLUMNS = (
+    "match_id",
+    "kickoff_utc",
+    "season",
+    "home_team",
+    "away_team",
+    "home_goals",
+    "away_goals",
+    "home_yellows",
+    "away_yellows",
+    "referee",
+    "btts",
+)
+TARGET_COLUMNS = ("btts", "total_yellows_over_3_5")
 
 
 def main() -> int:
@@ -19,52 +36,38 @@ def main() -> int:
     root = Path(__file__).resolve().parent
     path = root / args.input
     frame = pd.read_csv(path, parse_dates=["kickoff_utc"])
-    required = {
-        "match_id",
-        "kickoff_utc",
-        "season",
-        "home_team",
-        "away_team",
-        "home_goals",
-        "away_goals",
-        "home_yellows",
-        "away_yellows",
-        "referee",
-        "btts",
-    }
-    missing = sorted(required.difference(frame.columns))
-    target_cards = (frame["home_yellows"] + frame["away_yellows"] > 3).astype(int)
+    quality = profile_dataset(
+        frame,
+        required_columns=REQUIRED_COLUMNS,
+        target_columns=TARGET_COLUMNS,
+    )
     result = {
-        "input": args.input,
-        "sha256": hashlib.sha256(path.read_bytes()).hexdigest(),
-        "rows": len(frame),
-        "missing_required_columns": missing,
-        "duplicate_match_ids": int(frame["match_id"].duplicated().sum()),
-        "time_parse_failures": int(frame["kickoff_utc"].isna().sum()),
-        "time_monotonic_in_input": bool(frame["kickoff_utc"].is_monotonic_increasing),
-        "season_values": sorted(frame["season"].astype(str).unique()),
-        "date_min": str(frame["kickoff_utc"].min()),
-        "date_max": str(frame["kickoff_utc"].max()),
-        "unique_home_teams": int(frame["home_team"].nunique()),
-        "unique_away_teams": int(frame["away_team"].nunique()),
-        "null_counts": {
-            column: int(frame[column].isna().sum())
-            for column in (
-                "home_goals",
-                "away_goals",
-                "home_yellows",
-                "away_yellows",
-                "referee",
-                "btts",
-            )
-        },
-        "btts_rate": float(frame["btts"].mean()),
-        "cards_over_3_5_rate": float(target_cards.mean()),
+        "input_path": args.input,
+        "input_sha256": sha256_file(path),
+        "rows_before": len(frame),
+        "rows_after": len(frame),
+        "feature_version": "normalized-match-v0.3",
+        "season_values": sorted(frame["season"].astype(str).unique())
+        if "season" in frame.columns
+        else [],
+        "quality": quality,
     }
+    if "kickoff_utc" in frame.columns:
+        parsed = pd.to_datetime(frame["kickoff_utc"], utc=True, errors="coerce")
+        result["kickoff_utc_min"] = None if parsed.dropna().empty else str(parsed.min())
+        result["kickoff_utc_max"] = None if parsed.dropna().empty else str(parsed.max())
+    else:
+        result["kickoff_utc_min"] = None
+        result["kickoff_utc_max"] = None
+    if "home_team" in frame.columns:
+        result["unique_home_teams"] = int(frame["home_team"].nunique())
+    if "away_team" in frame.columns:
+        result["unique_away_teams"] = int(frame["away_team"].nunique())
+
     output = root / args.output
     output.parent.mkdir(parents=True, exist_ok=True)
-    output.write_text(json.dumps(result, indent=2), encoding="utf-8")
-    print(json.dumps(result, indent=2))
+    output.write_text(json.dumps(result, indent=2, ensure_ascii=False), encoding="utf-8")
+    print(json.dumps(result, indent=2, ensure_ascii=False))
     print(f"output_path={output}")
     return 0
 

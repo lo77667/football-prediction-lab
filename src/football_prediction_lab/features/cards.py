@@ -28,6 +28,7 @@ CARD_FEATURE_COLUMNS = [
     for window in CARD_WINDOWS
     for metric in _BASE_CARD_FEATURES
 ] + ["referee_avg_yellows_10", "home_card_matches_before", "away_card_matches_before"]
+PRE_MATCH_FEATURE_COLUMNS = tuple(CARD_FEATURE_COLUMNS)
 
 TeamCardEntry = tuple[float, float, float, float]
 RefereeCardEntry = tuple[float, float]

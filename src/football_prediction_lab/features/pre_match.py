@@ -40,6 +40,7 @@ FEATURE_COLUMNS = _ROLLING_COLUMNS + _DERIVED_COLUMNS + [
     "league_btts_rate_before",
     "league_avg_goals_before",
 ]
+PRE_MATCH_FEATURE_COLUMNS = tuple(FEATURE_COLUMNS)
 
 
 def feature_columns_for_window(window: int) -> list[str]:
@@ -96,7 +97,13 @@ def build_pre_match_features(
     if missing:
         raise ValueError(f"Missing columns for feature generation: {sorted(missing)}")
 
-    ordered = matches.sort_values(["kickoff_utc", "match_id"]).reset_index(drop=True)
+    normalized = matches.copy()
+    normalized["kickoff_utc"] = pd.to_datetime(
+        normalized["kickoff_utc"], utc=True, errors="raise", format="mixed"
+    )
+    ordered = normalized.sort_values(
+        ["kickoff_utc", "match_id"]
+    ).reset_index(drop=True)
     history: dict[str, deque[HistoryEntry]] = defaultdict(lambda: deque(maxlen=max(windows)))
     total_matches = 0
     total_btts = 0
