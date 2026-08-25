@@ -82,3 +82,10 @@
 أُضيف `source_policy.py` لتعريف `SourceSelectionPolicy` بمصدر وسوق ونوع odds ووقت إعلان سابق للـkickoff. يطبق `apply_source_selection_policy` السياسة قبل أي مقارنة، ويرفض closing ويُسجل المصادر أو الأنواع غير المطابقة بدل اختيار أفضل provider بعد ظهور outcome. لا تقرأ السياسة أي target أو نتيجة، ولا تنفذ forward-fill أو fallback سعريًا.
 
 أضيفت اختبارات تثبت أن مصدرًا غير معلن ونوع odds غير معلن يُستبعدان، وأن السياسة المعلنة عند kickoff أو بعده مرفوضة. ارتفعت suite المحلية إلى **98 اختبارًا** مع بقاء CI البعيد runner-level failure بلا steps قابلة للقراءة.
+
+
+## provenance bundle للـledger
+
+أُضيف `selection_provenance.py` لبناء `SelectionProvenance` metadata-only يضم `policy_id` و`policy_sha256` وIDs وبصمات snapshots والسوق والمصدر ونوع odds. يتحقق builder من أن السياسة أُعلنت قبل أو عند أقدم capture، وأن كل snapshot يطابق السوق والمصدر ونوع السعر. لا يحتوي bundle على `actual` أو target أو outcome.
+
+يوفر `verify_selection_provenance` تحققًا fail-closed؛ فإذا تغيرت السياسة أو snapshot أو ترتيب الهوية، يفشل التحقق بدل قبول ledger غير قابل لإعادة البناء. بعد هذا التحسين اجتازت suite المحلية **101 اختبارًا**، مع استمرار عدم توفر benchmark اقتصادي حقيقي وعدم تنفيذ أي إجراء مالي.
