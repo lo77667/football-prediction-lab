@@ -1,0 +1,15 @@
+{
+  "cycle": "47",
+  "release_state": "not_ready",
+  "mode": "shadow_only",
+  "production_enabled": false,
+  "commercial_release": false,
+  "telegram_enabled": false,
+  "recipients": [],
+  "token_env_var": null,
+  "kill_switch_path": "runtime/kill_switch.json",
+  "rate_limit_per_minute": 0,
+  "source_status": "deferred_missing_authorized_source",
+  "requires_explicit_user_approval": true,
+  "network_scope": "none"
+}
