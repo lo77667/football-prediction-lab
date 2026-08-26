@@ -2,9 +2,12 @@ name: quality-gate
 
 on:
   push:
-    branches: [main]
+    branches:
+      - main
   pull_request:
-    branches: [main]
+    branches:
+      - main
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -20,16 +23,16 @@ env:
 
 jobs:
   test-and-lint:
-    name: Test and lint
+    name: Test and lint (Python ${{ matrix.python-version }})
     runs-on: ubuntu-22.04
-    timeout-minutes: 15
+    timeout-minutes: 20
     strategy:
       fail-fast: false
       matrix:
         python-version: ["3.11", "3.12"]
 
     steps:
-      - name: Checkout
+      - name: Checkout repository
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
@@ -39,68 +42,57 @@ jobs:
         with:
           python-version: ${{ matrix.python-version }}
           cache: pip
-          cache-dependency-path: pyproject.toml
+          cache-dependency-path: requirements.lock
 
-      - name: Runner preflight
+      - name: Show execution context
         shell: bash
         run: |
           set -euxo pipefail
           printf 'runner=%s\n' "$RUNNER_NAME"
-          printf 'os=%s\n' "$RUNNER_OS"
-          printf 'arch=%s\n' "$RUNNER_ARCH"
+          printf 'event=%s\n' "$GITHUB_EVENT_NAME"
+          printf 'ref=%s\n' "$GITHUB_REF"
+          printf 'sha=%s\n' "$GITHUB_SHA"
           python --version
           python -m pip --version
-          git --version
           git status --short --branch
 
-      - name: Install project and development dependencies
+      - name: Install locked dependencies
         shell: bash
         run: |
           set -euxo pipefail
-          python -m pip install --upgrade pip setuptools wheel
-          python -m pip install --no-cache-dir ".[dev]"
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements.lock
+          python -m pip install -e '.[dev]'
           python -m pip check
 
-      - name: Compile Python sources
+      - name: Verify project import path
         shell: bash
         run: |
           set -euxo pipefail
-          python -m compileall -q src scripts_*.py
+          python -c "import football_prediction_lab; print(football_prediction_lab.__file__)"
+          python -c "import football_prediction_lab.evaluation.cycle36_model_selection as m; print(m.__file__)"
 
-      - name: Run tests
+      - name: Run pytest
         shell: bash
         run: |
           set -euxo pipefail
           python -m pytest -q
 
-      - name: Run lint
+      - name: Run Ruff
         shell: bash
         run: |
           set -euxo pipefail
-          python -m ruff check .
+          ruff check .
+
+      - name: Compile Python sources
+        shell: bash
+        run: |
+          set -euxo pipefail
+          python -m compileall -q src scripts
+          python -m compileall -q src scripts_*.py
 
       - name: Check repository whitespace
         shell: bash
         run: |
           set -euxo pipefail
           git diff --check
-
-      - name: Debug mode after silent failure
-        if: failure()
-        shell: bash
-        run: |
-          set +e
-          echo '--- DEBUG MODE: a previous step failed ---'
-          date -u
-          pwd
-          df -h
-          free -h
-          git status --short --branch
-          git log -3 --oneline --decorate
-          python --version
-          python -m pip --version
-          python -m pip list --format=columns
-          echo '--- environment (sensitive values redacted) ---'
-          env | sort | sed -E 's/^(.*(TOKEN|KEY|SECRET|PASSWORD|PASS|CREDENTIAL)[^=]*)=.*/\1=[REDACTED]/I'
-          echo '--- repository files ---'
-          find . -maxdepth 3 -type f -not -path './.git/*' | sort | sed -n '1,240p'
