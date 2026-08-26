@@ -18,7 +18,7 @@
 | `/v1/shadow/predictions` | POST | يقبل `PredictionServiceRequest` فقط ويستدعي طبقة التطبيق في `shadow` |
 | `/openapi.json` | GET | snapshot حتمي للعقود والمسارات |
 
-الواجهة تستخدم `LocalServiceAPI` كموزع قابل للاختبار، و`LocalAPIHTTPServer` كخادم loopback اختياري مبني من مكتبة Python القياسية. لا توجد dependency جديدة ولا تشغيل عام. يستطيع المستدعي استخدام `port=0` لاختيار منفذ محلي مؤقت أثناء الاختبار.
+الواجهة تستخدم `LocalServiceAPI` كموزع قابل للاختبار، و`LocalAPIHTTPServer` كخادم loopback اختياري مبني من مكتبة Python القياسية. لا توجد dependency جديدة ولا تشغيل عام. يستطيع المستدعي استخدام `port=0` لاختيار منفذ محلي مؤقت أثناء الاختبار. يوفر `scripts_serve_local_api.py` نقطة تشغيل محلية تتطلب `--allowed-manifest-root` و`--output-root`، وتقبل host loopback فقط. ويستخدم smoke workspace مؤقتاً منفصلاً عن output artifacts ثم يحذفه عند الإنهاء.
 
 ## العقود والضوابط
 
@@ -52,6 +52,11 @@
 الأمر المحلي:
 
 ```bash
+python scripts_serve_local_api.py \
+  --allowed-manifest-root /path/to/verified/ingestion \
+  --output-root /path/to/local/service-output \
+  --host 127.0.0.1 --port 8765
+
 python scripts_run_local_api_smoke.py --output-root reports/generated/cycle_42_local_api_smoke
 python scripts_write_local_api_openapi.py --output reports/generated/cycle_42_local_api_openapi.json
 python scripts_validate_service_response.py \
@@ -70,6 +75,7 @@ python scripts_validate_service_response.py \
 - `src/football_prediction_lab/service/local_api.py`
 - `scripts_run_local_api_smoke.py`
 - `scripts_write_local_api_openapi.py`
+- `scripts_serve_local_api.py`
 - `tests/test_service_cycle42_local_api.py`
 - `reports/generated/cycle_42_local_api_smoke/`
 - `reports/generated/cycle_42_local_api_openapi.json`

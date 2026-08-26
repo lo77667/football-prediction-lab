@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import argparse
+import atexit
 import hashlib
 import json
 import shutil
@@ -74,7 +75,12 @@ def main() -> int:
     )
     args = parser.parse_args()
     output_root = args.output_root.resolve()
-    ingestion_root = output_root / "ingestion"
+    output_root.mkdir(parents=True, exist_ok=True)
+    workspace_root = output_root.parent / f".{output_root.name}.workspace"
+    shutil.rmtree(workspace_root, ignore_errors=True)
+    workspace_root.mkdir(parents=True, exist_ok=True)
+    atexit.register(shutil.rmtree, workspace_root, ignore_errors=True)
+    ingestion_root = workspace_root / "ingestion"
     result = ingest_file(
         FIXTURE_PATH,
         run_id="cycle42-local-api-input",
@@ -90,7 +96,7 @@ def main() -> int:
     application = PredictionApplication(
         policy_path=POLICY_PATH,
         allowed_manifest_root=ingestion_root,
-        output_root=output_root / "service-output",
+        output_root=workspace_root / "service-output",
         code_root=ROOT,
     )
     # Cycle 42 smoke does not trust a previous-cycle run for readiness.
@@ -132,7 +138,7 @@ def main() -> int:
     validation_path = output_root / "validation.json"
     _write_json(request_path, request_payload)
     _write_json(response_path, prediction["response"])
-    source_ledger_path = output_root / "service-output" / "ledger" / "predictions.jsonl"
+    source_ledger_path = workspace_root / "service-output" / "ledger" / "predictions.jsonl"
     shutil.copyfile(source_ledger_path, ledger_path)
     validation = validate_service_response(response_path, ledger_path)
     manifest = {
