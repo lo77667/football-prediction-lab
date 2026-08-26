@@ -1,0 +1,28 @@
+{
+  "as_of_utc": "2025-01-01T12:00:00+00:00",
+  "code_commit": "dddd524a17d6747e8ee700cfbc3bb423ae398dd0",
+  "commercial_release": false,
+  "feature_version": "cycle39-shadow-input-v1",
+  "generation_status": "current",
+  "ledger_records_count": 6,
+  "ledger_sha256": "617c13ae3a34998e8ddacbcfaa7305d736bc8c10a16c164034bfe4d9d5a29a50",
+  "model_version": "cycle36-candidate-suite-v1",
+  "policy_version": "cycle36-future-2627-policy-v1",
+  "prediction_artifact_sha256": "722a16bdc847e42577cc424c3ec5d134c58b065c7c15dc9606fac1c57e5322e5",
+  "prediction_feature_versions": [
+    "pre-match-cycle36-btts-v1",
+    "pre-match-cycle36-cards-v1"
+  ],
+  "prediction_model_versions": [
+    "cycle36-candidate-suite-v1"
+  ],
+  "predictions_count": 6,
+  "request_fingerprint": "6f064823acc7af0814601703500a173ec5c64fd9b02e319c689ad8d9e0df480d",
+  "request_sha256": "369b0fe4007a8e66b305cd7683867c16f675e5abf87e221898ab18f54f5973c5",
+  "response_content_sha256": "244fd2d652b2766b8d00d012593a38acaad3512463298966ed0098ba037780d5",
+  "response_predictions_count": 3,
+  "response_sha256": "63eeae95df56c9ce460c60e0c0059e2b03f609576b80b7436a6f40e16c316f69",
+  "run_fingerprint": "6f064823acc7af0814601703500a173ec5c64fd9b02e319c689ad8d9e0df480d",
+  "schema_version": "cycle41-1-service-run-manifest-v1",
+  "source_manifest_fingerprint": "2a07a99fe1041e034f782012a4d0801ecea62bfefe9801e234bc5a2e3b6e8d12"
+}

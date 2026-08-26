@@ -1,13 +1,22 @@
 {
   "as_of_utc": "2025-01-01T12:00:00Z",
+  "code_commit": "dddd524a17d6747e8ee700cfbc3bb423ae398dd0",
   "commercial_release": false,
   "feature_version": "cycle39-shadow-input-v1",
   "manifest_fingerprint": "2a07a99fe1041e034f782012a4d0801ecea62bfefe9801e234bc5a2e3b6e8d12",
   "model_version": "cycle36-candidate-suite-v1",
   "operational_metrics": {
     "idempotent_replay": false,
+    "ledger_events_count": 6,
+    "ledger_markets": [
+      "btts",
+      "cards"
+    ],
+    "ledger_prediction_count": 6,
     "ledger_records": 6,
+    "ledger_sha256": "617c13ae3a34998e8ddacbcfaa7305d736bc8c10a16c164034bfe4d9d5a29a50",
     "predictions_issued": 3,
+    "response_predictions_count": 3,
     "skipped_items": 0
   },
   "policy_version": "cycle36-future-2627-policy-v1",
@@ -67,8 +76,9 @@
       "training_cutoff": "2025-01-01T11:59:59Z"
     }
   ],
-  "request_id": "cycle41-smoke",
-  "response_content_sha256": "6bf1dd482e681c1fc0860dc13cb9f2bd1d88979e929433d00c06607eda45676e",
+  "request_fingerprint": "6f064823acc7af0814601703500a173ec5c64fd9b02e319c689ad8d9e0df480d",
+  "request_id": "cycle41-1-smoke",
+  "response_content_sha256": "244fd2d652b2766b8d00d012593a38acaad3512463298966ed0098ba037780d5",
   "service_version": "cycle41-prediction-service-v1",
   "skipped": []
 }

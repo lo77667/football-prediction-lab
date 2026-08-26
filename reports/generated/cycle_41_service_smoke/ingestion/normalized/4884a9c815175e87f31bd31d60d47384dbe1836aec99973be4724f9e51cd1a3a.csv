@@ -1,4 +1,0 @@
-match_id,season,competition,home_team,away_team,kickoff_utc,source_provenance_id,ingestion_run_id,record_version,probability_btts,probability_cards,available_at_utc
-shadow-001,2425,EPL,Alpha,Delta,2025-01-01 15:00:00+00:00,cycle41-test-local:4884a9c815175e87,cycle41-service-input,1,0.62,0.41,2024-12-31 12:00:00+00:00
-shadow-002,2425,EPL,Beta,Gamma,2025-01-02 15:00:00+00:00,cycle41-test-local:4884a9c815175e87,cycle41-service-input,1,0.55,0.48,2024-12-31 12:00:00+00:00
-shadow-003,2425,EPL,Epsilon,Zeta,2025-01-03 15:00:00+00:00,cycle41-test-local:4884a9c815175e87,cycle41-service-input,1,0.51,0.57,2024-12-31 12:00:00+00:00

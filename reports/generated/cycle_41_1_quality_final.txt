@@ -1,6 +1,6 @@
-cycle=41
+cycle=41.1
 python_environment=/tmp/cycle37-clean-venv
-pytest=243 passed in 10.56s
+pytest=254 passed
 ruff=All checks passed
 compileall=passed
 git_diff_check=passed

@@ -1,0 +1,20 @@
+{
+  "commercial_release": false,
+  "forbidden_keys": [],
+  "ledger_markets": [
+    "btts",
+    "cards"
+  ],
+  "ledger_records": 6,
+  "ledger_records_count": 6,
+  "ledger_sha256": "617c13ae3a34998e8ddacbcfaa7305d736bc8c10a16c164034bfe4d9d5a29a50",
+  "predictions_count": 6,
+  "predictions_issued": 3,
+  "request_fingerprint": "6f064823acc7af0814601703500a173ec5c64fd9b02e319c689ad8d9e0df480d",
+  "response_content_sha256": "244fd2d652b2766b8d00d012593a38acaad3512463298966ed0098ba037780d5",
+  "response_predictions_count": 3,
+  "response_sha256": "63eeae95df56c9ce460c60e0c0059e2b03f609576b80b7436a6f40e16c316f69",
+  "run_fingerprint": "6f064823acc7af0814601703500a173ec5c64fd9b02e319c689ad8d9e0df480d",
+  "skipped_items": 0,
+  "validation": "passed"
+}

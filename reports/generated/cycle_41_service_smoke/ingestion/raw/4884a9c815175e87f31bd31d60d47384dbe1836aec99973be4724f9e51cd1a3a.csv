@@ -1,4 +1,0 @@
-match_id,season,competition,home_team,away_team,kickoff_utc,available_at_utc,probability_btts,probability_cards
-shadow-002,2425,EPL,Beta,Gamma,2025-01-02T15:00:00+00:00,2024-12-31T12:00:00+00:00,0.55,0.48
-shadow-001,2425,EPL,Alpha,Delta,2025-01-01T15:00:00+00:00,2024-12-31T12:00:00+00:00,0.62,0.41
-shadow-003,2425,EPL,Epsilon,Zeta,2025-01-03T15:00:00+00:00,2024-12-31T12:00:00+00:00,0.51,0.57

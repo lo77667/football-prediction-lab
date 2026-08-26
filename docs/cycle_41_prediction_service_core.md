@@ -72,3 +72,7 @@
 ## حدود الدورة
 
 لم تُستخدم أي شبكة أو API أو source خارجي. لم تُضف odds أو labels أو targets إلى response، ولم تتغير models أو features أو calibration أو policy 2526/2627 أو نتائج الدورات السابقة. لا يوجد public deployment أو scheduler أو worker أو financial execution. تبقى `commercial_release=false`، وتبقى هذه الخدمة محلية تجريبية prelabel فقط.
+
+## تصحيح دورة 41.1
+
+أُزيلت generated smoke artifacts القديمة من التسليم لأنها كانت تجمع تشغيلات ومواقع مختلفة تحت basenames مشتركة. التشغيل الحالي الوحيد موثق في `reports/generated/cycle_41_1_service_smoke/runs/<run_fingerprint>/` وفق عقد atomic run، وفهرسه في `reports/generated/cycle_41_1_artifact_index.json`. تفاصيل fail-closed والتحقق من ledger والـprovenance موجودة في `docs/cycle_41_1_artifact_integrity.md`.

@@ -1,9 +1,0 @@
-{
-  "schema_version": "cycle38-match-registry-v1",
-  "match_ids": [
-    "shadow-001",
-    "shadow-002",
-    "shadow-003"
-  ],
-  "updated_by_run_id": "cycle41-service-input"
-}

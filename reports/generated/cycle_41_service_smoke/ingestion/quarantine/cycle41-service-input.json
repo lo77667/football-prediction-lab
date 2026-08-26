@@ -1,8 +1,0 @@
-{
-  "rejection_counts_by_reason": {},
-  "rows_quarantined": 0,
-  "run_id": "cycle41-service-input",
-  "sample": [],
-  "sample_limit": 100,
-  "schema_version": "cycle38-quarantine-v1"
-}

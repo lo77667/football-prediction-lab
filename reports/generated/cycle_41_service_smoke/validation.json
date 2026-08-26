@@ -1,9 +1,0 @@
-{
-  "commercial_release": false,
-  "forbidden_keys": [],
-  "ledger_records": 6,
-  "predictions_issued": 3,
-  "response_content_sha256": "6bf1dd482e681c1fc0860dc13cb9f2bd1d88979e929433d00c06607eda45676e",
-  "skipped_items": 0,
-  "validation": "passed"
-}

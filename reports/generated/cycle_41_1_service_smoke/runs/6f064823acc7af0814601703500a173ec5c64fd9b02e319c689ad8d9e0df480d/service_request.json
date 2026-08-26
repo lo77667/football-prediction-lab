@@ -1,0 +1,11 @@
+{
+  "as_of_utc": "2025-01-01T12:00:00Z",
+  "expected_source_commit": "dddd524a17d6747e8ee700cfbc3bb423ae398dd0",
+  "feature_version": "cycle39-shadow-input-v1",
+  "manifest_fingerprint": "2a07a99fe1041e034f782012a4d0801ecea62bfefe9801e234bc5a2e3b6e8d12",
+  "market": "btts",
+  "mode": "shadow",
+  "model_version": "cycle36-candidate-suite-v1",
+  "policy_version": "cycle36-future-2627-policy-v1",
+  "request_id": "cycle41-1-smoke"
+}
