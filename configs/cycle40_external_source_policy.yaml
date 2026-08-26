@@ -1,0 +1,43 @@
+schema_version: cycle40-external-source-policy-v1
+policy_version: cycle40-readiness-deferred-v1
+external_source_status: deferred_missing_authorized_source
+allowed_sources: []
+allowed_markets: []
+allowed_fields:
+  - match_id
+  - event_id
+  - kickoff_utc
+  - captured_at_utc
+  - available_at_utc
+  - snapshot_version
+  - market
+  - market_definition
+  - selection
+  - decimal_odds
+  - odds_type
+minimum_provenance:
+  require_source_name: true
+  require_provider: true
+  require_source_version: true
+  require_license_or_policy: true
+  require_retrieved_at_utc: true
+  require_input_sha256: true
+  require_schema_version: true
+  require_request_or_snapshot_id: true
+matching:
+  kickoff_tolerance_minutes: 5
+cutoff_protocol:
+  timezone: UTC
+  require_captured_at_before_kickoff: true
+  require_available_at_before_cutoff: true
+  closing_odds_allowed: false
+  max_age_hours: 24
+retention:
+  policy: do_not_retain_unlicensed_external_data
+  allowed_reuse: false
+protected_seasons:
+  exposed: ["2526"]
+  future_holdout: ["2627"]
+  forbid_tuning_selection_calibration: ["2526", "2627"]
+commercial_release: false
+benchmark_status: deferred
