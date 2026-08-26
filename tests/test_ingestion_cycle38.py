@@ -248,6 +248,24 @@ def test_input_and_accepted_content_changes_change_fingerprint(tmp_path: Path) -
     assert first.manifest["manifest_fingerprint"] != second.manifest["manifest_fingerprint"]
 
 
+def test_frozen_probability_changes_manifest_fingerprint(tmp_path: Path) -> None:
+    first_frame = _frame().assign(probability_btts=[0.62, 0.55], probability_cards=[0.41, 0.48])
+    changed_frame = first_frame.copy()
+    changed_frame.loc[0, "probability_btts"] = 0.63
+    first = ingest_file(
+        _write(tmp_path / "first.csv", first_frame),
+        run_id="first",
+        output_root=tmp_path / "root-a",
+    )
+    second = ingest_file(
+        _write(tmp_path / "second.csv", changed_frame),
+        run_id="second",
+        output_root=tmp_path / "root-b",
+    )
+    assert first.manifest["manifest_fingerprint"] != second.manifest["manifest_fingerprint"]
+    assert first.manifest["run"]["output_hash"] != second.manifest["run"]["output_hash"]
+
+
 def test_rejection_counts_and_row_counts_are_fingerprinted(tmp_path: Path) -> None:
     input_path = _write(tmp_path / "authorized.csv", _frame())
     result = ingest_file(input_path, run_id="run", output_root=tmp_path / "root")

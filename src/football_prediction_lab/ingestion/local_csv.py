@@ -55,6 +55,7 @@ REQUIRED_CANONICAL_COLUMNS = (
     "ingestion_run_id",
     "record_version",
 )
+SHADOW_PROBABILITY_COLUMNS = ("probability_btts", "probability_cards")
 
 
 @dataclass(frozen=True)
@@ -83,32 +84,28 @@ def _hash_json(value: Any) -> str:
 
 
 def _canonical_records_hash(frame: pd.DataFrame) -> str:
-    """Hash accepted record content while excluding runtime provenance columns."""
+    """Hash all accepted pre-match content while excluding runtime provenance columns."""
 
-    columns = [
+    excluded = {"source_provenance_id", "ingestion_run_id"}
+    columns = sorted(column for column in frame.columns if column not in excluded)
+    records = frame.copy()[columns].sort_values(["kickoff_utc", "match_id"], kind="mergesort")
+    text_columns = {"match_id", "season", "competition", "home_team", "away_team"}
+    numeric_columns = {
         column
-        for column in REQUIRED_CANONICAL_COLUMNS
-        if column not in {"source_provenance_id", "ingestion_run_id"}
-    ]
-    columns.extend(
-        column
-        for column in ["available_at_utc"]
-        if column in frame.columns and column not in columns
-    )
-    records = frame.copy()
-    records = records[columns].sort_values(["kickoff_utc", "match_id"], kind="mergesort")
-    for column in ["match_id", "season", "competition", "home_team", "away_team"]:
-        records[column] = records[column].astype("string")
-    records["record_version"] = pd.to_numeric(records["record_version"], errors="raise").astype(
-        "int64"
-    )
-    records["kickoff_utc"] = pd.to_datetime(records["kickoff_utc"], utc=True, errors="raise").map(
-        lambda value: value.isoformat()
-    )
-    if "available_at_utc" in records:
-        records["available_at_utc"] = pd.to_datetime(
-            records["available_at_utc"], utc=True, errors="raise"
-        ).map(lambda value: value.isoformat())
+        for column in columns
+        if column == "record_version" or column.startswith("probability_")
+    }
+    for column in columns:
+        if column in text_columns:
+            records[column] = records[column].astype("string")
+        elif column.endswith("_utc"):
+            records[column] = pd.to_datetime(records[column], utc=True, errors="raise").map(
+                lambda value: value.isoformat()
+            )
+        elif column in numeric_columns:
+            records[column] = pd.to_numeric(records[column], errors="raise").astype(float)
+        else:
+            records[column] = records[column].astype("string")
     records = records.astype(object).where(pd.notna(records), None)
     return _hash_json(records.to_dict(orient="records"))
 
@@ -344,6 +341,10 @@ class LocalCsvAdapter(DataSourceAdapter):
             if record_version_column
             else 1
         )
+        for probability_column in SHADOW_PROBABILITY_COLUMNS:
+            source_column = _resolve_column(lookup, probability_column)
+            if source_column is not None:
+                result[probability_column] = pd.to_numeric(source[source_column], errors="coerce")
         available_column = _resolve_column(lookup, "available_at_utc")
         if available_column:
             available_values = []
