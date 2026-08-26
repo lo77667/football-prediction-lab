@@ -1,0 +1,23 @@
+{
+  "schema_version": "cycle40-invariants-v1",
+  "external_source_status": "deferred_missing_authorized_source",
+  "source_verified": false,
+  "source_deferred": true,
+  "source_rejected": false,
+  "no_network_call_for_unavailable_adapter": true,
+  "license_or_policy_required": true,
+  "timestamp_required": true,
+  "input_sha256_required_and_validated": true,
+  "captured_before_kickoff_required": true,
+  "available_before_cutoff_required": true,
+  "kickoff_tolerance_minutes": 5,
+  "duplicate_snapshot_rejected": true,
+  "unknown_match_isolated": true,
+  "ambiguous_match_not_randomly_linked": true,
+  "season_2526_protected": true,
+  "season_2627_reserved": true,
+  "economic_benchmark": "deferred",
+  "economic_metrics_emitted": false,
+  "secrets_in_artifacts_or_logs": false,
+  "commercial_release": false
+}

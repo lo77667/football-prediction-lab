@@ -1,0 +1,43 @@
+{
+  "allowed_source_count": 0,
+  "ambiguous_rows": 0,
+  "benchmark_status": "deferred",
+  "commercial_release": false,
+  "coverage": [],
+  "cutoff_protocol": {
+    "closing_odds_allowed": false,
+    "max_age_hours": 24,
+    "require_available_at_before_cutoff": true,
+    "require_captured_at_before_kickoff": true,
+    "timezone": "UTC"
+  },
+  "duplicate_snapshots": 0,
+  "external_source_status": "deferred_missing_authorized_source",
+  "late_rows": 0,
+  "license_failures": 0,
+  "matched_rows": 0,
+  "missing_provenance": 0,
+  "policy_path": "/home/ubuntu/football-prediction-lab/configs/cycle40_external_source_policy.yaml",
+  "policy_sha256": "4eac304503cddfb168975d0604577ed7f632637983df53f130d4350015316ece",
+  "policy_version": "cycle40-readiness-deferred-v1",
+  "protected_seasons": {
+    "exposed": [
+      "2526"
+    ],
+    "forbid_tuning_selection_calibration": [
+      "2526",
+      "2627"
+    ],
+    "future_holdout": [
+      "2627"
+    ]
+  },
+  "raw_rows": 0,
+  "schema_failures": 0,
+  "schema_version": "cycle40-external-source-readiness-v1",
+  "source_count": 0,
+  "source_rejections_by_reason": {},
+  "source_status": "source_deferred",
+  "unmatched_rows": 0,
+  "valid_rows": 0
+}

@@ -1,0 +1,16 @@
+{
+  "schema_version": "cycle40-external-source-manifest-v1",
+  "manifest_type": "deferred_no_authorized_source",
+  "external_source_status": "deferred_missing_authorized_source",
+  "source_count": 0,
+  "source_manifests": [],
+  "policy_version": "cycle40-readiness-deferred-v1",
+  "policy_sha256": "4eac304503cddfb168975d0604577ed7f632637983df53f130d4350015316ece",
+  "readiness_report": {
+    "relative_path": "reports/generated/cycle_40_source_readiness.json",
+    "sha256": "54803f7cf1e8b37012cef177251040809dc6e54bca9f4e0fddd41e07c8714bd5"
+  },
+  "coverage": [],
+  "benchmark_status": "deferred",
+  "commercial_release": false
+}

@@ -1,0 +1,2 @@
+compileall=passed
+diff_check=passed
