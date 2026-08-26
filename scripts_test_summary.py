@@ -5,7 +5,9 @@ from __future__ import annotations
 import json
 import re
 import subprocess
+import sys
 from datetime import UTC, datetime
+from importlib.metadata import PackageNotFoundError, version
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent
@@ -17,7 +19,7 @@ SUMMARY_PATTERN = re.compile(
 
 def _run_pytest(*args: str) -> str:
     result = subprocess.run(
-        ["pytest", "-q", *args],
+        [sys.executable, "-m", "pytest", "-q", *args],
         cwd=ROOT,
         check=True,
         capture_output=True,
@@ -43,6 +45,29 @@ def _parse_passed(output: str) -> int:
     return int(passed.group("count"))
 
 
+def _source_revision() -> str:
+    result = subprocess.run(
+        ["git", "rev-parse", "HEAD"],
+        cwd=ROOT,
+        check=False,
+        capture_output=True,
+        text=True,
+    )
+    if result.returncode == 0:
+        return result.stdout.strip()
+    marker = ROOT / "SOURCE_COMMIT.txt"
+    if marker.exists():
+        return marker.read_text(encoding="utf-8").strip()
+    return "archive-without-git-metadata"
+
+
+def _version(package: str) -> str:
+    try:
+        return version(package)
+    except PackageNotFoundError:
+        return "unavailable"
+
+
 def main() -> None:
     collected_output = _run_pytest("--collect-only")
     execution_output = _run_pytest()
@@ -51,13 +76,12 @@ def main() -> None:
         "collected_count": _parse_collected(collected_output),
         "passed_count": _parse_passed(execution_output),
         "timestamp_utc": datetime.now(UTC).isoformat().replace("+00:00", "Z"),
-        "commit": subprocess.run(
-            ["git", "rev-parse", "HEAD"],
-            cwd=ROOT,
-            check=True,
-            capture_output=True,
-            text=True,
-        ).stdout.strip(),
+        "commit": _source_revision(),
+        "tool_versions": {
+            "python": sys.version.split()[0],
+            "pytest": _version("pytest"),
+            "ruff": _version("ruff"),
+        },
     }
     if summary["collected_count"] != summary["passed_count"]:
         raise RuntimeError("collected_count and passed_count differ")

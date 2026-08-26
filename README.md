@@ -89,3 +89,36 @@ python scripts_validate_season.py \
 ## معيار الانتقال بين المراحل
 
 لا تنتقل المرحلة التالية إلا بعد مرور العمل على ستة أدوار: المنفّذ، المدقّق، المراجع، الباحث، المطوّر، والضامن. يسجل كل دور ملاحظاته في تقرير التجربة أو سجل المراجعة، ولا تُخفى الأخطاء أو تُعدّل النتائج السابقة.
+
+## التثبيت وإعادة الإنتاج من Full Source Bundle
+
+النسخة القابلة لإعادة الإنتاج تُستخرج من Git عبر `git archive`، ولا تعتمد على ملفات `data/` المحلية أو على checkout سابق. بعد فك الأرشيف من جذر المشروع، أنشئ بيئة نظيفة وثبّت الاعتماديات المقيدة:
+
+```bash
+python3 -m venv .venv
+.venv/bin/python -m pip install --upgrade pip
+.venv/bin/pip install -r requirements.lock
+.venv/bin/pip install -e . --no-deps
+```
+
+يضمن الأمر الأخير تسجيل الحزمة الحالية في البيئة دون استبدال الإصدارات المقيدة في lock. بعد التثبيت، تحقّق من أن imports تشير إلى المشروع الحالي، ثم شغّل verifier الرسمي:
+
+```bash
+.venv/bin/python -c "import football_prediction_lab; print(football_prediction_lab.__file__)"
+.venv/bin/python -c "import football_prediction_lab.evaluation.cycle36_model_selection as m; print(m.__file__)"
+.venv/bin/python scripts/verify_cycle36_reproducibility.py
+```
+
+يشغّل verifier الاختبارات وRuff وcompileall وtest summary من نفس `venv`، ويتحقق من أن مسارات modules تبدأ بجذر المشروع الحالي. كما توجد fixtures صغيرة في `tests/fixtures/cycle36_smoke/` لاختبار imports وPoisson probabilities فقط؛ لا تُستخدم هذه fixtures لإعادة إنتاج metrics التاريخية.
+
+لإعادة إنتاج التقييم التاريخي لـCycle 36، يجب توفير ملفات البيانات المحلية المصرح بها في `data/processed/` مع manifest وSHA-256 خارج Git. لا تُضمَّن البيانات المحلية أو الأسرار في Full Source Bundle. موسم `2526` خارج التطوير والاختيار، وموسم `2627` محجوز كـfuture holdout غير متاح وغير مقيم، وتبقى `commercial_release=false`.
+
+## وصف التسليم
+
+الأرشيف الكامل هو **Full reproducible source bundle** وليس patch-only bundle. يُنشأ من كل الملفات المتتبعة في commit الإصدار باستخدام:
+
+```bash
+git archive --format=zip --prefix=football-prediction-lab/ HEAD -o /tmp/football-prediction-lab-full.zip
+```
+
+ويشمل `src/` و`tests/` وملفات التشغيل الجذرية و`scripts/` و`pyproject.toml` و`requirements.lock` و`configs/` و`docs/` و`reports/` المتتبعة. لا يعتمد على حزمة انتقائية أو imports من checkout آخر.

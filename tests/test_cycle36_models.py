@@ -21,6 +21,7 @@ from football_prediction_lab.models.poisson_cards import PoissonCardsRate
 ROOT = Path(__file__).parents[1]
 REPORT_PATH = ROOT / "reports/generated/cycle_36_candidate_evaluation.json"
 POLICY_PATH = ROOT / "configs/cycle36_future_holdout_policy.json"
+SMOKE_DIR = ROOT / "tests/fixtures/cycle36_smoke"
 
 
 def _btts_frame() -> pd.DataFrame:
@@ -47,6 +48,13 @@ def _cards_frame() -> pd.DataFrame:
             "away_card_matches_before": [0, 5, 10],
         }
     )
+
+
+def test_smoke_fixtures_run_without_historical_data() -> None:
+    btts_frame = pd.read_csv(SMOKE_DIR / "btts_features.csv")
+    cards_frame = pd.read_csv(SMOKE_DIR / "cards_features.csv")
+    assert PoissonGoalsBtts().fit(btts_frame).predict_probability(btts_frame).between(0, 1).all()
+    assert PoissonCardsRate().fit(cards_frame).predict_probability(cards_frame).between(0, 1).all()
 
 
 def test_poisson_candidates_have_valid_positive_rates_and_probabilities() -> None:
