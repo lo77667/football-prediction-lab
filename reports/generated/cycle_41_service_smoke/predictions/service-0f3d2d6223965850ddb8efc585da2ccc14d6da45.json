@@ -112,7 +112,7 @@
       "training_cutoff": "2025-01-01T11:59:59Z"
     }
   ],
-  "run_id": "service-593a6906162fbff91a50fa7594b8141d64376588",
+  "run_id": "service-0f3d2d6223965850ddb8efc585da2ccc14d6da45",
   "schema_version": "cycle39-shadow-predictions-v1",
   "skipped": [],
   "source_manifest_fingerprint": "2a07a99fe1041e034f782012a4d0801ecea62bfefe9801e234bc5a2e3b6e8d12",

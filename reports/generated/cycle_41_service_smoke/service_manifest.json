@@ -1,7 +1,7 @@
 {
   "schema_version": "cycle41-service-smoke-manifest-v1",
   "service_version": "cycle41-prediction-service-v1",
-  "source_commit": "446a2aaf4b9df49c671393804780bb2185ce4ea6",
+  "source_commit": "c11a61aa39dccd8e0907081b5dc440fadf46810b",
   "manifest_fingerprint": "2a07a99fe1041e034f782012a4d0801ecea62bfefe9801e234bc5a2e3b6e8d12",
   "request_fingerprint": "593a6906162fbff91a50fa7594b8141d64376588b7e15e351f08bf9e925bbdbe",
   "response_content_sha256": "6bf1dd482e681c1fc0860dc13cb9f2bd1d88979e929433d00c06607eda45676e",
