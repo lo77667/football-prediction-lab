@@ -1,0 +1,4 @@
+match_id,season,competition,home_team,away_team,kickoff_utc,source_provenance_id,ingestion_run_id,record_version,available_at_utc
+smoke-001,2425,EPL,Alpha,Delta,2025-01-01 15:00:00+00:00,cycle38_smoke:9e7952716d52881e,smoke-001,1,2025-01-01 10:00:00+00:00
+smoke-002,2425,EPL,Beta,Gamma,2025-01-02 15:00:00+00:00,cycle38_smoke:9e7952716d52881e,smoke-001,1,2025-01-02 10:00:00+00:00
+smoke-003,2425,EPL,Epsilon,Zeta,2025-01-03 15:00:00+00:00,cycle38_smoke:9e7952716d52881e,smoke-001,1,2025-01-03 10:00:00+00:00

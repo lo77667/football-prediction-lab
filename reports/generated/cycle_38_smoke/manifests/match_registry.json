@@ -1,0 +1,9 @@
+{
+  "schema_version": "cycle38-match-registry-v1",
+  "match_ids": [
+    "smoke-001",
+    "smoke-002",
+    "smoke-003"
+  ],
+  "updated_by_run_id": "smoke-001"
+}
