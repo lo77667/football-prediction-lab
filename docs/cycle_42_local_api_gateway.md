@@ -66,6 +66,24 @@ python scripts_validate_service_response.py \
 
 يجب أن تكون نتيجة smoke `network_scope=loopback-only` و`commercial_release=false`، ويجب ألا يصبح `/health` صحياً بسبب manifest منفرد أو ledger مفقود. لا يُعتبر نجاح smoke دليلاً على أداء النموذج أو الربحية.
 
+## الأدلة النهائية
+
+| الفحص | النتيجة |
+|---|---|
+| HEAD المصدر | `bece2157fea0c0a0727112d015a9182bbf1d7b85` |
+| `python -m pytest -q` | `275 passed` |
+| `ruff check .` | `All checks passed` |
+| `python -m compileall -q src scripts_*.py` | passed |
+| `git diff --check` | passed |
+| local API smoke | routes 200، prediction `ok=true`، 3 predictions |
+| artifact validator | passed، ledger records `6`، markets `btts/cards` |
+| target tampering | failed closed، exit code `1` |
+| empty ledger | failed closed، exit code `1` |
+| OpenAPI determinism | passed، snapshot مطابق لإعادة التوليد |
+| sensitive path/secret scan | passed |
+| network scope | loopback-only؛ لا external calls |
+| commercial release | `false` |
+
 ## خارج نطاق الدورة
 
 لا تشمل هذه الدورة Telegram أو أي token أو Chat ID أو إرسال حقيقي، ولا worker 24/7 أو scheduler أو polling أو external ingestion أو public deployment أو database persistence أو monitoring إداري دائم. هذه العناصر مؤجلة إلى دوراتها المخصصة ولا يجوز تنفيذها ضمن Cycle 42.

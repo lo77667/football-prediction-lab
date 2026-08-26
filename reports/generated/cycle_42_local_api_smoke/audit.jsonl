@@ -1,0 +1,5 @@
+{"commercial_release":false,"event":"local_api_request","method":"GET","path":"/health","status":200}
+{"commercial_release":false,"event":"local_api_request","method":"GET","path":"/ready","status":200}
+{"commercial_release":false,"event":"local_api_request","method":"GET","path":"/version","status":200}
+{"commercial_release":false,"event":"local_api_request","method":"GET","path":"/openapi.json","status":200}
+{"commercial_release":false,"event":"local_api_request","method":"POST","path":"/v1/shadow/predictions","status":200}
