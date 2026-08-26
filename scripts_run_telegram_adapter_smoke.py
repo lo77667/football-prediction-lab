@@ -19,6 +19,7 @@ from football_prediction_lab.notification.telegram import (
     TelegramRequestError,
 )
 from football_prediction_lab.service.contracts import ShadowPrediction
+from football_prediction_lab.service.version import code_commit
 
 ROOT = Path(__file__).resolve().parent
 SOURCE_RESPONSE = (
@@ -91,6 +92,7 @@ def main() -> int:
             "signal_schema": NotificationSignal.model_json_schema(),
             "telegram_message_schema": TelegramMessage.model_json_schema(),
             "production_enabled": False,
+            "adapter_code_commit": code_commit(ROOT),
             "commercial_release": False,
         },
     )
@@ -105,6 +107,7 @@ def main() -> int:
             "fake_client_calls": fake_client.calls,
             "backoff_seconds": sleeps,
             "production_blocked": production_blocked,
+            "adapter_code_commit": code_commit(ROOT),
             "network_scope": "none",
             "commercial_release": False,
         },
@@ -117,6 +120,7 @@ def main() -> int:
             "message_contract": "message_contract.json",
             "validation": "validation.json",
             "notification_id": dry_first.notification_id,
+            "adapter_code_commit": code_commit(ROOT),
             "commercial_release": False,
         },
     )
