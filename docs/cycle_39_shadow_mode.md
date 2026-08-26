@@ -96,7 +96,7 @@
 
 ## 7. حالة CI الفعلية
 
-بعد دفع commit التوثيق النهائي، أُطلق workflow `quality-gate` على commit `a46bd870a3536fe7590cc40b9299f435a30d92b1`. تعريف workflow يحتوي صراحة على checkout، setup Python 3.11 و3.12، تثبيت dependencies، import-path check، pytest، Ruff، compileall، وgit diff check. لكن حالة GitHub Actions الفعلية لم تصل إلى تنفيذ هذه الخطوات: run `32971090787` انتهى بـ`failure`، وكل من jobَي Python 3.11 و3.12 ظهر له `steps=[]`، ولم يوجد log تنفيذ قابل للاستخراج [2].
+بعد دفع commit التوثيق الحالي، أُطلق workflow `quality-gate` على commit `56a923ae8ee4f9aa7e55516651c0c80cf87e0a3e`. تعريف workflow يحتوي صراحة على checkout، setup Python 3.11 و3.12، تثبيت dependencies، import-path check، pytest، Ruff، compileall، وgit diff check. لكن حالة GitHub Actions الفعلية لم تصل إلى تنفيذ هذه الخطوات: run `32971188636` انتهى بـ`failure`، وكل من jobَي Python 3.11 و3.12 ظهر له `steps=[]`، ولم يوجد log تنفيذ قابل للاستخراج [2].
 
 لذلك القرار الدقيق هو: **quality-gate مكتوب صراحة في المستودع، لكن CI البعيد ما زال runner-blocked وغير مثبت التنفيذ**. لا تُعد هذه الدورة CI ناجحة، ولا تُنسب المشكلة إلى pytest أو Ruff أو الكود المحلي، لأن سجل التنفيذ لم يبدأ.
 
@@ -107,4 +107,4 @@
 ### المراجع
 
 [1]: ../configs/cycle36_future_holdout_policy.json "سياسة Cycle 36/2627 المقفلة"
-[2]: https://github.com/lo77667/football-prediction-lab/actions/runs/32971090787 "GitHub Actions quality-gate run 32971090787"
+[2]: https://github.com/lo77667/football-prediction-lab/actions/runs/32971188636 "GitHub Actions quality-gate run 32971188636"
