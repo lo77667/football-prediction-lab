@@ -26,7 +26,7 @@
 |---|---|
 | input SHA-256 | `9e7952716d52881ee3e86a93f9fe88b15a65551674c3462d6f073231ce95a8b0` |
 | normalized output SHA-256 | `06599790c27e862d60153a88efbccac675add788340b9cddf3a3ab957d27a06b` |
-| manifest fingerprint | `92e8346f0630d78942e01b8127df7b4fd80079809c03000a1031fa3eae605fac` |
+| manifest fingerprint | `606757a7a8dd9d96e79145479aa8f68e1d4d82102f24d0cf5c1105cb0603a202` |
 | quarantine counts | `{}` |
 | duplicate count | 0 |
 | timezone failure count | 0 |

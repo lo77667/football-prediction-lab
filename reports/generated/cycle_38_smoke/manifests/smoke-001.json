@@ -4,17 +4,41 @@
     "smoke-002",
     "smoke-003"
   ],
+  "accepted_records_sha256": "de8776f7788b0cd2e2ebee0fd212f8b003d3951f7cda9bd34ca3ded42a7061e6",
+  "artifacts": [
+    {
+      "artifact_filename": "9e7952716d52881ee3e86a93f9fe88b15a65551674c3462d6f073231ce95a8b0.csv",
+      "artifact_role": "raw",
+      "content_sha256": "9e7952716d52881ee3e86a93f9fe88b15a65551674c3462d6f073231ce95a8b0",
+      "relative_artifact_key": "raw/9e7952716d52881ee3e86a93f9fe88b15a65551674c3462d6f073231ce95a8b0.csv"
+    },
+    {
+      "artifact_filename": "9e7952716d52881ee3e86a93f9fe88b15a65551674c3462d6f073231ce95a8b0.csv",
+      "artifact_role": "normalized",
+      "content_sha256": "de8776f7788b0cd2e2ebee0fd212f8b003d3951f7cda9bd34ca3ded42a7061e6",
+      "relative_artifact_key": "normalized/9e7952716d52881ee3e86a93f9fe88b15a65551674c3462d6f073231ce95a8b0.csv"
+    },
+    {
+      "artifact_filename": "9e7952716d52881ee3e86a93f9fe88b15a65551674c3462d6f073231ce95a8b0.csv",
+      "artifact_role": "processed",
+      "content_sha256": "de8776f7788b0cd2e2ebee0fd212f8b003d3951f7cda9bd34ca3ded42a7061e6",
+      "relative_artifact_key": "processed/9e7952716d52881ee3e86a93f9fe88b15a65551674c3462d6f073231ce95a8b0.csv"
+    }
+  ],
+  "canonical_normalized_output_sha256": "de8776f7788b0cd2e2ebee0fd212f8b003d3951f7cda9bd34ca3ded42a7061e6",
+  "canonical_processed_output_sha256": "de8776f7788b0cd2e2ebee0fd212f8b003d3951f7cda9bd34ca3ded42a7061e6",
+  "competition_policy": "input-declared",
   "deterministic_sort": [
     "kickoff_utc",
     "match_id"
   ],
   "duplicate_count": 0,
-  "generated_at_utc": "2026-08-26T09:39:48.927502+00:00",
+  "generated_at_utc": "2026-08-26T11:42:18.493486+00:00",
   "input_path": "/home/ubuntu/football-prediction-lab/tests/fixtures/cycle38_smoke/authorized_matches.csv",
   "input_sha256": "9e7952716d52881ee3e86a93f9fe88b15a65551674c3462d6f073231ce95a8b0",
   "kickoff_utc_max": "2025-01-03 15:00:00+00:00",
   "kickoff_utc_min": "2025-01-01 15:00:00+00:00",
-  "manifest_fingerprint": "92e8346f0630d78942e01b8127df7b4fd80079809c03000a1031fa3eae605fac",
+  "manifest_fingerprint": "606757a7a8dd9d96e79145479aa8f68e1d4d82102f24d0cf5c1105cb0603a202",
   "manifest_path": "/home/ubuntu/football-prediction-lab/reports/generated/cycle_38_smoke/manifests/smoke-001.json",
   "max_rejection_rate": 0.25,
   "output_path": "/home/ubuntu/football-prediction-lab/reports/generated/cycle_38_smoke/normalized/9e7952716d52881ee3e86a93f9fe88b15a65551674c3462d6f073231ce95a8b0.csv",
@@ -43,13 +67,14 @@
     "total_yellows_over_3_5"
   ],
   "processed_output_path": "/home/ubuntu/football-prediction-lab/reports/generated/cycle_38_smoke/processed/9e7952716d52881ee3e86a93f9fe88b15a65551674c3462d6f073231ce95a8b0.csv",
+  "processed_output_sha256": "06599790c27e862d60153a88efbccac675add788340b9cddf3a3ab957d27a06b",
   "quarantine_path": "/home/ubuntu/football-prediction-lab/reports/generated/cycle_38_smoke/quarantine/smoke-001.json",
   "raw_path": "/home/ubuntu/football-prediction-lab/reports/generated/cycle_38_smoke/raw/9e7952716d52881ee3e86a93f9fe88b15a65551674c3462d6f073231ce95a8b0.csv",
   "rejection_counts_by_reason": {},
   "rejection_rate": 0.0,
   "run": {
-    "code_commit": "262685144d7656460074c0da803e8401954da306",
-    "completed_at_utc": "2026-08-26T09:39:48.927502Z",
+    "code_commit": "7645dfd852dea050d5530a271e63b841f5a664b1",
+    "completed_at_utc": "2026-08-26T11:42:18.493486Z",
     "error_summary": [],
     "input_hash": "9e7952716d52881ee3e86a93f9fe88b15a65551674c3462d6f073231ce95a8b0",
     "output_hash": "06599790c27e862d60153a88efbccac675add788340b9cddf3a3ab957d27a06b",
@@ -59,7 +84,7 @@
     "run_id": "smoke-001",
     "source_name": "cycle38_smoke",
     "source_version": "fixture-v1",
-    "started_at_utc": "2026-08-26T09:39:48.924324Z",
+    "started_at_utc": "2026-08-26T11:42:18.485092Z",
     "status": "completed"
   },
   "schema_version": "cycle38-ingestion-manifest-v1",
@@ -70,7 +95,7 @@
     "input_path": "/home/ubuntu/football-prediction-lab/tests/fixtures/cycle38_smoke/authorized_matches.csv",
     "input_sha256": "9e7952716d52881ee3e86a93f9fe88b15a65551674c3462d6f073231ce95a8b0",
     "license_or_usage_policy": "test-only-fixture",
-    "retrieved_at_utc": "2026-08-26T09:39:48.924324Z",
+    "retrieved_at_utc": "2026-08-26T11:42:18.485092Z",
     "row_count": 3,
     "schema_version": "cycle38-match-v1",
     "source_name": "cycle38_smoke",

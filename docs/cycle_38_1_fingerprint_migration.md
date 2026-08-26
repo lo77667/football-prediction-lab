@@ -27,7 +27,7 @@
 
 | الحقل | قبل 38.1 | بعد 38.1 |
 |---|---|---|
-| manifest file SHA-256 | `b3611456baa8cf103b97d736c3ddbc2ed436924fef6c272ef8b1c453503cd98d` | `bcd2b7e026db095b731a68455276f8b1bb1a5b6c00bce926b1c4551b0e0b4acf` |
+| manifest file SHA-256 | `b3611456baa8cf103b97d736c3ddbc2ed436924fef6c272ef8b1c453503cd98d` | `ec9ce75f953c0aab36ff6b3b2a07c1793bdd9bfe0de36e2458ccb310adc95142` |
 | `manifest_fingerprint` | `92e8346f0630d78942e01b8127df7b4fd80079809c03000a1031fa3eae605fac` | `606757a7a8dd9d96e79145479aa8f68e1d4d82102f24d0cf5c1105cb0603a202` |
 | normalized output hash | `06599790c27e862d60153a88efbccac675add788340b9cddf3a3ab957d27a06b` | `06599790c27e862d60153a88efbccac675add788340b9cddf3a3ab957d27a06b` |
 | processed output hash | `06599790c27e862d60153a88efbccac675add788340b9cddf3a3ab957d27a06b` | `06599790c27e862d60153a88efbccac675add788340b9cddf3a3ab957d27a06b` |
@@ -79,7 +79,7 @@ ruff check relevant files                All checks passed!
 compileall ingestion/scripts             passed
 ```
 
-سيُعاد تشغيل البوابة الكاملة بعد تثبيت commit دورة 38.1 وتحديث test summary. لا تُستخدم `2526` أو `2627` في هذا الاختبار، ولا توجد commercial release؛ الحالة تبقى `commercial_release=false`.
+أُعيد تشغيل البوابة الكاملة على commit `7645dfd852dea050d5530a271e63b841f5a664b1` داخل venv النظيفة، وسجل test summary عدد `192/192`. لا تُستخدم `2526` أو `2627` في هذا الاختبار، ولا توجد commercial release؛ الحالة تبقى `commercial_release=false`.
 
 ## المراجع الداخلية
 
