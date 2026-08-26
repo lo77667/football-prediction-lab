@@ -88,7 +88,7 @@ def test_rejects_extra_fields_and_source_version_mismatch(tmp_path: Path) -> Non
 def test_rejects_naive_as_of(tmp_path: Path) -> None:
     path = tmp_path / "source.jsonl"
     _write(path, [_row()])
-    with pytest.raises(ValueError, match="timezone-aware"):
+    with pytest.raises(ValueError, match="explicit UTC"):
         LocalJsonlSource(path, source_version="fixture-v1").read(
             as_of_utc=__import__("datetime").datetime(2025, 1, 1, 12)
         )

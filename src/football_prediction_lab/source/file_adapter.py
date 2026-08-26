@@ -5,7 +5,7 @@ from __future__ import annotations
 import hashlib
 import json
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Any
 
@@ -48,8 +48,12 @@ class LocalJsonlSource:
         self.max_age_seconds = max_age_seconds
 
     def read(self, *, as_of_utc: datetime) -> SourceBatch:
-        if as_of_utc.tzinfo is None or as_of_utc.utcoffset() is None:
-            raise ValueError("as_of_utc must be timezone-aware")
+        if (
+            as_of_utc.tzinfo is None
+            or as_of_utc.utcoffset() is None
+            or as_of_utc.utcoffset() != timedelta(0)
+        ):
+            raise ValueError("as_of_utc must be explicit UTC")
         payload = self.path.read_bytes()
         digest = hashlib.sha256(payload).hexdigest()
         rows: list[SourceRow] = []
