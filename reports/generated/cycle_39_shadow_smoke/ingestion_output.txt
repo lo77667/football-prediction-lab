@@ -1,0 +1,8 @@
+manifest_path=/home/ubuntu/football-prediction-lab/reports/generated/cycle_39_shadow_smoke/ingestion/manifests/cycle39-smoke-ingest.json
+normalized_path=/home/ubuntu/football-prediction-lab/reports/generated/cycle_39_shadow_smoke/ingestion/normalized/4884a9c815175e87f31bd31d60d47384dbe1836aec99973be4724f9e51cd1a3a.csv
+quarantine_path=/home/ubuntu/football-prediction-lab/reports/generated/cycle_39_shadow_smoke/ingestion/quarantine/cycle39-smoke-ingest.json
+raw_path=/home/ubuntu/football-prediction-lab/reports/generated/cycle_39_shadow_smoke/ingestion/raw/4884a9c815175e87f31bd31d60d47384dbe1836aec99973be4724f9e51cd1a3a.csv
+rows_read=3
+rows_accepted=3
+rows_quarantined=0
+status=completed

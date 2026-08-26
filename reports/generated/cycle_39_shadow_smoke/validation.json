@@ -1,0 +1,12 @@
+{
+  "commercial_release": false,
+  "ledger_path": "/home/ubuntu/football-prediction-lab/reports/generated/cycle_39_shadow_smoke/shadow/ledger/predictions.jsonl",
+  "ledger_sha256": "26d1bfc573dd1381ea8f8124f5ebf9d89f3776b8de219765dbc019570129ec82",
+  "output_sha256": "a6713cc0d57ee49001c084e74752b74d7af00a96b56eb2caaed9693a08a92548",
+  "predictions_issued": 6,
+  "predictions_path": "/home/ubuntu/football-prediction-lab/reports/generated/cycle_39_shadow_smoke/shadow/predictions/cycle39-smoke.json",
+  "rows_skipped": 0,
+  "run_id": "cycle39-smoke",
+  "run_path": "/home/ubuntu/football-prediction-lab/reports/generated/cycle_39_shadow_smoke/shadow/runs/cycle39-smoke.json",
+  "validation": "passed"
+}

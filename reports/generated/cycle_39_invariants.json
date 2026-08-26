@@ -1,0 +1,15 @@
+{
+  "schema_version": "cycle39-invariants-v1",
+  "prediction_artifact_target_result_post_match_keys_absent": true,
+  "prediction_timestamps_are_pre_match": true,
+  "training_cutoff_precedes_as_of": true,
+  "commercial_release_false": true,
+  "season_2526_not_in_development_policy": true,
+  "season_2627_reserved_and_not_evaluated": true,
+  "ledger_hash_chain_valid": true,
+  "ledger_append_is_idempotent": true,
+  "existing_prediction_artifact_is_immutable": true,
+  "canonical_manifest_changes_when_frozen_probability_changes": true,
+  "smoke_validation": "passed",
+  "smoke_replay": "passed"
+}
