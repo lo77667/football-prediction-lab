@@ -125,4 +125,4 @@ python3 -m venv .venv
 git archive --format=zip --prefix=football-prediction-lab/ HEAD -o /tmp/football-prediction-lab-full.zip
 ```
 
-ويشمل `src/` و`tests/` وملفات التشغيل الجذرية و`scripts/` و`pyproject.toml` و`requirements.lock` و`configs/` و`docs/` و`reports/` المتتبعة. لا يعتمد على حزمة انتقائية أو imports من checkout آخر.
+ويشمل `src/` و`tests/` وملفات التشغيل الجذرية و`scripts/` و`pyproject.toml` و`requirements.lock` و`configs/` و`docs/` و`reports/` المتتبعة. ويستبدل Git تلقائيًا marker الموجود في `SOURCE_COMMIT.txt` ببصمة commit داخل الأرشيف. لا يعتمد على حزمة انتقائية أو imports من checkout آخر.
