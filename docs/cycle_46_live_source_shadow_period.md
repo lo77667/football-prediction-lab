@@ -31,3 +31,5 @@
 ## الملفات
 
 `src/football_prediction_lab/source/file_adapter.py`، `src/football_prediction_lab/source/__init__.py`، `tests/test_cycle46_file_source.py`، `scripts_run_cycle46_source_readiness.py`، `reports/generated/cycle_46_source_readiness.json`، وهذا التقرير.
+
+تدقيق مستقل: downloader الشبكي الآن يحتاج allow_network=True صراحةً، وLocalJsonlSource يرفض أي as_of غير UTC.

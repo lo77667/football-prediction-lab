@@ -12,6 +12,11 @@ def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--season", default="2425")
     parser.add_argument("--competition", default="E0")
+    parser.add_argument(
+        "--allow-network",
+        action="store_true",
+        help="explicitly allow the legacy public download",
+    )
     args = parser.parse_args()
 
     root = Path(__file__).resolve().parents[0]
@@ -19,7 +24,7 @@ def main() -> int:
     processed_path = root / "data" / "processed" / f"{args.season}_{args.competition}.csv"
     url = f"https://www.football-data.co.uk/mmz4281/{args.season}/{args.competition}.csv"
 
-    download_csv(url, raw_path)
+    download_csv(url, raw_path, allow_network=args.allow_network)
     normalized = normalize_football_data_csv(
         raw_path,
         competition="English Premier League",

@@ -11,9 +11,13 @@ import pandas as pd
 REQUIRED_SOURCE_COLUMNS = {"Date", "HomeTeam", "AwayTeam", "FTHG", "FTAG"}
 
 
-def download_csv(url: str, destination: Path, timeout: int = 30) -> Path:
-    """Download a public CSV using a standard HTTP request and return its path."""
+def download_csv(
+    url: str, destination: Path, timeout: int = 30, *, allow_network: bool = False
+) -> Path:
+    """Download a CSV only when the caller explicitly opts into network access."""
 
+    if not allow_network:
+        raise RuntimeError("network download is disabled; pass allow_network=True explicitly")
     destination.parent.mkdir(parents=True, exist_ok=True)
     request = Request(url, headers={"User-Agent": "football-prediction-lab/0.1"})
     with urlopen(request, timeout=timeout) as response:  # noqa: S310 - URL is configured by the project
@@ -42,9 +46,7 @@ def normalize_football_data_csv(
         else pd.Series("", index=frame.index, dtype="string")
     )
     date_time = (raw_dates + " " + raw_times).str.strip()
-    kickoff = pd.to_datetime(
-        date_time, format="%d/%m/%Y %H:%M", errors="coerce", utc=True
-    )
+    kickoff = pd.to_datetime(date_time, format="%d/%m/%Y %H:%M", errors="coerce", utc=True)
     missing_time = kickoff.isna()
     if missing_time.any():
         kickoff.loc[missing_time] = pd.to_datetime(
@@ -99,9 +101,9 @@ def normalize_football_data_csv(
     normalized["total_yellows"] = normalized["home_yellows"] + normalized["away_yellows"]
 
     normalized["match_id"] = normalized.apply(_match_id, axis=1)
-    normalized["btts"] = (
-        (normalized["home_goals"] > 0) & (normalized["away_goals"] > 0)
-    ).astype("int8")
+    normalized["btts"] = ((normalized["home_goals"] > 0) & (normalized["away_goals"] > 0)).astype(
+        "int8"
+    )
     columns = [
         "match_id",
         "kickoff_utc",
@@ -128,9 +130,7 @@ def normalize_football_data_csv(
         "btts",
         "source",
     ]
-    return normalized[columns].sort_values(
-        ["kickoff_utc", "match_id"]
-    ).reset_index(drop=True)
+    return normalized[columns].sort_values(["kickoff_utc", "match_id"]).reset_index(drop=True)
 
 
 def _optional_text(frame: pd.DataFrame, column: str) -> pd.Series:

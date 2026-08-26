@@ -1,8 +1,9 @@
 from pathlib import Path
 
 import pandas as pd
+import pytest
 
-from football_prediction_lab.data.football_data import normalize_football_data_csv
+from football_prediction_lab.data.football_data import download_csv, normalize_football_data_csv
 
 
 def test_normalize_football_data_csv(tmp_path: Path) -> None:
@@ -29,3 +30,8 @@ def test_normalize_football_data_csv(tmp_path: Path) -> None:
     assert result["match_id"].is_unique
     assert str(result["kickoff_utc"].dtype).startswith("datetime64[ns, UTC]")
     assert result.loc[0, "kickoff_utc"].hour == 20
+
+
+def test_download_csv_is_disabled_without_explicit_network_opt_in(tmp_path: Path) -> None:
+    with pytest.raises(RuntimeError, match="network download is disabled"):
+        download_csv("https://example.invalid/data.csv", tmp_path / "data.csv")
