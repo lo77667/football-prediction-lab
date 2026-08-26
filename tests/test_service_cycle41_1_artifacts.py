@@ -155,7 +155,9 @@ def test_prediction_artifact_and_ledger_ids_are_consistent(tmp_path: Path) -> No
     ]
     assert len(predictions) == len(ledger) == 6
     assert len(response["predictions"]) == 3
-    assert [item["prediction_id"] for item in predictions] == [item["record_id"] for item in ledger]
+    assert [item["prediction"]["prediction_id"] for item in predictions] == [
+        item["record_id"] for item in ledger
+    ]
     assert response["operational_metrics"]["ledger_markets"] == ["btts", "cards"]
 
 
