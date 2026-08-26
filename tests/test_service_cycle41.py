@@ -97,10 +97,10 @@ def test_health_is_not_ready_without_verified_manifest_and_has_safe_version() ->
     assert "secret" not in json.dumps(version).lower()
 
 
-def test_valid_manifest_can_be_healthy_and_path_traversal_is_blocked(tmp_path: Path) -> None:
+def test_manifest_file_alone_is_not_healthy_and_path_traversal_is_blocked(tmp_path: Path) -> None:
     application, manifest = _prepare(tmp_path)
     manifest_path = tmp_path / "ingestion" / "manifests" / "service-input.json"
-    assert application.health(manifest_path)["status"] == "healthy"
+    assert application.health(manifest_path)["status"] == "blocked_provenance"
     assert (
         application.health(tmp_path / "outside" / "escape.json")["status"] == "blocked_provenance"
     )
@@ -249,6 +249,7 @@ def test_response_hash_is_canonical_and_changes_with_semantic_request(tmp_path: 
             PredictionServiceRequest.model_validate(_request(manifest)),
             payload["predictions"],
             payload["skipped"],
+            payload["operational_metrics"],
         )
     )
     assert set(reordered) == set(payload)

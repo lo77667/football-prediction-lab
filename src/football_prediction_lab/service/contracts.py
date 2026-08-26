@@ -72,14 +72,31 @@ class PredictionServiceRequest(BaseModel):
 
 
 class ServiceOperationalMetrics(BaseModel):
-    """Stable counters only; paths, timestamps, and data contents are excluded."""
+    """Stable counts plus explicit ledger semantics; no paths or raw data."""
 
     model_config = ConfigDict(extra="forbid")
 
     predictions_issued: int = Field(ge=0)
     skipped_items: int = Field(ge=0)
+    response_predictions_count: int = Field(ge=0)
     ledger_records: int = Field(ge=0)
+    ledger_events_count: int = Field(ge=0)
+    ledger_prediction_count: int = Field(ge=0)
+    ledger_markets: list[Literal["btts", "cards"]]
+    ledger_sha256: str = Field(pattern=_HEX64_PATTERN)
     idempotent_replay: bool
+
+    @model_validator(mode="after")
+    def validate_ledger_counts(self) -> ServiceOperationalMetrics:
+        if self.response_predictions_count != self.predictions_issued:
+            raise ValueError("response prediction count must match predictions_issued")
+        if self.ledger_records != self.ledger_prediction_count:
+            raise ValueError("ledger_records must match ledger_prediction_count")
+        if self.ledger_events_count != self.ledger_prediction_count:
+            raise ValueError("ledger event and prediction counts must match")
+        if self.ledger_prediction_count and not self.ledger_markets:
+            raise ValueError("ledger_markets is required when ledger records exist")
+        return self
 
 
 class PredictionServiceResponse(BaseModel):
@@ -88,6 +105,8 @@ class PredictionServiceResponse(BaseModel):
     model_config = ConfigDict(extra="forbid", str_strip_whitespace=True)
 
     request_id: str = Field(min_length=1, max_length=128)
+    request_fingerprint: str = Field(pattern=_HEX64_PATTERN)
+    code_commit: str = Field(pattern=_COMMIT_PATTERN)
     service_version: str = Field(min_length=1)
     policy_version: str = Field(min_length=1)
     model_version: str = Field(min_length=1)

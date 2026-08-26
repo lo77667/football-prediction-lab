@@ -10,6 +10,7 @@ from typing import Any
 import pandas as pd
 
 from football_prediction_lab.ingestion.local_csv import validate_manifest
+from football_prediction_lab.service.artifact_validation import validate_service_run
 from football_prediction_lab.service.contracts import (
     PredictionServiceRequest,
     PredictionServiceResponse,
@@ -140,8 +141,14 @@ class PredictionApplication:
         request: PredictionServiceRequest,
         predictions: list[dict[str, Any]],
         skipped: list[dict[str, Any]],
+        metrics: dict[str, Any],
     ) -> dict[str, Any]:
+        stable_metrics = {
+            key: value for key, value in metrics.items() if key != "idempotent_replay"
+        }
         return {
+            "request_fingerprint": self.request_fingerprint(request),
+            "code_commit": code_commit(self.code_root),
             "service_version": SERVICE_VERSION,
             "policy_version": request.policy_version,
             "model_version": request.model_version,
@@ -150,6 +157,7 @@ class PredictionApplication:
             "as_of_utc": request.as_of_utc.isoformat(),
             "predictions": predictions,
             "skipped": skipped,
+            "operational_metrics": stable_metrics,
         }
 
     def predict(self, request: PredictionServiceRequest) -> PredictionServiceResponse:
@@ -194,11 +202,32 @@ class PredictionApplication:
                 str(item.get("reason", "")),
             ),
         )
+        ledger = ShadowLedger(Path(result["ledger_path"]))
+        ledger_records = ledger.records()
+        ledger_metrics = {
+            "predictions_issued": len(predictions),
+            "skipped_items": len(skipped),
+            "response_predictions_count": len(predictions),
+            "ledger_records": len(ledger_records),
+            "ledger_events_count": len(ledger_records),
+            "ledger_prediction_count": len(ledger_records),
+            "ledger_markets": sorted(
+                {
+                    str(entry["record"].get("market"))
+                    for entry in ledger_records
+                    if entry.get("record", {}).get("market") in {"btts", "cards"}
+                }
+            ),
+            "ledger_sha256": ledger.sha256(),
+            "idempotent_replay": was_existing,
+        }
         content_hash = self._content_hash(
-            self._response_hash_payload(request, predictions, skipped)
+            self._response_hash_payload(request, predictions, skipped, ledger_metrics)
         )
         response = PredictionServiceResponse(
             request_id=request.request_id,
+            request_fingerprint=self.request_fingerprint(request),
+            code_commit=code_commit(self.code_root),
             service_version=SERVICE_VERSION,
             policy_version=request.policy_version,
             model_version=request.model_version,
@@ -207,12 +236,7 @@ class PredictionApplication:
             as_of_utc=request.as_of_utc,
             predictions=predictions,
             skipped=skipped,
-            operational_metrics=ServiceOperationalMetrics(
-                predictions_issued=len(predictions),
-                skipped_items=len(skipped),
-                ledger_records=len(ShadowLedger(Path(result["ledger_path"])).records()),
-                idempotent_replay=was_existing,
-            ),
+            operational_metrics=ServiceOperationalMetrics(**ledger_metrics),
             response_content_sha256=content_hash,
         )
         return response
@@ -239,9 +263,10 @@ class PredictionApplication:
         if manifest_path is None:
             return payload
         try:
-            manifest = validate_manifest(self._safe_manifest_path(manifest_path))
-            if not manifest.get("manifest_fingerprint"):
-                raise ValueError("missing fingerprint")
+            safe_path = self._safe_manifest_path(manifest_path)
+            if not safe_path.is_dir():
+                raise ValueError("health requires a complete atomic run directory")
+            validate_service_run(safe_path)
         except Exception:
             payload["status"] = "blocked_provenance"
             return payload
