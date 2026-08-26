@@ -1,6 +1,6 @@
 {
   "as_of_utc": "2025-01-01T12:00:00Z",
-  "expected_source_commit": "dddd524a17d6747e8ee700cfbc3bb423ae398dd0",
+  "expected_source_commit": "513d818cabdf38f1a621fa1c005b46b287ce631f",
   "feature_version": "cycle39-shadow-input-v1",
   "manifest_fingerprint": "2a07a99fe1041e034f782012a4d0801ecea62bfefe9801e234bc5a2e3b6e8d12",
   "market": "btts",

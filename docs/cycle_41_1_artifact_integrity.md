@@ -19,7 +19,7 @@
 يولد `scripts_run_service_smoke.py` تشغيلًا واحدًا داخل:
 
 ```text
-reports/generated/cycle_41_1_service_smoke/runs/6f064823acc7af0814601703500a173ec5c64fd9b02e319c689ad8d9e0df480d/
+reports/generated/cycle_41_1_service_smoke/runs/356b08d69b859a1d30e24865196ac120aacb118679127d859f1f202e57ba2ec0/
 ```
 
 ويحتوي المجلد فقط على:
@@ -33,19 +33,19 @@ reports/generated/cycle_41_1_service_smoke/runs/6f064823acc7af0814601703500a173e
 | `predictions_prelabel.jsonl` | prediction artifact كامل للسوقين، 6 records |
 | `validation.json` | نتيجة التحقق لنفس المجلد |
 
-التشغيل الحالي يحمل `code_commit=dddd524a17d6747e8ee700cfbc3bb423ae398dd0`، و`request_fingerprint` و`run_fingerprint` متساويان، و`source_manifest_fingerprint=2a07a99fe1041e034f782012a4d0801ecea62bfefe9801e234bc5a2e3b6e8d12`. لا توجد مخرجات current أو historical أخرى داخل root التسليم.
+التشغيل الحالي يحمل `code_commit=513d818cabdf38f1a621fa1c005b46b287ce631f`، و`request_fingerprint` و`run_fingerprint` متساويان، و`source_manifest_fingerprint=2a07a99fe1041e034f782012a4d0801ecea62bfefe9801e234bc5a2e3b6e8d12`. لا توجد مخرجات current أو historical أخرى داخل root التسليم.
 
 ## hashes والعدادات
 
 | الحقل | القيمة |
 |---|---|
-| request SHA-256 | `369b0fe4007a8e66b305cd7683867c16f675e5abf87e221898ab18f54f5973c5` |
-| response file SHA-256 | `63eeae95df56c9ce460c60e0c0059e2b03f609576b80b7436a6f40e16c316f69` |
-| response content SHA-256 | `244fd2d652b2766b8d00d012593a38acaad3512463298966ed0098ba037780d5` |
+| request SHA-256 | `10666205536b926d5c54ef0f641bdb3b16f94a58dd7433e888cd33435d6b29cf` |
+| response file SHA-256 | `453c2ff6daf0e3aa3482162574cb6a8475ecfe9faafd932c9d76ca5322c2ff83` |
+| response content SHA-256 | `07b1f7994439ecfccd2ed80f20357b8481ae4f2f099924c5438311cd9fddd3eb` |
 | ledger file SHA-256 | `617c13ae3a34998e8ddacbcfaa7305d736bc8c10a16c164034bfe4d9d5a29a50` |
-| prediction artifact SHA-256 | `722a16bdc847e42577cc424c3ec5d134c58b065c7c15dc9606fac1c57e5322e5` |
-| manifest SHA-256 | `15349fdd5749891a70fdd76cb07bc49d719478fa98ac7b3d52e06845c1d239ef` |
-| validation SHA-256 | `4bafc91009b01c97a2a1021e5b3d95fdd3dda621d64dc7d85064ec2eb349140a` |
+| prediction artifact SHA-256 | `2d86adcb362c8fb325630793da5d799a0e44e9ff99a87f3a8048c2cf04548644` |
+| manifest SHA-256 | `2894cfde1cc6f3e8ab0e9bd2b25f7685363fb62dc1811ea78a23ff0bd9ffc784` |
+| validation SHA-256 | `ca5226b9bf19328d043310b1d22bbc5a857882b415196e9a9b4d024f1681620a` |
 | response predictions | `3` |
 | ledger events/predictions | `6 / 6` |
 | ledger markets | `btts`, `cards` |
@@ -68,7 +68,7 @@ reports/generated/cycle_41_1_service_smoke/runs/6f064823acc7af0814601703500a173e
 
 ## الحتمية وportability
 
-يُحسب request fingerprint من semantic request فقط، مع استبعاد request_id وoutput root وruntime timestamp وhostname. لذلك أعاد التشغيل أو تغيير output root نفس prediction IDs وprobabilities وresponse content hash. اختلاف request fingerprints بين تشغيل سابق والـrun الحالي يُسجل باعتباره ناتجاً عن اختلاف `expected_source_commit` الدلالي: التشغيل السابق كان على `b37f632`، أما التشغيل canonical الحالي فمبني على `dddd524` بعد إصلاح validator؛ لا يُفسر الاختلاف بالوقت وحده.
+يُحسب request fingerprint من semantic request فقط، مع استبعاد request_id وoutput root وruntime timestamp وhostname. لذلك أعاد التشغيل أو تغيير output root نفس prediction IDs وprobabilities وresponse content hash. اختلاف request fingerprints بين تشغيل سابق والـrun الحالي يُسجل باعتباره ناتجاً عن اختلاف `expected_source_commit` الدلالي: التشغيل السابق كان على `b37f632`، أما التشغيل canonical الحالي فمبني على `513d818` بعد إصلاح validator؛ لا يُفسر الاختلاف بالوقت وحده.
 
 ## الاختبارات
 

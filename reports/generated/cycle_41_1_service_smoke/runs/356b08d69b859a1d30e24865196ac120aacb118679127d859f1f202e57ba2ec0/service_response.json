@@ -1,6 +1,6 @@
 {
   "as_of_utc": "2025-01-01T12:00:00Z",
-  "code_commit": "dddd524a17d6747e8ee700cfbc3bb423ae398dd0",
+  "code_commit": "513d818cabdf38f1a621fa1c005b46b287ce631f",
   "commercial_release": false,
   "feature_version": "cycle39-shadow-input-v1",
   "manifest_fingerprint": "2a07a99fe1041e034f782012a4d0801ecea62bfefe9801e234bc5a2e3b6e8d12",
@@ -76,9 +76,9 @@
       "training_cutoff": "2025-01-01T11:59:59Z"
     }
   ],
-  "request_fingerprint": "6f064823acc7af0814601703500a173ec5c64fd9b02e319c689ad8d9e0df480d",
+  "request_fingerprint": "356b08d69b859a1d30e24865196ac120aacb118679127d859f1f202e57ba2ec0",
   "request_id": "cycle41-1-smoke",
-  "response_content_sha256": "244fd2d652b2766b8d00d012593a38acaad3512463298966ed0098ba037780d5",
+  "response_content_sha256": "07b1f7994439ecfccd2ed80f20357b8481ae4f2f099924c5438311cd9fddd3eb",
   "service_version": "cycle41-prediction-service-v1",
   "skipped": []
 }
