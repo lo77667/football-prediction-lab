@@ -1,27 +1,27 @@
 {
   "workflow": "quality-gate",
   "repository": "lo77667/football-prediction-lab",
-  "head_sha": "ba66f13e7e47379674c2af66788f28753112b7e0",
-  "run_id": 32976619856,
-  "run_url": "https://github.com/lo77667/football-prediction-lab/actions/runs/32976619856",
+  "head_sha": "6ef4cc4bc3fd4ae1fc9133e9a15936ba2d028d57",
+  "run_id": 32976877125,
+  "run_url": "https://github.com/lo77667/football-prediction-lab/actions/runs/32976877125",
   "status": "completed",
   "conclusion": "failure",
   "jobs": [
     {
-      "name": "Test and lint (Python 3.11)",
-      "job_id": 98202803708,
+      "name": "Test and lint (Python 3.12)",
+      "job_id": 98203655621,
       "conclusion": "failure",
       "steps": [],
       "log_available": false
     },
     {
-      "name": "Test and lint (Python 3.12)",
-      "job_id": 98202803917,
+      "name": "Test and lint (Python 3.11)",
+      "job_id": 98203655815,
       "conclusion": "failure",
       "steps": [],
       "log_available": false
     }
   ],
   "interpretation": "runner-blocked-before-step-execution",
-  "verified_at_utc": "2026-08-26T13:50:40Z"
+  "verified_at_utc": "2026-08-26T13:53:13Z"
 }

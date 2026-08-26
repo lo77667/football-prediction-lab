@@ -98,7 +98,7 @@ python scripts_audit_external_source.py --mode readiness
 
 ## 6. حالة CI
 
-تم دفع مصدر دورة 40 إلى repository الخاص `lo77667/football-prediction-lab`. آخر run مرصود على commit `ba66f13e7e47379674c2af66788f28753112b7e0` هو run `32976619856` [1]. انتهى run بـ`failure` قبل تنفيذ أي خطوة؛ job Python 3.11 بالمعرف `98202803708` وjob Python 3.12 بالمعرف `98202803917` ظهرا بـ`steps=[]`. لا يوجد log تنفيذ قابل للاستخراج.
+تم دفع مصدر دورة 40 إلى repository الخاص `lo77667/football-prediction-lab`. آخر run موثق على commit `6ef4cc4bc3fd4ae1fc9133e9a15936ba2d028d57` هو run `32976877125` [1]. انتهى run بـ`failure` قبل تنفيذ أي خطوة؛ job Python 3.12 بالمعرف `98203655621` وjob Python 3.11 بالمعرف `98203655815` ظهرا بـ`steps=[]`. لا يوجد log تنفيذ قابل للاستخراج.
 
 بالتالي، quality gates المحلية ناجحة، بينما CI البعيد **runner-blocked قبل step execution**. لا يصح ادعاء نجاح CI، ولا يصح نسبة failure إلى pytest أو Ruff لأن runner لم يبدأ الأوامر. تعريف workflow نفسه يحتوي steps صريحة، لكن الدليل التشغيلي البعيد لا يزال يثبت الفشل قبل التنفيذ.
 
@@ -110,4 +110,4 @@ python scripts_audit_external_source.py --mode readiness
 
 ### المراجع
 
-[1]: https://github.com/lo77667/football-prediction-lab/actions/runs/32976619856 "GitHub Actions quality-gate run 32976619856"
+[1]: https://github.com/lo77667/football-prediction-lab/actions/runs/32976877125 "GitHub Actions quality-gate run 32976877125"
