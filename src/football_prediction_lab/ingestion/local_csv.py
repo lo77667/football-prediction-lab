@@ -82,6 +82,91 @@ def _hash_json(value: Any) -> str:
     return hashlib.sha256(_canonical_json(value)).hexdigest()
 
 
+def _canonical_records_hash(frame: pd.DataFrame) -> str:
+    """Hash accepted record content while excluding runtime provenance columns."""
+
+    columns = [
+        column
+        for column in REQUIRED_CANONICAL_COLUMNS
+        if column not in {"source_provenance_id", "ingestion_run_id"}
+    ]
+    columns.extend(
+        column
+        for column in ["available_at_utc"]
+        if column in frame.columns and column not in columns
+    )
+    records = frame.copy()
+    records = records[columns].sort_values(["kickoff_utc", "match_id"], kind="mergesort")
+    for column in ["match_id", "season", "competition", "home_team", "away_team"]:
+        records[column] = records[column].astype("string")
+    records["record_version"] = pd.to_numeric(records["record_version"], errors="raise").astype(
+        "int64"
+    )
+    records["kickoff_utc"] = pd.to_datetime(records["kickoff_utc"], utc=True, errors="raise").map(
+        lambda value: value.isoformat()
+    )
+    if "available_at_utc" in records:
+        records["available_at_utc"] = pd.to_datetime(
+            records["available_at_utc"], utc=True, errors="raise"
+        ).map(lambda value: value.isoformat())
+    records = records.astype(object).where(pd.notna(records), None)
+    return _hash_json(records.to_dict(orient="records"))
+
+
+def _artifact_descriptor(role: str, path_value: str, content_sha256: str) -> dict[str, str]:
+    filename = Path(path_value).name
+    return {
+        "artifact_role": role,
+        "artifact_filename": filename,
+        "relative_artifact_key": f"{role}/{filename}",
+        "content_sha256": content_sha256,
+    }
+
+
+def canonical_manifest_payload(manifest: dict[str, Any]) -> dict[str, Any]:
+    """Return the path/time/run-independent payload used by manifest_fingerprint."""
+
+    source = manifest["source"]
+    run = manifest["run"]
+    artifacts = [
+        {
+            "artifact_role": artifact["artifact_role"],
+            "content_sha256": artifact["content_sha256"],
+        }
+        for artifact in manifest["artifacts"]
+    ]
+    return {
+        "canonicalization_version": "cycle38.1-v1",
+        "schema_version": manifest["schema_version"],
+        "source_name": source["source_name"],
+        "source_version": source["source_version"],
+        "input_sha256": manifest["input_sha256"],
+        "source_schema_version": source["schema_version"],
+        "license_or_usage_policy": source["license_or_usage_policy"],
+        "artifacts": sorted(artifacts, key=lambda item: item["artifact_role"]),
+        "rows_read": run["rows_read"],
+        "rows_accepted": run["rows_accepted"],
+        "rows_quarantined": run["rows_quarantined"],
+        "rejection_counts_by_reason": dict(sorted(manifest["rejection_counts_by_reason"].items())),
+        "duplicate_count": manifest["duplicate_count"],
+        "timezone_failure_count": manifest["timezone_failure_count"],
+        "season_values": sorted(manifest.get("season_values", [])),
+        "competition_policy": manifest.get("competition_policy", "input-declared"),
+        "max_rejection_rate": manifest["max_rejection_rate"],
+        "deterministic_sort": manifest["deterministic_sort"],
+        "pre_match_target_columns_forbidden": sorted(
+            manifest["pre_match_target_columns_forbidden"]
+        ),
+        "accepted_records_sha256": manifest["accepted_records_sha256"],
+    }
+
+
+def canonical_manifest_fingerprint(manifest: dict[str, Any]) -> str:
+    """Hash canonical UTF-8 JSON bytes, never repr(dict)."""
+
+    return _hash_json(canonical_manifest_payload(manifest))
+
+
 def _parse_aware(value: Any, *, source_timezone: str | None = None) -> pd.Timestamp | None:
     if pd.isna(value):
         return None
@@ -411,6 +496,8 @@ def ingest_file(
     accepted.to_csv(normalized_path, index=False, lineterminator="\n")
     accepted.to_csv(processed_path, index=False, lineterminator="\n")
     output_hash = sha256_file(normalized_path)
+    processed_output_hash = sha256_file(processed_path)
+    accepted_records_hash = _canonical_records_hash(accepted)
     rows_read = len(raw)
     rejected_row_indices = {
         int(item["row"])
@@ -476,6 +563,7 @@ def ingest_file(
         "output_path": str(normalized_path),
         "processed_output_path": str(processed_path),
         "raw_path": str(raw_path),
+        "processed_output_sha256": processed_output_hash,
         "quarantine_path": str(quarantine_path),
         "manifest_path": str(manifest_path),
         "season_values": sorted(accepted["season"].astype(str).unique().tolist()),
@@ -483,6 +571,10 @@ def ingest_file(
         "kickoff_utc_min": None if accepted.empty else str(accepted["kickoff_utc"].min()),
         "kickoff_utc_max": None if accepted.empty else str(accepted["kickoff_utc"].max()),
         "timezone": "UTC",
+        "competition_policy": "input-declared",
+        "canonical_normalized_output_sha256": accepted_records_hash,
+        "canonical_processed_output_sha256": accepted_records_hash,
+        "accepted_records_sha256": accepted_records_hash,
         "rejection_rate": rejection_rate,
         "max_rejection_rate": max_rejection_rate,
         "rejection_counts_by_reason": quarantine_payload["rejection_counts_by_reason"],
@@ -494,17 +586,14 @@ def ingest_file(
         ),
         "deterministic_sort": ["kickoff_utc", "match_id"],
         "pre_match_target_columns_forbidden": sorted(POST_MATCH_COLUMNS),
+        "artifacts": [
+            _artifact_descriptor("raw", raw_path, adapter.input_sha256),
+            _artifact_descriptor("normalized", normalized_path, accepted_records_hash),
+            _artifact_descriptor("processed", processed_path, accepted_records_hash),
+        ],
         "generated_at_utc": completed.isoformat(),
     }
-    stable_manifest = dict(manifest)
-    stable_manifest.pop("generated_at_utc", None)
-    stable_manifest["run"] = dict(stable_manifest["run"])
-    stable_manifest["run"].pop("started_at_utc", None)
-    stable_manifest["run"].pop("completed_at_utc", None)
-    stable_manifest["source"] = dict(stable_manifest["source"])
-    stable_manifest["source"].pop("retrieved_at_utc", None)
-    stable_manifest["manifest_fingerprint"] = _hash_json(stable_manifest)
-    manifest["manifest_fingerprint"] = stable_manifest["manifest_fingerprint"]
+    manifest["manifest_fingerprint"] = canonical_manifest_fingerprint(manifest)
     manifest_path.write_text(
         json.dumps(manifest, indent=2, ensure_ascii=False, sort_keys=True) + "\n", encoding="utf-8"
     )
@@ -524,24 +613,49 @@ def ingest_file(
 
 
 def validate_manifest(manifest_path: Path) -> dict[str, Any]:
-    """Validate manifest structure and every referenced local output hash."""
+    """Validate manifest structure, hashes, counters, and canonical fingerprint."""
 
     manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
     run = IngestionRun.model_validate(manifest["run"])
     if run.input_hash != manifest["input_sha256"]:
         raise ValueError("manifest input hash mismatch")
     output_path = Path(manifest["output_path"])
+    processed_path = Path(manifest["processed_output_path"])
     if not output_path.exists() or sha256_file(output_path) != run.output_hash:
         raise ValueError("manifest output hash mismatch or missing output")
     if (
-        Path(manifest["raw_path"]).exists()
-        and sha256_file(Path(manifest["raw_path"])) != run.input_hash
+        not processed_path.exists()
+        or sha256_file(processed_path) != manifest["processed_output_sha256"]
     ):
-        raise ValueError("immutable raw hash mismatch")
+        raise ValueError("manifest processed output hash mismatch or missing output")
+    raw_path = Path(manifest["raw_path"])
+    if not raw_path.exists() or sha256_file(raw_path) != run.input_hash:
+        raise ValueError("immutable raw hash mismatch or missing raw")
+    normalized = pd.read_csv(output_path)
+    processed = pd.read_csv(processed_path)
+    accepted_records_hash = _canonical_records_hash(normalized)
+    if accepted_records_hash != manifest["accepted_records_sha256"]:
+        raise ValueError("accepted records canonical hash mismatch")
+    if accepted_records_hash != manifest["canonical_normalized_output_sha256"]:
+        raise ValueError("canonical normalized output hash mismatch")
+    if accepted_records_hash != _canonical_records_hash(processed):
+        raise ValueError("canonical processed output hash mismatch")
+    if accepted_records_hash != manifest["canonical_processed_output_sha256"]:
+        raise ValueError("canonical processed output hash mismatch")
+    quarantine_path = Path(manifest["quarantine_path"])
+    quarantine = json.loads(quarantine_path.read_text(encoding="utf-8"))
+    if quarantine["rows_quarantined"] != run.rows_quarantined:
+        raise ValueError("quarantine row count mismatch")
+    if dict(quarantine["rejection_counts_by_reason"]) != dict(
+        sorted(manifest["rejection_counts_by_reason"].items())
+    ):
+        raise ValueError("quarantine reason counts mismatch")
     if run.rows_accepted + run.rows_quarantined < run.rows_read:
         raise ValueError("manifest row accounting is incomplete")
     if run.status == "failed" and manifest["rejection_rate"] <= manifest["max_rejection_rate"]:
         raise ValueError("failed run does not exceed rejection policy")
+    if manifest["manifest_fingerprint"] != canonical_manifest_fingerprint(manifest):
+        raise ValueError("manifest fingerprint does not match canonical payload")
     return manifest
 
 
@@ -556,8 +670,9 @@ def replay_manifest(manifest_path: Path) -> dict[str, Any]:
         raise ValueError("replay input hash differs from manifest")
     return {
         "replay": "passed",
-        "manifest_fingerprint": manifest["manifest_fingerprint"],
+        "manifest_fingerprint": canonical_manifest_fingerprint(manifest),
         "input_sha256": manifest["input_sha256"],
+        "output_sha256": manifest["run"]["output_hash"],
         "output_hash": manifest["run"]["output_hash"],
         "rows_accepted": manifest["run"]["rows_accepted"],
     }

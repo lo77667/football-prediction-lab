@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import copy
 import json
 from datetime import datetime
 from pathlib import Path
@@ -11,6 +12,7 @@ from pydantic import ValidationError
 from football_prediction_lab.ingestion.contracts import SourceRecord
 from football_prediction_lab.ingestion.local_csv import (
     LocalCsvAdapter,
+    canonical_manifest_fingerprint,
     ingest_file,
     replay_manifest,
     validate_manifest,
@@ -206,6 +208,79 @@ def test_date_time_requires_explicit_source_timezone(tmp_path: Path) -> None:
     )
     assert quarantine["rows_quarantined"] == 1
     assert quarantine["rejection_counts_by_reason"]["source_timezone_required_for_date_time"] == 1
+
+
+def test_manifest_fingerprint_is_independent_of_root_and_runtime(tmp_path: Path) -> None:
+    input_path = _write(tmp_path / "authorized.csv", _frame())
+    first = ingest_file(input_path, run_id="same-run", output_root=tmp_path / "root-a")
+    second = ingest_file(input_path, run_id="same-run", output_root=tmp_path / "root-b")
+    assert first.manifest["manifest_fingerprint"] == second.manifest["manifest_fingerprint"]
+    mutated = copy.deepcopy(first.manifest)
+    mutated["run"]["run_id"] = "different-run"
+    mutated["run"]["started_at_utc"] = "2030-01-01T00:00:00+00:00"
+    mutated["run"]["completed_at_utc"] = "2030-01-01T00:00:01+00:00"
+    mutated["source"]["retrieved_at_utc"] = "2030-01-01T00:00:00+00:00"
+    mutated["input_path"] = "/another/machine/input.csv"
+    mutated["output_path"] = "/another/machine/normalized/other.csv"
+    mutated["processed_output_path"] = "/another/machine/processed/other.csv"
+    mutated["raw_path"] = "/another/machine/raw/other.csv"
+    assert canonical_manifest_fingerprint(first.manifest) == canonical_manifest_fingerprint(mutated)
+
+
+def test_run_id_is_not_content_fingerprint_identity(tmp_path: Path) -> None:
+    input_path = _write(tmp_path / "authorized.csv", _frame())
+    first = ingest_file(input_path, run_id="run-a", output_root=tmp_path / "root-a")
+    second = ingest_file(input_path, run_id="run-b", output_root=tmp_path / "root-b")
+    assert first.manifest["manifest_fingerprint"] == second.manifest["manifest_fingerprint"]
+    assert first.manifest["run"]["run_id"] != second.manifest["run"]["run_id"]
+    assert first.manifest["run"]["output_hash"] != second.manifest["run"]["output_hash"]
+
+
+def test_input_and_accepted_content_changes_change_fingerprint(tmp_path: Path) -> None:
+    first_path = _write(tmp_path / "first.csv", _frame())
+    changed = _frame().copy()
+    changed.loc[0, "away_team"] = "Changed"
+    second_path = _write(tmp_path / "second.csv", changed)
+    first = ingest_file(first_path, run_id="first", output_root=tmp_path / "root-a")
+    second = ingest_file(second_path, run_id="second", output_root=tmp_path / "root-b")
+    assert first.manifest["input_sha256"] != second.manifest["input_sha256"]
+    assert first.manifest["run"]["output_hash"] != second.manifest["run"]["output_hash"]
+    assert first.manifest["manifest_fingerprint"] != second.manifest["manifest_fingerprint"]
+
+
+def test_rejection_counts_and_row_counts_are_fingerprinted(tmp_path: Path) -> None:
+    input_path = _write(tmp_path / "authorized.csv", _frame())
+    result = ingest_file(input_path, run_id="run", output_root=tmp_path / "root")
+    changed = copy.deepcopy(result.manifest)
+    changed["run"]["rows_accepted"] = 1
+    changed["rows_accepted"] = 1
+    changed["rejection_counts_by_reason"] = {"synthetic_reason": 1}
+    assert canonical_manifest_fingerprint(result.manifest) != canonical_manifest_fingerprint(
+        changed
+    )
+
+
+def test_json_key_order_and_rejection_key_order_do_not_change_fingerprint(tmp_path: Path) -> None:
+    input_path = _write(tmp_path / "authorized.csv", _frame())
+    result = ingest_file(input_path, run_id="run", output_root=tmp_path / "root")
+    reordered = copy.deepcopy(result.manifest)
+    reordered["rejection_counts_by_reason"] = dict(
+        reversed(list(reordered["rejection_counts_by_reason"].items()))
+    )
+    reordered["source"] = dict(reversed(list(reordered["source"].items())))
+    assert canonical_manifest_fingerprint(result.manifest) == canonical_manifest_fingerprint(
+        reordered
+    )
+
+
+def test_replay_returns_canonical_fingerprint_and_output_sha256(tmp_path: Path) -> None:
+    input_path = _write(tmp_path / "authorized.csv", _frame())
+    result = ingest_file(input_path, run_id="run", output_root=tmp_path / "root")
+    replay = replay_manifest(result.manifest_path)
+    assert replay["replay"] == "passed"
+    assert replay["input_sha256"] == result.manifest["input_sha256"]
+    assert replay["output_sha256"] == result.manifest["run"]["output_hash"]
+    assert replay["manifest_fingerprint"] == result.manifest["manifest_fingerprint"]
 
 
 def test_future_season_is_not_silently_admitted_to_policy() -> None:
