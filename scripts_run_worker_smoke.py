@@ -8,7 +8,12 @@ from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from typing import Any
 
-from football_prediction_lab.service.version import FEATURE_VERSION, MODEL_VERSION, POLICY_VERSION
+from football_prediction_lab.service.version import (
+    FEATURE_VERSION,
+    MODEL_VERSION,
+    POLICY_VERSION,
+    code_commit,
+)
 from football_prediction_lab.worker import (
     FileLock,
     LocalWorker,
@@ -101,6 +106,7 @@ def main() -> int:
         root / "validation.json",
         {
             "validation": "passed",
+            "worker_code_commit": code_commit(Path(__file__).resolve().parent),
             "dry_run_statuses": [item["status"] for item in dry_results],
             "telegram_disabled_status": disabled_result["status"],
             "no_data_status": no_data_result["status"],
@@ -115,6 +121,7 @@ def main() -> int:
         root / "smoke_summary.json",
         {
             "scenarios": ["dry-run", "telegram-disabled", "no-data", "shadow"],
+            "worker_code_commit": code_commit(Path(__file__).resolve().parent),
             "artifacts": ["validation.json", "**/worker_state.json", "**/worker_events.jsonl"],
             "network_scope": "none",
             "commercial_release": False,
