@@ -17,8 +17,8 @@
   "license_failures": 0,
   "matched_rows": 0,
   "missing_provenance": 0,
-  "policy_path": "/home/ubuntu/football-prediction-lab/configs/cycle40_external_source_policy.yaml",
-  "policy_sha256": "4eac304503cddfb168975d0604577ed7f632637983df53f130d4350015316ece",
+  "policy_artifact_key": "configs/cycle40_external_source_policy.yaml",
+  "policy_sha256": "87bea18b599cd8564936f3749bb39353c7e24ee483a369d23fcb2dbdc17431b4",
   "policy_version": "cycle40-readiness-deferred-v1",
   "protected_seasons": {
     "exposed": [
@@ -33,8 +33,18 @@
     ]
   },
   "raw_rows": 0,
+  "report_artifact_key": "reports/generated/cycle_40_source_readiness.json",
+  "report_content_sha256": "18e53a3ceb1eba6b495952ee727aa81b653c9f7ffb9c781ef78af4958ac3ccef",
+  "runtime_metadata": {
+    "generated_at_utc": "2026-08-26T14:32:26.011984Z",
+    "hostname": "db71298c03d4",
+    "output_root": "/home/ubuntu/football-prediction-lab/reports/generated",
+    "policy_path": "/home/ubuntu/football-prediction-lab/configs/cycle40_external_source_policy.yaml",
+    "report_path": "/home/ubuntu/football-prediction-lab/reports/generated/cycle_40_source_readiness.json"
+  },
   "schema_failures": 0,
   "schema_version": "cycle40-external-source-readiness-v1",
+  "source_commit": "7bc75b0946445c3d9bc44063a173c4da96b5f50e",
   "source_count": 0,
   "source_rejections_by_reason": {},
   "source_status": "source_deferred",

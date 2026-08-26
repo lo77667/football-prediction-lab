@@ -111,3 +111,13 @@ python scripts_audit_external_source.py --mode readiness
 ### المراجع
 
 [1]: https://github.com/lo77667/football-prediction-lab/actions/runs/32976877125 "GitHub Actions quality-gate run 32976877125"
+
+## 8. إصلاح Cycle 40.1: portability وdeterminism
+
+أصلحت Cycle 40.1 سبب اختلاف SHA عند تشغيل readiness من checkout أو output root مختلف. كان التقرير الأولي يحتوي `policy_path` مطلقاً داخل JSON، وكانت مخرجات CLI تحتوي `report_path` المطلق؛ لذلك تغيّرت bytes وSHA الملف رغم ثبات المحتوى المنطقي. لم يكن ذلك اختلافاً في المصدر أو في readiness decision.
+
+أصبح canonical report يعتمد على JSON UTF-8 بترتيب مفاتيح وفواصل ثابتة، وقوائم مرتبة، وrejection reasons مرتبة. ويحتوي على `policy_artifact_key=configs/cycle40_external_source_policy.yaml` و`report_artifact_key=reports/generated/cycle_40_source_readiness.json` و`policy_sha256` و`report_content_sha256` و`source_commit`. أما `policy_path` و`report_path` و`output_root` وhostname وruntime timestamp، إن لزم الاحتفاظ بها، فتوجد داخل `runtime_metadata` فقط ولا تدخل في `report_content_sha256`.
+
+يفصل التنفيذ الآن بين `report_content_sha256`، وهو hash منطقي محمول لمحتوى التقرير، وبين manifest file SHA، وهو hash للـbytes الفعلية لملف manifest. ويعيد validator حساب report content hash وpolicy hash دون مقارنة absolute paths. يظل external source deferred، وتظل `benchmark_status=deferred` و`commercial_release=false`.
+
+اختبار التشغيل من مسارين مختلفين أعطى `report_content_sha256=18e53a3ceb1eba6b495952ee727aa81b653c9f7ffb9c781ef78af4958ac3ccef` في المسارين، مع `portable_hash_equal=true` ونجاح validate في كليهما. كما تثبت اختبارات 40.1 أن تغيير runtime timestamps أو hostname أو absolute paths لا يغير canonical hash، بينما يغيره تغيير policy أو counters أو status. لم يُدخل هذا الإصلاح أي مصدر خارجي ولم يغير النماذج أو الميزات أو نتائج الدورات السابقة أو policy حماية 2526/2627.

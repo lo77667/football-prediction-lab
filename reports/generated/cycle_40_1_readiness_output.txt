@@ -1,0 +1,11 @@
+external_source_status=deferred_missing_authorized_source
+source_status=source_deferred
+verified_snapshots=0
+benchmark_status=deferred
+commercial_release=false
+report_path=/home/ubuntu/football-prediction-lab/reports/generated/cycle_40_source_readiness.json
+report_content_sha256=18e53a3ceb1eba6b495952ee727aa81b653c9f7ffb9c781ef78af4958ac3ccef
+report_file_sha256=db910a8c3b8515738cbf8446ff1f13a8054062103fc429e9f793bde7dde126c0
+manifest_path=/home/ubuntu/football-prediction-lab/reports/generated/cycle_40_deferred_manifest.json
+manifest_file_sha256=0df91c9e6acf5b600bba1852f8411022fa91bb68b4919b316fdc5550afc8664d
+{"allowed_source_count": 0, "ambiguous_rows": 0, "benchmark_status": "deferred", "commercial_release": false, "coverage": [], "cutoff_protocol": {"closing_odds_allowed": false, "max_age_hours": 24, "require_available_at_before_cutoff": true, "require_captured_at_before_kickoff": true, "timezone": "UTC"}, "duplicate_snapshots": 0, "external_source_status": "deferred_missing_authorized_source", "late_rows": 0, "license_failures": 0, "matched_rows": 0, "missing_provenance": 0, "policy_artifact_key": "configs/cycle40_external_source_policy.yaml", "policy_sha256": "87bea18b599cd8564936f3749bb39353c7e24ee483a369d23fcb2dbdc17431b4", "policy_version": "cycle40-readiness-deferred-v1", "protected_seasons": {"exposed": ["2526"], "forbid_tuning_selection_calibration": ["2526", "2627"], "future_holdout": ["2627"]}, "raw_rows": 0, "report_artifact_key": "reports/generated/cycle_40_source_readiness.json", "report_content_sha256": "18e53a3ceb1eba6b495952ee727aa81b653c9f7ffb9c781ef78af4958ac3ccef", "runtime_metadata": {"generated_at_utc": "2026-08-26T14:32:26.011984Z", "hostname": "db71298c03d4", "output_root": "/home/ubuntu/football-prediction-lab/reports/generated", "policy_path": "/home/ubuntu/football-prediction-lab/configs/cycle40_external_source_policy.yaml", "report_path": "/home/ubuntu/football-prediction-lab/reports/generated/cycle_40_source_readiness.json"}, "schema_failures": 0, "schema_version": "cycle40-external-source-readiness-v1", "source_commit": "7bc75b0946445c3d9bc44063a173c4da96b5f50e", "source_count": 0, "source_rejections_by_reason": {}, "source_status": "source_deferred", "unmatched_rows": 0, "valid_rows": 0}
