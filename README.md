@@ -30,6 +30,8 @@
 
 توجد تحسينات الأداء والتنبيهات وCI/CD وPower BI في [`docs/operational_enhancements.md`](docs/operational_enhancements.md)، مع ترحيل PostgreSQL في `schemas/postgres/002_partitioned_summary_alerts.sql`، ومنطق التنبيه في `src/football_prediction_lab/player_warehouse/alerts.py`، وسير العمل الموحد في `.github/workflows/quality-gate.yml`، وقياسات DAX في `docs/powerbi_daily_go_no_go.dax`.
 
+توجد المرحلة التالية الخاصة بالعتبات التكيفية ومراقبة الانحراف الطولي في [`docs/adaptive_thresholds_drift_and_feedback.md`](docs/adaptive_thresholds_drift_and_feedback.md). تشمل الملفات الجديدة `schemas/postgres/003_adaptive_trajectory_feedback.sql` و`src/football_prediction_lab/player_warehouse/drift.py`، مع اختبارات للعتبات، واختبارات KS/PSI، وتسجيل ملاحظات المدربين.
+
 ## بنية المستودع
 
 - `src/football_prediction_lab/`: حزم جمع البيانات، الميزات، النماذج، التقييم، السجل، والوكيل التفسيري.

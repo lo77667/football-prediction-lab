@@ -38,6 +38,27 @@ features:
     - future_outcome
     - post_match_statistics_not_available_at_cutoff
 
+adaptive_alerts:
+  base_load_ratio_threshold: 1.50
+  confidence_threshold: -0.40
+  volatility_multiplier_cap: 0.20
+  threshold_clip_min_multiplier: 0.75
+  threshold_clip_max_multiplier: 1.35
+  season_phase_source: analytics.season_phase_calendar
+  baseline_volatility_source: analytics.v_player_load_baseline_volatility
+  policy_version: adaptive_thresholds_v1
+
+drift_monitoring:
+  baseline_source: locked_training_snapshot
+  features:
+    - confidence_score
+    - player_load_au
+  ks_alpha: 0.01
+  psi_investigation_threshold: 0.20
+  missingness_delta_threshold: 0.05
+  minimum_valid_samples: 20
+  action_on_drift: investigate_and_hold_model_changes
+
 modeling:
   baseline_models:
     - logistic

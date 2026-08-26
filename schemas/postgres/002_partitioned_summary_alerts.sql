@@ -41,9 +41,9 @@ CREATE TABLE facts.player_match_performance (
   activity_date DATE NOT NULL,
   season_code TEXT NOT NULL DEFAULT 'unknown',
   CHECK (available_at_utc >= observed_at_utc),
-  UNIQUE (player_match_id, activity_date),
-  UNIQUE (player_id, match_id, activity_date),
-  UNIQUE (source_system, source_record_id, activity_date)
+  CONSTRAINT uq_player_match_performance_partitioned_id UNIQUE (player_match_id, activity_date),
+  CONSTRAINT uq_player_match_performance_partitioned_player_match UNIQUE (player_id, match_id, activity_date),
+  CONSTRAINT uq_player_match_performance_partitioned_source UNIQUE (source_system, source_record_id, activity_date)
 ) PARTITION BY RANGE (activity_date);
 
 DO $$
@@ -107,9 +107,9 @@ CREATE TABLE facts.player_load_daily (
   quality_status facts.quality_status NOT NULL DEFAULT 'accepted',
   source_system TEXT NOT NULL,
   source_record_id TEXT NOT NULL,
-  UNIQUE (load_id, activity_date),
-  UNIQUE (player_id, activity_date),
-  UNIQUE (source_system, source_record_id, activity_date)
+  CONSTRAINT uq_player_load_daily_partitioned_id UNIQUE (load_id, activity_date),
+  CONSTRAINT uq_player_load_daily_partitioned_player_date UNIQUE (player_id, activity_date),
+  CONSTRAINT uq_player_load_daily_partitioned_source UNIQUE (source_system, source_record_id, activity_date)
 ) PARTITION BY RANGE (activity_date);
 
 DO $$
