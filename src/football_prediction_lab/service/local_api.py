@@ -88,7 +88,7 @@ def openapi_schema() -> dict[str, Any]:
                             "content": {
                                 "application/json": {
                                     "schema": {
-                                        "$ref": "#/components/schemas/PredictionServiceResponse"
+                                        "$ref": "#/components/schemas/ServiceSuccessEnvelope"
                                     }
                                 }
                             },
@@ -119,6 +119,15 @@ def openapi_schema() -> dict[str, Any]:
                 "PredictionServiceRequest": request_schema,
                 "PredictionServiceResponse": response_schema,
                 "ServiceError": error_schema,
+                "ServiceSuccessEnvelope": {
+                    "type": "object",
+                    "additionalProperties": False,
+                    "required": ["ok", "response"],
+                    "properties": {
+                        "ok": {"const": True},
+                        "response": {"$ref": "#/components/schemas/PredictionServiceResponse"},
+                    },
+                },
                 "ServiceErrorEnvelope": {
                     "type": "object",
                     "additionalProperties": False,
