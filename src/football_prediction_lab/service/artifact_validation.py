@@ -172,7 +172,13 @@ def validate_service_run(run_dir: Path) -> dict[str, Any]:
     ledger = ShadowLedger(ledger_path)
     ledger.verify()
     ledger_entries = ledger.records()
-    prediction_ids = [str(item.get("prediction_id")) for item in prediction_lines]
+    prediction_payloads = [
+        item.get("prediction", item) if isinstance(item, dict) else item
+        for item in prediction_lines
+    ]
+    if any(not isinstance(item, dict) or "prediction" not in item for item in prediction_lines):
+        raise ValueError("prediction artifact records must carry service provenance envelope")
+    prediction_ids = [str(item.get("prediction_id")) for item in prediction_payloads]
     ledger_ids = [str(entry["record_id"]) for entry in ledger_entries]
     if prediction_ids != ledger_ids:
         raise ValueError("prediction artifact IDs do not match ledger order")
@@ -182,10 +188,10 @@ def validate_service_run(run_dir: Path) -> dict[str, Any]:
     expected_ledger_sha = sha256_file(ledger_path)
     expected_prediction_sha = sha256_file(predictions_path)
     prediction_feature_versions = sorted(
-        {str(item.get("feature_version")) for item in prediction_lines}
+        {str(item.get("feature_version")) for item in prediction_payloads}
     )
     prediction_model_versions = sorted(
-        {str(item.get("model_version")) for item in prediction_lines}
+        {str(item.get("model_version")) for item in prediction_payloads}
     )
     expected = {
         "run_fingerprint": expected_request_fp,
@@ -206,6 +212,7 @@ def validate_service_run(run_dir: Path) -> dict[str, Any]:
         "feature_version": request.feature_version,
         "prediction_feature_versions": prediction_feature_versions,
         "prediction_model_versions": prediction_model_versions,
+        "prediction_artifact_code_commit": response.code_commit,
     }
     for key, value in expected.items():
         if manifest.get(key) != value:
@@ -226,7 +233,13 @@ def validate_service_run(run_dir: Path) -> dict[str, Any]:
         raise ValueError("response prediction count mismatch")
     if response.operational_metrics.ledger_prediction_count != len(ledger_entries):
         raise ValueError("ledger prediction count mismatch")
-    for item in prediction_lines:
+    for envelope, item in zip(prediction_lines, prediction_payloads, strict=True):
+        if envelope.get("code_commit") != response.code_commit:
+            raise ValueError("prediction code commit mismatch")
+        if envelope.get("request_fingerprint") != expected_request_fp:
+            raise ValueError("prediction request fingerprint mismatch")
+        if envelope.get("as_of_utc") != response.as_of_utc.isoformat():
+            raise ValueError("prediction as_of mismatch")
         if item.get("policy_version") != request.policy_version:
             raise ValueError("prediction policy version mismatch")
         if item.get("model_version") not in manifest.get("prediction_model_versions", []):

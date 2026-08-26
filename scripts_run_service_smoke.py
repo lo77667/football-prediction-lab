@@ -112,10 +112,19 @@ def main() -> int:
         runner_ledger_path = runner_result / "ledger" / "predictions.jsonl"
         shutil.copyfile(runner_ledger_path, ledger_path)
         runner_artifact = json.loads(runner_prediction_path.read_text(encoding="utf-8"))
+        prediction_envelopes = [
+            {
+                "prediction": item,
+                "request_fingerprint": run_fingerprint,
+                "code_commit": response.code_commit,
+                "as_of_utc": response.as_of_utc.isoformat(),
+            }
+            for item in runner_artifact["predictions"]
+        ]
         predictions_path.write_text(
             "".join(
                 json.dumps(item, ensure_ascii=False, sort_keys=True) + "\n"
-                for item in runner_artifact["predictions"]
+                for item in prediction_envelopes
             ),
             encoding="utf-8",
         )
@@ -130,6 +139,7 @@ def main() -> int:
             "response_content_sha256": response.response_content_sha256,
             "ledger_sha256": ledger_sha,
             "prediction_artifact_sha256": sha256_file(predictions_path),
+            "prediction_artifact_code_commit": response.code_commit,
             "code_commit": response.code_commit,
             "policy_version": response.policy_version,
             "model_version": response.model_version,
