@@ -1,9 +1,10 @@
-from datetime import UTC, datetime
+from datetime import UTC, date, datetime
 
 import numpy as np
 import pandas as pd
 import pytest
 
+from football_prediction_lab.player_warehouse.alerts import build_high_risk_alerts
 from football_prediction_lab.player_warehouse.contracts import QualitativeMarkerEvent
 from football_prediction_lab.player_warehouse.ingest import (
     canonical_sha256,
@@ -18,6 +19,53 @@ from football_prediction_lab.player_warehouse.qualitative import (
     aggregate_marker_features,
     extract_marker_events,
 )
+
+
+def test_high_risk_alert_builder_detects_pattern_and_is_idempotency_ready() -> None:
+    summary = pd.DataFrame(
+        {
+            "player_id": ["p-1", "p-2"],
+            "activity_date": ["2026-08-25", "2026-08-25"],
+            "player_load_au": [180.0, 180.0],
+            "prior_28_observation_load_avg": [100.0, 100.0],
+            "confidence_score": [-0.6, 0.2],
+            "qualitative_score_missing": [False, False],
+        }
+    )
+    alerts = build_high_risk_alerts(summary, alert_date=date(2026, 8, 25))
+    assert len(alerts) == 1
+    assert alerts.loc[0, "player_id"] == "p-1"
+    assert alerts.loc[0, "dedupe_key"] == "p-1|2026-08-25|high_load_low_confidence"
+    assert alerts.loc[0, "severity"] == "high"
+
+
+def test_high_risk_alert_builder_suppresses_missing_baseline_or_score() -> None:
+    summary = pd.DataFrame(
+        {
+            "player_id": ["p-1", "p-2"],
+            "activity_date": ["2026-08-25", "2026-08-25"],
+            "player_load_au": [180.0, 180.0],
+            "prior_28_observation_load_avg": [None, 100.0],
+            "confidence_score": [-0.6, None],
+            "qualitative_score_missing": [True, True],
+        }
+    )
+    assert build_high_risk_alerts(summary).empty
+
+
+def test_alert_thresholds_are_validated() -> None:
+    summary = pd.DataFrame(
+        {
+            "player_id": ["p-1"],
+            "activity_date": ["2026-08-25"],
+            "player_load_au": [180.0],
+            "prior_28_observation_load_avg": [100.0],
+            "confidence_score": [-0.6],
+            "qualitative_score_missing": [False],
+        }
+    )
+    with pytest.raises(ValueError, match="between -1 and 0"):
+        build_high_risk_alerts(summary, confidence_threshold=0.2)
 
 
 def test_ingestion_hash_is_order_independent_and_quarantine_is_safe() -> None:

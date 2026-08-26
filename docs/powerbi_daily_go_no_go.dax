@@ -1,0 +1,51 @@
+-- Power BI model assumptions
+-- Table: analytics.mv_player_daily_summary
+-- Filter context: one player and one activity_date per coaching decision.
+-- The measure deliberately returns REVIEW when required inputs are missing.
+
+Daily Go/No-Go Score =
+VAR Readiness = MAX ( 'mv_player_daily_summary'[readiness_score] )
+VAR LoadAU = MAX ( 'mv_player_daily_summary'[player_load_au] )
+VAR Prior28Load = MAX ( 'mv_player_daily_summary'[prior_28_observation_load_avg] )
+VAR LoadRatio = DIVIDE ( LoadAU, Prior28Load )
+VAR Readiness01 = DIVIDE ( Readiness + 1, 2 )
+VAR LoadTolerance01 =
+    SWITCH (
+        TRUE (),
+        ISBLANK ( LoadRatio ), BLANK (),
+        LoadRatio <= 1.20, 1.00,
+        LoadRatio <= 1.50, 0.70,
+        LoadRatio <= 1.80, 0.40,
+        0.00
+    )
+RETURN
+    IF (
+        ISBLANK ( Readiness ) || ISBLANK (LoadRatio),
+        BLANK (),
+        0.60 * Readiness01 + 0.40 * LoadTolerance01
+    )
+
+Daily Go/No-Go =
+VAR Readiness = MAX ( 'mv_player_daily_summary'[readiness_score] )
+VAR Confidence = MAX ( 'mv_player_daily_summary'[confidence_score] )
+VAR LoadAU = MAX ( 'mv_player_daily_summary'[player_load_au] )
+VAR Prior28Load = MAX ( 'mv_player_daily_summary'[prior_28_observation_load_avg] )
+VAR LoadRatio = DIVIDE ( LoadAU, Prior28Load )
+VAR Score = [Daily Go/No-Go Score]
+RETURN
+    SWITCH (
+        TRUE (),
+        ISBLANK ( Readiness ) || ISBLANK ( Confidence ) || ISBLANK ( LoadRatio ), "REVIEW",
+        LoadRatio >= 2.00 || Confidence <= -0.60 || Readiness <= -0.60, "NO-GO",
+        Score >= 0.65, "GO",
+        "REVIEW"
+    )
+
+-- Optional conditional-formatting measure for a table/card visual.
+Daily Go/No-Go Color =
+SWITCH (
+    [Daily Go/No-Go],
+    "GO", "#2E7D32",
+    "NO-GO", "#C62828",
+    "#EF6C00"
+)

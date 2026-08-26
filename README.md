@@ -26,6 +26,10 @@
 
 هذا المسار لا يحتوي على بيانات لاعبات حقيقية ولا يفعّل أي قرار آلي. قبل التدريب الإنتاجي يجب اعتماد الموافقات، ومراجعة حماية البيانات، وإدخال مصادر حقيقية مصرح بها، وإجراء اختبار زمني مستقل مع فحوص المعايرة والإنصاف.
 
+## التحسينات التشغيلية
+
+توجد تحسينات الأداء والتنبيهات وCI/CD وPower BI في [`docs/operational_enhancements.md`](docs/operational_enhancements.md)، مع ترحيل PostgreSQL في `schemas/postgres/002_partitioned_summary_alerts.sql`، ومنطق التنبيه في `src/football_prediction_lab/player_warehouse/alerts.py`، وسير العمل الموحد في `.github/workflows/quality-gate.yml`، وقياسات DAX في `docs/powerbi_daily_go_no_go.dax`.
+
 ## بنية المستودع
 
 - `src/football_prediction_lab/`: حزم جمع البيانات، الميزات، النماذج، التقييم، السجل، والوكيل التفسيري.
