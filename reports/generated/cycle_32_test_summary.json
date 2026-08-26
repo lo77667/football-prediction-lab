@@ -1,7 +1,12 @@
 {
-  "collected_count": 164,
-  "commit": "4814ec2162b4ef9979d2d673f9323606dd9324bd",
-  "passed_count": 164,
+  "collected_count": 174,
+  "commit": "4e5ba45deacd3959c6fa0fc17e8a78160fe8e798",
+  "passed_count": 174,
   "schema_version": "pytest-summary-v1",
-  "timestamp_utc": "2026-08-25T23:35:05.834831Z"
+  "timestamp_utc": "2026-08-26T00:26:23.289732Z",
+  "tool_versions": {
+    "pytest": "8.4.2",
+    "python": "3.12.3",
+    "ruff": "0.16.4"
+  }
 }
