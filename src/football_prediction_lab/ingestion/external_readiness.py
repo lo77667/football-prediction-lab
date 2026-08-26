@@ -1,4 +1,4 @@
-"""Fail-closed readiness checks for explicitly authorized external sources."""
+"""Fail-closed and portable readiness checks for authorized external sources."""
 
 from __future__ import annotations
 
@@ -20,16 +20,65 @@ from football_prediction_lab.ingestion.external_contracts import (
 DEFERRED_STATUS = "deferred_missing_authorized_source"
 BENCHMARK_DEFERRED = "deferred"
 SOURCE_STATUSES = {"source_verified", "source_deferred", "source_rejected"}
+POLICY_ARTIFACT_KEY = "configs/cycle40_external_source_policy.yaml"
+REPORT_ARTIFACT_KEY = "reports/generated/cycle_40_source_readiness.json"
+_RUNTIME_KEYS = {
+    "policy_path",
+    "report_path",
+    "output_root",
+    "hostname",
+    "runtime_metadata",
+    "report_file_sha256",
+}
+_HASH_KEYS = {"report_content_sha256", "manifest_file_sha256"}
+
+
+def _canonicalize(value: Any) -> Any:
+    """Normalize JSON-compatible values, including order-insensitive lists."""
+
+    if isinstance(value, dict):
+        return {str(key): _canonicalize(item) for key, item in value.items()}
+    if isinstance(value, (list, tuple)):
+        normalized = [_canonicalize(item) for item in value]
+        return sorted(normalized, key=lambda item: _canonical_json(item))
+    if isinstance(value, float):
+        if value != value or value in (float("inf"), float("-inf")):
+            raise ValueError("non-finite numeric values are not canonicalizable")
+        return value
+    return value
 
 
 def _canonical_json(value: Any) -> bytes:
     return (
-        json.dumps(value, ensure_ascii=False, sort_keys=True, separators=(",", ":")) + "\n"
+        json.dumps(
+            _canonicalize(value),
+            ensure_ascii=False,
+            sort_keys=True,
+            separators=(",", ":"),
+        )
+        + "\n"
     ).encode("utf-8")
 
 
 def _sha256_bytes(value: bytes) -> str:
     return hashlib.sha256(value).hexdigest()
+
+
+def canonical_report_payload(report: dict[str, Any]) -> dict[str, Any]:
+    """Return report content excluding all runtime location and self-hash fields."""
+
+    payload = {
+        key: value
+        for key, value in report.items()
+        if key not in _RUNTIME_KEYS and key not in _HASH_KEYS
+    }
+    return _canonicalize(payload)
+
+
+def report_content_sha256(report: dict[str, Any]) -> str:
+    """Hash only portable, deterministic report content."""
+
+    return _sha256_bytes(_canonical_json(canonical_report_payload(report)))
 
 
 def _aware_utc(value: Any) -> datetime:
@@ -73,19 +122,27 @@ def _source_status(policy: dict[str, Any]) -> str:
     return "source_deferred" if not policy["allowed_sources"] else "source_rejected"
 
 
-def deferred_readiness_report(policy: dict[str, Any], *, policy_path: Path) -> dict[str, Any]:
-    """Build a deterministic no-source report without fabricating source or economic data."""
+def deferred_readiness_report(
+    policy: dict[str, Any],
+    *,
+    policy_path: Path | None = None,
+    source_commit: str | None = None,
+    runtime_metadata: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    """Build a deterministic no-source report; paths are runtime-only when supplied."""
 
     policy_bytes = _canonical_json(policy)
-    return {
+    report: dict[str, Any] = {
         "schema_version": "cycle40-external-source-readiness-v1",
         "external_source_status": DEFERRED_STATUS,
         "source_status": _source_status(policy),
         "source_count": 0,
         "allowed_source_count": len(policy["allowed_sources"]),
+        "policy_artifact_key": POLICY_ARTIFACT_KEY,
+        "report_artifact_key": REPORT_ARTIFACT_KEY,
         "policy_version": policy["policy_version"],
-        "policy_path": str(policy_path.resolve()),
         "policy_sha256": _sha256_bytes(policy_bytes),
+        "source_commit": source_commit,
         "cutoff_protocol": policy["cutoff_protocol"],
         "protected_seasons": policy["protected_seasons"],
         "raw_rows": 0,
@@ -103,6 +160,14 @@ def deferred_readiness_report(policy: dict[str, Any], *, policy_path: Path) -> d
         "benchmark_status": BENCHMARK_DEFERRED,
         "commercial_release": False,
     }
+    if policy_path is not None:
+        report["runtime_metadata"] = {
+            "policy_path": str(policy_path.resolve()),
+        }
+    if runtime_metadata:
+        report.setdefault("runtime_metadata", {}).update(runtime_metadata)
+    report["report_content_sha256"] = report_content_sha256(report)
+    return report
 
 
 def _record_identity(record: ExternalSnapshotRecord) -> tuple[str, ...]:
@@ -245,15 +310,124 @@ def audit_snapshot_records(
         else "source_rejected",
         "source_status": source_status,
         **dict(counters),
-        "accepted_snapshot_ids": [record.request_or_snapshot_id for record in accepted],
+        "accepted_snapshot_ids": sorted(record.request_or_snapshot_id for record in accepted),
         "source_rejections_by_reason": dict(sorted(reasons.items())),
         "benchmark_status": BENCHMARK_DEFERRED,
         "commercial_release": False,
     }
 
 
-def write_readiness_report(report: dict[str, Any], destination: Path) -> str:
+def write_readiness_report(
+    report: dict[str, Any],
+    destination: Path,
+    *,
+    runtime_metadata: dict[str, Any] | None = None,
+) -> str:
+    """Write a report and return its physical file hash, not its content hash."""
+
+    if runtime_metadata:
+        report.setdefault("runtime_metadata", {}).update(runtime_metadata)
+    report["report_content_sha256"] = report_content_sha256(report)
     payload = json.dumps(report, ensure_ascii=False, sort_keys=True, indent=2) + "\n"
     destination.parent.mkdir(parents=True, exist_ok=True)
     destination.write_text(payload, encoding="utf-8")
     return _sha256_bytes(payload.encode("utf-8"))
+
+
+def _iter_strings(value: Any) -> list[str]:
+    if isinstance(value, dict):
+        return [item for nested in value.values() for item in _iter_strings(nested)]
+    if isinstance(value, (list, tuple)):
+        return [item for nested in value for item in _iter_strings(nested)]
+    return [value] if isinstance(value, str) else []
+
+
+def validate_readiness_report(report: dict[str, Any], policy: dict[str, Any]) -> dict[str, Any]:
+    """Validate portable report content without requiring its checkout path."""
+
+    if not isinstance(report, dict):
+        raise ValueError("readiness report must be a mapping")
+    expected_policy_sha256 = _sha256_bytes(_canonical_json(policy))
+    if report.get("policy_artifact_key") != POLICY_ARTIFACT_KEY:
+        raise ValueError("policy_artifact_key mismatch")
+    if report.get("report_artifact_key") != REPORT_ARTIFACT_KEY:
+        raise ValueError("report_artifact_key mismatch")
+    if report.get("policy_sha256") != expected_policy_sha256:
+        raise ValueError("policy hash mismatch")
+    expected_report_sha256 = report_content_sha256(report)
+    if report.get("report_content_sha256") != expected_report_sha256:
+        raise ValueError("report content hash mismatch")
+    canonical = _canonical_json(canonical_report_payload(report)).decode("utf-8")
+    if any(value.startswith("/") for value in _iter_strings(canonical_report_payload(report))):
+        raise ValueError("absolute paths are not allowed in canonical report payload")
+    if any(
+        marker in canonical.lower()
+        for marker in ("api_key", "access_token", "authorization", "password")
+    ):
+        raise ValueError("secrets are not allowed in canonical report payload")
+    source_count = report.get("source_count")
+    if source_count == 0:
+        if report.get("external_source_status") != DEFERRED_STATUS:
+            raise ValueError("zero sources must remain deferred")
+        if report.get("source_status") != "source_deferred":
+            raise ValueError("zero sources must have source_deferred status")
+        if report.get("benchmark_status") != BENCHMARK_DEFERRED:
+            raise ValueError("zero sources require deferred benchmark")
+    if report.get("commercial_release") is not False:
+        raise ValueError("readiness report requires commercial_release=false")
+    return {
+        "schema_version": report.get("schema_version"),
+        "policy_sha256": expected_policy_sha256,
+        "report_content_sha256": expected_report_sha256,
+        "canonical_bytes": len(canonical.encode("utf-8")),
+        "absolute_paths_in_canonical": False,
+        "secrets_in_canonical": False,
+        "commercial_release": False,
+    }
+
+
+def build_deferred_manifest(report: dict[str, Any]) -> dict[str, Any]:
+    """Build a portable manifest whose physical file hash is computed externally."""
+
+    return {
+        "schema_version": "cycle40-external-source-manifest-v2",
+        "manifest_type": "deferred_no_authorized_source",
+        "external_source_status": DEFERRED_STATUS,
+        "source_count": 0,
+        "source_manifests": [],
+        "policy_artifact_key": POLICY_ARTIFACT_KEY,
+        "report_artifact_key": REPORT_ARTIFACT_KEY,
+        "policy_sha256": report["policy_sha256"],
+        "report_content_sha256": report["report_content_sha256"],
+        "benchmark_status": BENCHMARK_DEFERRED,
+        "commercial_release": False,
+    }
+
+
+def write_manifest(manifest: dict[str, Any], destination: Path) -> str:
+    """Write exact manifest bytes and return the physical manifest file SHA-256."""
+
+    payload = _canonical_json(manifest)
+    destination.parent.mkdir(parents=True, exist_ok=True)
+    destination.write_bytes(payload)
+    return _sha256_bytes(payload)
+
+
+def validate_deferred_manifest(
+    manifest: dict[str, Any],
+    report: dict[str, Any],
+    policy: dict[str, Any],
+) -> dict[str, Any]:
+    """Validate manifest linkage while keeping physical file hash separate."""
+
+    validate_readiness_report(report, policy)
+    expected = build_deferred_manifest(report)
+    if manifest != expected:
+        raise ValueError("deferred manifest content mismatch")
+    return {
+        "manifest_content_valid": True,
+        "policy_sha256": report["policy_sha256"],
+        "report_content_sha256": report["report_content_sha256"],
+        "manifest_file_sha256_scope": "sha256 of exact manifest JSON bytes",
+        "commercial_release": False,
+    }
