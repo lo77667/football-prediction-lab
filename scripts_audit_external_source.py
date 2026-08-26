@@ -35,6 +35,11 @@ def _source_commit() -> str:
             text=True,
         ).stdout.strip()
     except (OSError, subprocess.CalledProcessError):
+        marker = ROOT / "SOURCE_COMMIT.txt"
+        if marker.exists():
+            value = marker.read_text(encoding="utf-8").strip()
+            if len(value) == 40 and all(character in "0123456789abcdef" for character in value):
+                return value
         return "unknown"
 
 
