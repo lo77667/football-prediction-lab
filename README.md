@@ -32,6 +32,8 @@
 
 توجد المرحلة التالية الخاصة بالعتبات التكيفية ومراقبة الانحراف الطولي في [`docs/adaptive_thresholds_drift_and_feedback.md`](docs/adaptive_thresholds_drift_and_feedback.md). تشمل الملفات الجديدة `schemas/postgres/003_adaptive_trajectory_feedback.sql` و`src/football_prediction_lab/player_warehouse/drift.py`، مع اختبارات للعتبات، واختبارات KS/PSI، وتسجيل ملاحظات المدربين.
 
+يوجد مخطط تطبيق Android الأصلي **Coach & Player Companion** في [`docs/android_coach_player_companion_blueprint.md`](docs/android_coach_player_companion_blueprint.md). يغطي الأدوار، Room/SQLCipher، WorkManager، REST/GraphQL، المصادقة، مزامنة العمل دون اتصال، واجهة الملعب، الإشعارات، وضوابط الخصوصية وإصدار APK/AAB.
+
 ## بنية المستودع
 
 - `src/football_prediction_lab/`: حزم جمع البيانات، الميزات، النماذج، التقييم، السجل، والوكيل التفسيري.
