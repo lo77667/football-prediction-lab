@@ -1,0 +1,19 @@
+# Android/Gradle build outputs
+.gradle/
+build/
+*/build/
+
+# Local SDK and IDE configuration
+local.properties
+.idea/
+*.iml
+.externalNativeBuild/
+.cxx/
+
+# Signing material and local secrets
+*.jks
+*.keystore
+*.p12
+*.pem
+keystore.properties
+.env*

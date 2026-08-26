@@ -1,0 +1,328 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 1,
+    "identityHash": "3fb3e23aeb1c6c2974c2a1dd2ffd4123",
+    "entities": [
+      {
+        "tableName": "cached_alerts",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`alertId` TEXT NOT NULL, `playerId` TEXT NOT NULL, `dedupeKey` TEXT NOT NULL, `alertType` TEXT NOT NULL, `severity` TEXT NOT NULL, `alertDate` TEXT NOT NULL, `triggerReason` TEXT NOT NULL, `loadRatio` REAL, `adaptiveThreshold` REAL, `confidenceScore` REAL, `volatilityBand` TEXT, `acknowledgmentStatus` TEXT NOT NULL, `serverVersion` INTEGER NOT NULL, `asOfUtc` TEXT NOT NULL, `expiresAtUtc` TEXT, PRIMARY KEY(`alertId`))",
+        "fields": [
+          {
+            "fieldPath": "alertId",
+            "columnName": "alertId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "playerId",
+            "columnName": "playerId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "dedupeKey",
+            "columnName": "dedupeKey",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "alertType",
+            "columnName": "alertType",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "severity",
+            "columnName": "severity",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "alertDate",
+            "columnName": "alertDate",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "triggerReason",
+            "columnName": "triggerReason",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "loadRatio",
+            "columnName": "loadRatio",
+            "affinity": "REAL"
+          },
+          {
+            "fieldPath": "adaptiveThreshold",
+            "columnName": "adaptiveThreshold",
+            "affinity": "REAL"
+          },
+          {
+            "fieldPath": "confidenceScore",
+            "columnName": "confidenceScore",
+            "affinity": "REAL"
+          },
+          {
+            "fieldPath": "volatilityBand",
+            "columnName": "volatilityBand",
+            "affinity": "TEXT"
+          },
+          {
+            "fieldPath": "acknowledgmentStatus",
+            "columnName": "acknowledgmentStatus",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "serverVersion",
+            "columnName": "serverVersion",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "asOfUtc",
+            "columnName": "asOfUtc",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "expiresAtUtc",
+            "columnName": "expiresAtUtc",
+            "affinity": "TEXT"
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "alertId"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_cached_alerts_dedupeKey_serverVersion",
+            "unique": true,
+            "columnNames": [
+              "dedupeKey",
+              "serverVersion"
+            ],
+            "orders": [],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_cached_alerts_dedupeKey_serverVersion` ON `${TABLE_NAME}` (`dedupeKey`, `serverVersion`)"
+          },
+          {
+            "name": "index_cached_alerts_playerId_alertDate",
+            "unique": false,
+            "columnNames": [
+              "playerId",
+              "alertDate"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_cached_alerts_playerId_alertDate` ON `${TABLE_NAME}` (`playerId`, `alertDate`)"
+          },
+          {
+            "name": "index_cached_alerts_acknowledgmentStatus",
+            "unique": false,
+            "columnNames": [
+              "acknowledgmentStatus"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_cached_alerts_acknowledgmentStatus` ON `${TABLE_NAME}` (`acknowledgmentStatus`)"
+          }
+        ]
+      },
+      {
+        "tableName": "wellness_drafts",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`localId` TEXT NOT NULL, `playerId` TEXT NOT NULL, `checkInDate` TEXT NOT NULL, `sleepHours` REAL, `soreness` INTEGER, `mood` INTEGER, `energy` INTEGER, `consentPurpose` TEXT NOT NULL, `createdAtUtc` TEXT NOT NULL, `updatedAtUtc` TEXT NOT NULL, `syncState` TEXT NOT NULL, PRIMARY KEY(`localId`))",
+        "fields": [
+          {
+            "fieldPath": "localId",
+            "columnName": "localId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "playerId",
+            "columnName": "playerId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "checkInDate",
+            "columnName": "checkInDate",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "sleepHours",
+            "columnName": "sleepHours",
+            "affinity": "REAL"
+          },
+          {
+            "fieldPath": "soreness",
+            "columnName": "soreness",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "mood",
+            "columnName": "mood",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "energy",
+            "columnName": "energy",
+            "affinity": "INTEGER"
+          },
+          {
+            "fieldPath": "consentPurpose",
+            "columnName": "consentPurpose",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "createdAtUtc",
+            "columnName": "createdAtUtc",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "updatedAtUtc",
+            "columnName": "updatedAtUtc",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "syncState",
+            "columnName": "syncState",
+            "affinity": "TEXT",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "localId"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_wellness_drafts_playerId_checkInDate",
+            "unique": true,
+            "columnNames": [
+              "playerId",
+              "checkInDate"
+            ],
+            "orders": [],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_wellness_drafts_playerId_checkInDate` ON `${TABLE_NAME}` (`playerId`, `checkInDate`)"
+          },
+          {
+            "name": "index_wellness_drafts_syncState",
+            "unique": false,
+            "columnNames": [
+              "syncState"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_wellness_drafts_syncState` ON `${TABLE_NAME}` (`syncState`)"
+          }
+        ]
+      },
+      {
+        "tableName": "sync_outbox",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`clientEventId` TEXT NOT NULL, `resourceType` TEXT NOT NULL, `playerId` TEXT NOT NULL, `idempotencyKey` TEXT NOT NULL, `payloadJson` TEXT NOT NULL, `createdAtUtc` TEXT NOT NULL, `attemptCount` INTEGER NOT NULL, `nextAttemptAtUtc` TEXT NOT NULL, `syncState` TEXT NOT NULL, `lastErrorCode` TEXT, PRIMARY KEY(`clientEventId`))",
+        "fields": [
+          {
+            "fieldPath": "clientEventId",
+            "columnName": "clientEventId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "resourceType",
+            "columnName": "resourceType",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "playerId",
+            "columnName": "playerId",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "idempotencyKey",
+            "columnName": "idempotencyKey",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "payloadJson",
+            "columnName": "payloadJson",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "createdAtUtc",
+            "columnName": "createdAtUtc",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "attemptCount",
+            "columnName": "attemptCount",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "nextAttemptAtUtc",
+            "columnName": "nextAttemptAtUtc",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "syncState",
+            "columnName": "syncState",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "lastErrorCode",
+            "columnName": "lastErrorCode",
+            "affinity": "TEXT"
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "clientEventId"
+          ]
+        },
+        "indices": [
+          {
+            "name": "index_sync_outbox_idempotencyKey",
+            "unique": true,
+            "columnNames": [
+              "idempotencyKey"
+            ],
+            "orders": [],
+            "createSql": "CREATE UNIQUE INDEX IF NOT EXISTS `index_sync_outbox_idempotencyKey` ON `${TABLE_NAME}` (`idempotencyKey`)"
+          },
+          {
+            "name": "index_sync_outbox_syncState_createdAtUtc",
+            "unique": false,
+            "columnNames": [
+              "syncState",
+              "createdAtUtc"
+            ],
+            "orders": [],
+            "createSql": "CREATE INDEX IF NOT EXISTS `index_sync_outbox_syncState_createdAtUtc` ON `${TABLE_NAME}` (`syncState`, `createdAtUtc`)"
+          }
+        ]
+      }
+    ],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '3fb3e23aeb1c6c2974c2a1dd2ffd4123')"
+    ]
+  }
+}
