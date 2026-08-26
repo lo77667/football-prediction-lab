@@ -1,0 +1,8 @@
+{
+  "code_commit": "446a2aaf4b9df49c671393804780bb2185ce4ea6",
+  "commercial_release": false,
+  "feature_version": "cycle39-shadow-input-v1",
+  "model_version": "cycle36-candidate-suite-v1",
+  "policy_version": "cycle36-future-2627-policy-v1",
+  "service_version": "cycle41-prediction-service-v1"
+}
