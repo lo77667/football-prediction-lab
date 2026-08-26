@@ -1,0 +1,4 @@
+{"attempt":1,"commercial_release":false,"event":"notification_attempt","notification_id":"d6947e76bfd297db27299764e381841a960b0ee8a91e66e55ecc2a9b7bee034e","status":"attempt_started"}
+{"attempt":1,"commercial_release":false,"error_code":"http_429","error_message":"rate limited","event":"notification_failed","notification_id":"d6947e76bfd297db27299764e381841a960b0ee8a91e66e55ecc2a9b7bee034e","retryable":true,"status":"retryable_failed"}
+{"attempt":2,"commercial_release":false,"event":"notification_attempt","notification_id":"d6947e76bfd297db27299764e381841a960b0ee8a91e66e55ecc2a9b7bee034e","status":"attempt_started"}
+{"attempt":2,"commercial_release":false,"event":"notification_sent","message_id":"fake-message-2","notification_id":"d6947e76bfd297db27299764e381841a960b0ee8a91e66e55ecc2a9b7bee034e","status":"sent"}

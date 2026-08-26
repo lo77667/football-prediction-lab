@@ -1,0 +1,1 @@
+{"adapter_code_commit":"acf0649a924096a3953f96ec7fe66500f6e9b649","backoff_seconds":[0.1],"commercial_release":false,"dry_run_status":"dry_run","duplicate_status":"duplicate_skipped","fake_client_calls":2,"network_scope":"none","production_blocked":true,"test_attempts":2,"test_status":"sent","validation":"passed"}

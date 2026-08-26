@@ -62,6 +62,8 @@ python scripts_run_telegram_adapter_smoke.py \
 | الفحص | النتيجة الحالية |
 |---|---|
 | regression المستهدف | `69 passed` |
+| full pytest | `297 passed` |
+| adapter source commit | `acf0649a924096a3953f96ec7fe66500f6e9b649` |
 | Ruff | passed |
 | compileall | passed |
 | git diff check | passed |
@@ -70,7 +72,7 @@ python scripts_run_telegram_adapter_smoke.py \
 | production mode | blocked by default |
 | commercial release | `false` |
 
-يجب استكمال الاختبار الكامل والمراجعة المستقلة بعد تثبيت المصدر. لا يُعد fake client أو smoke المحلي دليلاً على وصول رسالة إلى Telegram أو على صلاحية تشغيل تجاري.
+أُعيد تشغيل الاختبار الكامل بعد تثبيت المصدر: `297 passed`. لا يُعد fake client أو smoke المحلي دليلاً على وصول رسالة إلى Telegram أو على صلاحية تشغيل تجاري.
 
 ## خارج النطاق
 
