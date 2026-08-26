@@ -24,7 +24,7 @@ env:
 jobs:
   test-and-lint:
     name: Test and lint (Python ${{ matrix.python-version }})
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     timeout-minutes: 20
     strategy:
       fail-fast: false
