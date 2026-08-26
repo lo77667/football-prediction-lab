@@ -1,0 +1,1 @@
+{"artifacts":["validation.json","**/worker_state.json","**/worker_events.jsonl"],"commercial_release":false,"network_scope":"none","scenarios":["dry-run","telegram-disabled","no-data","shadow"],"worker_code_commit":"fb5fe8b0adc83b06198d06a6f06a714b3c804358"}

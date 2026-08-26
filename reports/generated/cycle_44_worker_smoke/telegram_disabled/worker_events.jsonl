@@ -1,0 +1,4 @@
+{"as_of_utc":"2025-01-01T12:00:00+00:00","commercial_release":false,"event":"heartbeat"}
+{"as_of_utc":"2025-01-01T12:00:00+00:00","commercial_release":false,"event":"prediction_issued","event_key":"cycle44-smoke-001:btts","prediction_id":"cycle44-smoke-001:btts"}
+{"commercial_release":false,"event":"notification_skipped","prediction_id":"cycle44-smoke-001:btts","reason":"telegram_disabled"}
+{"accepted_events":1,"as_of_utc":"2025-01-01T12:00:00+00:00","commercial_release":false,"event":"cycle_completed","failures":0,"notifications_sent":1,"predictions_issued":1,"skipped_events":0,"status":"completed"}

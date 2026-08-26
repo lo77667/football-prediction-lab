@@ -55,6 +55,22 @@ python scripts_run_worker_smoke.py \
 - `tests/test_cycle44_worker.py`
 - `reports/generated/cycle_44_worker_smoke/`
 
+## الأدلة النهائية
+
+| الفحص | النتيجة |
+|---|---|
+| worker source commit | `fb5fe8b0adc83b06198d06a6f06a714b3c804358` |
+| full pytest | `312 passed` |
+| Ruff | passed |
+| compileall | passed |
+| git diff check | passed |
+| worker smoke | `validation=passed` |
+| scenarios | `completed`، `partial_data`، `no_data`، `telegram-disabled`، `shadow` |
+| network scope | `none` |
+| commercial release | `false` |
+
+راجع المراجع state وevent logs فعلياً، وجرّب target/result وtimeouts وlock contention وcrash recovery وrestart dedup. لا يدل ذلك على تشغيل 24/7 فعلياً أو على مصدر حي أو إرسال خارجي.
+
 ## خارج النطاق
 
 لا تشمل الدورة مصدر بيانات حي، Telegram حقيقياً، webhook، scheduler خارجي، process supervisor، database persistence، monitoring service، أو استضافة 24/7. هذه العناصر لا تُعتبر منفذة بمجرد وجود worker loop محلي.
