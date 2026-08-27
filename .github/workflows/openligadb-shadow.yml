@@ -16,7 +16,6 @@ env:
   PYTHONUNBUFFERED: "1"
   PIP_DISABLE_PIP_VERSION_CHECK: "1"
   PYTHONDONTWRITEBYTECODE: "1"
-  SHADOW_ROOT: ${{ runner.temp }}/openligadb-shadow
 
 jobs:
   collect-shadow:
@@ -55,11 +54,11 @@ jobs:
         shell: bash
         run: |
           set -euxo pipefail
-          rm -rf "$SHADOW_ROOT"
+          rm -rf "$RUNNER_TEMP/openligadb-shadow"
           python scripts_run_local_shadow.py \
             --allow-network \
             --iterations 1 \
-            --output-root "$SHADOW_ROOT"
+            --output-root "$RUNNER_TEMP/openligadb-shadow"
 
       - name: Verify shadow controls
         shell: bash
@@ -70,7 +69,7 @@ jobs:
           import os
           from pathlib import Path
 
-          report = json.loads((Path(os.environ["SHADOW_ROOT"]) / "latest_run.json").read_text())
+          report = json.loads((Path(os.environ["RUNNER_TEMP"]) / "openligadb-shadow" / "latest_run.json").read_text())
           assert report["status"] == "completed"
           assert report["network_opt_in"] is True
           assert report["telegram_enabled"] is False
