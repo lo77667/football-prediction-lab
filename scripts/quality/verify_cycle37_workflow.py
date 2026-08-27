@@ -15,6 +15,8 @@ REQUIRED_RUNS = (
     "python -m pip install -e '.[dev]'",
     "import football_prediction_lab",
     "python -m pytest -q",
+    "python scripts/ops/scripts_test_summary.py",
+    "python scripts/quality/scripts_check_temporal_leakage.py",
     "ruff check .",
     "python -m compileall -q src scripts",
 )

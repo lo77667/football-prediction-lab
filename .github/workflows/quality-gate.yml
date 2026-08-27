@@ -78,6 +78,39 @@ jobs:
           set -euxo pipefail
           python -m pytest -q
 
+      - name: Generate test summary artifact
+        shell: bash
+        run: |
+          set -euxo pipefail
+          python scripts/ops/scripts_test_summary.py
+
+      - name: Required temporal leakage guard
+        shell: bash
+        run: |
+          set -euxo pipefail
+          python scripts/quality/scripts_check_temporal_leakage.py \
+            --output reports/generated/quality_gate_temporal_leakage.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          report = json.loads(
+              Path("reports/generated/quality_gate_temporal_leakage.json")
+              .read_text(encoding="utf-8")
+          )
+          failures = {
+              key: report[key]
+              for key in (
+                  "match_rows_with_same_day_leakage",
+                  "leaked_team_history_events",
+                  "time_parse_failures",
+              )
+              if report[key] != 0
+          }
+          if failures:
+              raise SystemExit(f"temporal leakage guard failed: {failures}")
+          PY
+
       - name: Run Ruff
         shell: bash
         run: |
@@ -89,7 +122,6 @@ jobs:
         run: |
           set -euxo pipefail
           python -m compileall -q src scripts
-          python -m compileall -q src scripts_*.py
 
       - name: Check repository whitespace
         shell: bash
