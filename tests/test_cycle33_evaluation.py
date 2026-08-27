@@ -3,7 +3,7 @@ from pathlib import Path
 
 import numpy as np
 
-_SCRIPT = Path(__file__).parents[1] / "scripts_evaluate_cycle33.py"
+_SCRIPT = Path(__file__).parents[1] / "scripts" / "evaluation" / "scripts_evaluate_cycle33.py"
 _SPEC = spec_from_file_location("scripts_evaluate_cycle33", _SCRIPT)
 assert _SPEC is not None and _SPEC.loader is not None
 _MODULE = module_from_spec(_SPEC)

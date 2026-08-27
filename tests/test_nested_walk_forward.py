@@ -11,7 +11,9 @@ from football_prediction_lab.evaluation.nested_walk_forward import (
     select_variant_on_inner_validation,
 )
 
-_SCRIPT = Path(__file__).parents[1] / "scripts_evaluate_cycle34_nested.py"
+_SCRIPT = (
+    Path(__file__).parents[1] / "scripts" / "evaluation" / "scripts_evaluate_cycle34_nested.py"
+)
 _SPEC = spec_from_file_location("scripts_evaluate_cycle34_nested", _SCRIPT)
 assert _SPEC is not None and _SPEC.loader is not None
 _MODULE = module_from_spec(_SPEC)

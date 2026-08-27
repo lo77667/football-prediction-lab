@@ -383,7 +383,7 @@ def test_cli_is_portable_across_two_checkout_and_output_roots(tmp_path: Path) ->
     policy_b.write_bytes(POLICY_PATH.read_bytes())
     command = [
         sys.executable,
-        str(ROOT / "scripts_audit_external_source.py"),
+        str(ROOT / "scripts" / "quality" / "scripts_audit_external_source.py"),
         "--mode",
         "readiness",
         "--policy",

@@ -57,22 +57,22 @@ ruff check .
 
 ```bash
 for season in 1516 1617 1718 1819 1920 2021 2122 2223 2324 2425; do
-  python scripts_download_initial.py --season "$season" --competition E0
+  python scripts/ingestion/scripts_download_initial.py --season "$season" --competition E0
 done
-python scripts_combine_seasons.py \
+python scripts/features/scripts_combine_seasons.py \
   --output data/processed/epl_1516_2425.csv
-python scripts_build_features.py \
+python scripts/features/scripts_build_features.py \
   --input data/processed/epl_1516_2425.csv \
   --output data/processed/epl_1516_2425_features.csv
 # يكتب أيضًا manifest بجوار ملف الميزات
-python scripts_compare_btts_multiseason.py \
+python scripts/evaluation/scripts_compare_btts_multiseason.py \
   --input data/processed/epl_1516_2425_features.csv
-python scripts_compare_cards_multiseason.py \
+python scripts/evaluation/scripts_compare_cards_multiseason.py \
   --input data/processed/epl_1516_2425.csv
-python scripts_walk_forward.py \
+python scripts/walk_forward/scripts_walk_forward.py \
   --input data/processed/epl_1516_2425_features.csv \
   --cards-input data/processed/epl_1516_2425.csv
-python scripts_walk_forward_tuned.py \
+python scripts/walk_forward/scripts_walk_forward_tuned.py \
   --input data/processed/epl_1516_2425_features.csv \
   --cards-input data/processed/epl_1516_2425.csv
 ```
@@ -80,19 +80,19 @@ python scripts_walk_forward_tuned.py \
 لتشغيل مقارنة الكمي بالهجين، يجب توفير ملف JSONL حقيقي مصدره موثق ومسموح استخدامه؛ لا يُنشأ هذا الملف من نص مولد أو من نتيجة المباراة:
 
 ```bash
-python scripts_compare_btts_hybrid.py \
+python scripts/evaluation/scripts_compare_btts_hybrid.py \
   --qualitative-events path/to/verified_events.jsonl
 ```
 
 لفحص موسم مع manifest وفحوص provenance المشددة:
 
 ```bash
-python scripts_validate_season.py \
+python scripts/ingestion/scripts_validate_season.py \
   --input data/processed/2425_E0.csv \
   --output reports/generated/validate_2425.json
 ```
 
-في الإصدار الحالي تعمل المكونات الأساسية دون مفتاح API. ويجب مراجعة ترخيص كل مصدر قبل إعادة توزيع البيانات أو تشغيل خدمة عامة. ويظل `scripts_compare_btts_hybrid.py` مسارًا اختياريًا لا يعمل دون أحداث نوعية حقيقية متحققة زمنيًا.
+في الإصدار الحالي تعمل المكونات الأساسية دون مفتاح API. ويجب مراجعة ترخيص كل مصدر قبل إعادة توزيع البيانات أو تشغيل خدمة عامة. ويظل `scripts/evaluation/scripts_compare_btts_hybrid.py` مسارًا اختياريًا لا يعمل دون أحداث نوعية حقيقية متحققة زمنيًا.
 
 ## معيار الانتقال بين المراحل
 
@@ -114,7 +114,7 @@ python3 -m venv .venv
 ```bash
 .venv/bin/python -c "import football_prediction_lab; print(football_prediction_lab.__file__)"
 .venv/bin/python -c "import football_prediction_lab.evaluation.cycle36_model_selection as m; print(m.__file__)"
-.venv/bin/python scripts/verify_cycle36_reproducibility.py
+.venv/bin/python scripts/quality/verify_cycle36_reproducibility.py
 ```
 
 يشغّل verifier الاختبارات وRuff وcompileall وtest summary من نفس `venv`، ويتحقق من أن مسارات modules تبدأ بجذر المشروع الحالي. كما توجد fixtures صغيرة في `tests/fixtures/cycle36_smoke/` لاختبار imports وPoisson probabilities فقط؛ لا تُستخدم هذه fixtures لإعادة إنتاج metrics التاريخية.
@@ -129,4 +129,4 @@ python3 -m venv .venv
 git archive --format=zip --prefix=football-prediction-lab/ HEAD -o /tmp/football-prediction-lab-full.zip
 ```
 
-ويشمل `src/` و`tests/` وملفات التشغيل الجذرية و`scripts/` و`pyproject.toml` و`requirements.lock` و`configs/` و`docs/` و`reports/` المتتبعة. ويستبدل Git تلقائيًا marker الموجود في `SOURCE_COMMIT.txt` ببصمة commit داخل الأرشيف. لا يعتمد على حزمة انتقائية أو imports من checkout آخر.
+ويشمل `src/` و`tests/` وملفات التشغيل المنظمة تحت `scripts/` و`pyproject.toml` و`requirements.lock` و`configs/` و`docs/` و`reports/` المتتبعة. ويستبدل Git تلقائيًا marker الموجود في `SOURCE_COMMIT.txt` ببصمة commit داخل الأرشيف. لا يعتمد على حزمة انتقائية أو imports من checkout آخر.

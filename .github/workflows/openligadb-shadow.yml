@@ -55,7 +55,7 @@ jobs:
         run: |
           set -euxo pipefail
           rm -rf "$RUNNER_TEMP/openligadb-shadow"
-          python scripts_run_local_shadow.py \
+          python scripts/shadow/scripts_run_local_shadow.py \
             --allow-network \
             --iterations 1 \
             --output-root "$RUNNER_TEMP/openligadb-shadow"

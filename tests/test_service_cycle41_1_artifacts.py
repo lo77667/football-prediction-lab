@@ -12,8 +12,8 @@ from football_prediction_lab.service.artifact_validation import validate_service
 
 ROOT = Path(__file__).resolve().parents[1]
 POLICY_PATH = ROOT / "configs" / "cycle36_future_holdout_policy.json"
-SMOKE_SCRIPT = ROOT / "scripts_run_service_smoke.py"
-VALIDATOR_SCRIPT = ROOT / "scripts_validate_service_response.py"
+SMOKE_SCRIPT = ROOT / "scripts" / "ops" / "scripts_run_service_smoke.py"
+VALIDATOR_SCRIPT = ROOT / "scripts" / "ops" / "scripts_validate_service_response.py"
 
 
 def _run_smoke(root: Path) -> tuple[Path, dict[str, object]]:

@@ -3,7 +3,7 @@ from pathlib import Path
 
 import pytest
 
-_SCRIPT_PATH = Path(__file__).parents[1] / "scripts_audit_odds_readiness.py"
+_SCRIPT_PATH = Path(__file__).parents[1] / "scripts" / "quality" / "scripts_audit_odds_readiness.py"
 _SPEC = spec_from_file_location("scripts_audit_odds_readiness", _SCRIPT_PATH)
 assert _SPEC is not None and _SPEC.loader is not None
 _READINESS = module_from_spec(_SPEC)

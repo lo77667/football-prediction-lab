@@ -186,12 +186,13 @@ def test_bootstrap_is_deterministic_and_grouped_by_match_id() -> None:
 
 
 def test_cycle36_script_imports_in_isolated_python() -> None:
+    script_path = ROOT / "scripts" / "evaluation" / "scripts_evaluate_cycle36_candidates.py"
     result = subprocess.run(
         [
             sys.executable,
             "-I",
             "-c",
-            "import runpy; runpy.run_path('scripts_evaluate_cycle36_candidates.py')",
+            f"import runpy; runpy.run_path({str(script_path)!r})",
         ],
         cwd=ROOT,
         capture_output=True,
