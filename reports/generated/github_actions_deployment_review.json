@@ -1,0 +1,42 @@
+{
+  "repository": "lo77667/football-prediction-lab",
+  "visibility": "public",
+  "workflow_id": 343384062,
+  "workflow_name": "OpenLigaDB shadow collection",
+  "manual_shadow_run": {
+    "run_id": 33030729892,
+    "head_sha": "da349b9faaaff54e04aa2143e07094e9a1929e15",
+    "url": "https://github.com/lo77667/football-prediction-lab/actions/runs/33030729892",
+    "conclusion": "success",
+    "runner_steps_executed": true,
+    "artifact_uploaded": true
+  },
+  "quality_gate_run": {
+    "run_id": 33031147853,
+    "head_sha": "6dce29c4643f208d71ddaa073959a5c9edd6a554",
+    "url": "https://github.com/lo77667/football-prediction-lab/actions/runs/33031147853",
+    "conclusion": "success",
+    "python_versions": ["3.11", "3.12"],
+    "pytest_step": "success",
+    "ruff_step": "success",
+    "compileall_step": "success",
+    "diff_check_step": "success"
+  },
+  "schedule": {
+    "cron_utc": "17 * * * *",
+    "workflow_dispatch_verified": true,
+    "automatic_schedule_observed": false,
+    "note": "The scheduled trigger is configured but has not yet been observed in a completed schedule event."
+  },
+  "controls": {
+    "network_opt_in": true,
+    "ai_enabled_in_workflow": false,
+    "telegram_enabled": false,
+    "prediction_issued": false,
+    "commercial_release": false,
+    "odds_enabled": false,
+    "secret_scan": "no_matches"
+  },
+  "decision": "shadow_collection_ready_pending_schedule_observation",
+  "ci_remote": "verified_for_quality_gate_head_6dce29c"
+}
