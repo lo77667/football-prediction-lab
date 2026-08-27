@@ -55,7 +55,7 @@ def main() -> int:
             result.update(
                 {
                     "status": "reachable",
-                    "provider": batch.provider,
+                    "provider": getattr(batch, "provider", "OpenLigaDB"),
                     "matches": len(batch.matches),
                     "response_sha256": batch.response_sha256,
                 }
