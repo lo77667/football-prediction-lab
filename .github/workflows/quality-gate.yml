@@ -89,6 +89,7 @@ jobs:
         run: |
           set -euxo pipefail
           python scripts/quality/scripts_check_temporal_leakage.py \
+            --input tests/fixtures/cycle39_shadow/processed_with_frozen_probabilities.csv \
             --output reports/generated/quality_gate_temporal_leakage.json
           python - <<'PY'
           import json
