@@ -1,0 +1,34 @@
+{
+  "repository": "lo77667/football-prediction-lab",
+  "visibility": "public",
+  "workflow": "OpenLigaDB shadow collection",
+  "workflow_id": 343384062,
+  "run_id": 33030729892,
+  "run_url": "https://github.com/lo77667/football-prediction-lab/actions/runs/33030729892",
+  "head_sha": "da349b9faaaff54e04aa2143e07094e9a1929e15",
+  "event": "workflow_dispatch",
+  "status": "completed",
+  "conclusion": "success",
+  "runner_steps_executed": true,
+  "artifact": {
+    "name": "openligadb-shadow-33030729892",
+    "files": ["latest_run.json", "shadow.sqlite3"],
+    "latest_run_sha256": "746335492e8e6815e23065eba550cc84c0793ad420924ad8c96c82703fcea7e3",
+    "shadow_sqlite_sha256": "0e4855746f9763c5407bf9c7a6e92727bed4671c048ba072e656b18a1432f849"
+  },
+  "controls": {
+    "network_opt_in": true,
+    "telegram_enabled": false,
+    "ai_enabled": false,
+    "prediction_issued": false,
+    "commercial_release": false,
+    "odds_enabled": false
+  },
+  "schedule": {
+    "cron_utc": "17 * * * *",
+    "automatic_schedule_observed": false,
+    "manual_dispatch_verified": true
+  },
+  "secret_scan": "no_matches",
+  "ci_remote": "shadow_workflow_verified; quality_gate_runs_prior_to_public_visibility_failed_before_steps"
+}
