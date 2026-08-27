@@ -17,6 +17,7 @@ class ShadowIngestResult:
     run_id: str
     as_of_utc: str
     source_version: str
+    manifest_fingerprint: str
     response_sha256: str
     fetched_at_utc: str
     total_matches: int
@@ -152,6 +153,7 @@ class OpenLigaDBShadowIngestor:
             run_id=run_id,
             as_of_utc=observed_iso,
             source_version=source_version,
+            manifest_fingerprint=manifest_fingerprint,
             response_sha256=batch.response_sha256,
             fetched_at_utc=captured_at,
             total_matches=len(batch.matches),
