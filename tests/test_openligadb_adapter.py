@@ -55,6 +55,30 @@ def test_fixture_is_parsed_and_cached_without_network() -> None:
     assert calls == ["https://api.openligadb.de/getmatchdata/pl/2026"]
 
 
+def test_cache_ttl_zero_forces_a_fresh_fetch() -> None:
+    calls: list[str] = []
+    payload = json.dumps([MATCH]).encode()
+
+    def transport(url: str, timeout: float) -> bytes:
+        del timeout
+        calls.append(url)
+        return payload
+
+    client = OpenLigaDBClient(
+        transport=transport,
+        min_interval_seconds=0,
+        cache_ttl_seconds=0,
+    )
+    client.fetch_league_season("pl", 2026)
+    second = client.fetch_league_season("pl", 2026)
+
+    assert second.from_cache is False
+    assert calls == [
+        "https://api.openligadb.de/getmatchdata/pl/2026",
+        "https://api.openligadb.de/getmatchdata/pl/2026",
+    ]
+
+
 def test_unknown_match_fields_are_rejected() -> None:
     payload = dict(MATCH, unexpected="value")
     client = OpenLigaDBClient(

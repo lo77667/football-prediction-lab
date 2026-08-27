@@ -174,13 +174,17 @@ class OpenLigaDBClient:
         allow_network: bool = False,
         timeout_seconds: float = 10.0,
         min_interval_seconds: float = 1.0,
+        cache_ttl_seconds: float | None = None,
         transport: Transport | None = None,
     ) -> None:
         if timeout_seconds <= 0 or min_interval_seconds < 0:
             raise ValueError("timeout and rate interval must be non-negative, timeout positive")
+        if cache_ttl_seconds is not None and cache_ttl_seconds < 0:
+            raise ValueError("cache_ttl_seconds must be non-negative or None")
         self.allow_network = allow_network
         self.timeout_seconds = timeout_seconds
         self.min_interval_seconds = min_interval_seconds
+        self.cache_ttl_seconds = cache_ttl_seconds
         self._transport = transport or _default_transport
         self._cache: dict[str, tuple[bytes, datetime]] = {}
         self._last_request = 0.0
@@ -190,7 +194,14 @@ class OpenLigaDBClient:
         with self._lock:
             cached = self._cache.get(endpoint)
             if cached is not None:
-                return cached[0], True
+                cached_payload, cached_at = cached
+                cache_fresh = (
+                    self.cache_ttl_seconds is None
+                    or (datetime.now(UTC) - cached_at).total_seconds() < self.cache_ttl_seconds
+                )
+                if cache_fresh:
+                    return cached_payload, True
+                self._cache.pop(endpoint, None)
             if not self.allow_network and self._transport is _default_transport:
                 raise OpenLigaDBNetworkDisabled(
                     "OpenLigaDB network access is disabled; pass allow_network=True"
