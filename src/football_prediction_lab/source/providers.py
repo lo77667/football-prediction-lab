@@ -175,7 +175,7 @@ class SportScoreClient(_ProviderClient):
             matches.append(
                 ProviderMatch(
                     provider=self.provider,
-                    external_id=_text(item.get("slug"), "slug"),
+                    external_id=_text(item.get("slug") or item.get("url"), "slug/url"),
                     kickoff_utc=_utc(item.get("time")),
                     home_team=_text(item.get("home"), "home"),
                     away_team=_text(item.get("away"), "away"),
