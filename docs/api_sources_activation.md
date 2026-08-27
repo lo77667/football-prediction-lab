@@ -25,6 +25,19 @@ python scripts/ingestion/scripts_run_provider_readiness.py \
 
 ينتج التشغيل الافتراضي حالة `deferred` لكل مزود مع `network_requested=false`. هذه هي الحالة المقصودة للاختبارات المحلية. لا يتحول المصدر إلى `reachable` إلا عند تمرير `--allow-network` صراحةً، وعندها يحتاج مزودا `football-data.org` و`TheSportsDB` إلى مفاتيح صالحة في متغيرات البيئة.
 
+## نتيجة probe الفعلية
+
+شُغّل readiness صراحةً للتاريخ `2026-08-28` بعد تفعيل الشبكة لهذا الاختبار المحدد فقط. لم يُرسل أي توقع أو رسالة أو odds؛ جرى طلب fixtures عام فقط.
+
+| المصدر | النتيجة | العدد/الملاحظة |
+|---|---|---:|
+| OpenLigaDB | `reachable` | `380` مباراة؛ response SHA يبدأ بـ`3b6986e8` |
+| SportScore | `reachable` | `100` مباراة؛ response SHA يبدأ بـ`8d868a8a` |
+| football-data.org | `missing_credential` | يحتاج `FOOTBALL_DATA_API_TOKEN` |
+| TheSportsDB | `missing_credential` | يحتاج `THESPORTSDB_API_KEY` |
+
+هذه النتيجة تثبت قابلية الوصول في ذلك التشغيل فقط، ولا تثبت التغطية المستمرة أو صحة البيانات أو جودة BTTS. كما أن غياب المفتاحين يمنع probe الفعلي لهذين المصدرين، ولم تُخترع مفاتيح ولم تُحفظ أسرار.
+
 ## التشغيل الشبكي الصريح
 
 إذا توفرت موافقة مستقلة على اختبار مصدر خارجي، تُمرر المفاتيح عبر البيئة فقط:
