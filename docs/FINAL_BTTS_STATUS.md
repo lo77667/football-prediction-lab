@@ -41,7 +41,7 @@
 | التقرير canonical | `reports/generated/btts_final_evaluation.json` |
 | input artifact | `data/processed/epl_1516_2425_features.csv` |
 | input SHA-256 | `ebaec5d28231129a4a88bcd810a3e227c7b0c0d2c66239bb209c27c52eff490e` |
-| source commit وقت التوليد | `83ab3b809bbe47853cf5687abafa0387de4a69de` |
+| source commit وقت التوليد | `53bd227bf136e0bddf2e36f175aae269d067b089` |
 | schema | `btts-final-evaluation-v1` |
 | المعايرة | Platt sigmoid على موسم المعايرة السابق مباشرة |
 | الحالة التجارية | `rejected` |
