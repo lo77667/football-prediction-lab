@@ -1,0 +1,96 @@
+name: Provider readiness shadow
+
+on:
+  schedule:
+    - cron: "47 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: provider-readiness-${{ github.workflow }}
+  cancel-in-progress: false
+
+env:
+  PYTHONUNBUFFERED: "1"
+  PIP_DISABLE_PIP_VERSION_CHECK: "1"
+  PYTHONDONTWRITEBYTECODE: "1"
+
+jobs:
+  provider-readiness:
+    name: Read four football providers (shadow)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: requirements.lock
+
+      - name: Install project dependencies
+        shell: bash
+        run: |
+          set -euxo pipefail
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements.lock
+          python -m pip install -e .
+          python -m pip check
+
+      - name: Verify project import path
+        shell: bash
+        run: |
+          set -euxo pipefail
+          python -c "import football_prediction_lab; print(football_prediction_lab.__file__)"
+
+      - name: Run provider readiness probe
+        shell: bash
+        env:
+          FOOTBALL_DATA_API_TOKEN: ${{ secrets.FOOTBALL_DATA_API_TOKEN }}
+          THESPORTSDB_API_KEY: ${{ secrets.THESPORTSDB_API_KEY }}
+        run: |
+          set -euxo pipefail
+          python scripts/ingestion/scripts_run_provider_readiness.py \
+            --date "$(date -u +%F)" \
+            --allow-network \
+            --output reports/generated/provider_readiness_ci.json
+
+      - name: Check shadow-only controls
+        shell: bash
+        run: |
+          set -euxo pipefail
+          python - <<'PY'
+          import json
+          from pathlib import Path
+
+          report = json.loads(
+              Path("reports/generated/provider_readiness_ci.json")
+              .read_text(encoding="utf-8")
+          )
+          assert report["mode"] == "shadow_only"
+          assert report["commercial_release"] is False
+          assert report["network_requested"] is True
+          assert set(report["providers"]) == {
+              "football_data",
+              "openligadb",
+              "sportscore",
+              "thesportsdb",
+          }
+          print(json.dumps(report, ensure_ascii=False, sort_keys=True, indent=2))
+          PY
+
+      - name: Upload provider readiness artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: provider-readiness-${{ github.run_id }}
+          path: reports/generated/provider_readiness_ci.json
+          if-no-files-found: error
+          retention-days: 7
