@@ -1,5 +1,6 @@
 """Guarded AI-assisted analysis contracts."""
 
+from .audit import audit_ai_store
 from .guardrails import (
     SCHEMA_VERSION,
     AIAnalysis,
@@ -14,6 +15,7 @@ from .openligadb_context import build_pre_match_request
 
 __all__ = [
     "AIAnalysis",
+    "audit_ai_store",
     "build_pre_match_request",
     "AIProviderError",
     "OpenAIJSONAnalyzer",
