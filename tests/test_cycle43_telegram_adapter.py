@@ -186,6 +186,15 @@ def test_forbidden_signal_fields_are_rejected(field: str) -> None:
         NotificationSignal.model_validate({**_signal().model_dump(), field: "blocked"})
 
 
+def test_rendered_message_never_contains_odds_or_financial_fields() -> None:
+    message = render_message(_signal(), chat_id="chat", length_limit=4096)
+    lowered = message.text.lower()
+    assert "odds" not in lowered
+    assert "ev" not in lowered
+    assert "roi" not in lowered
+    assert "stake" not in lowered
+
+
 def test_forbidden_terms_and_missing_chat_id_are_rejected() -> None:
     with pytest.raises(ValidationError):
         NotificationSignal.model_validate({**_signal().model_dump(), "match_id": "result-001"})
