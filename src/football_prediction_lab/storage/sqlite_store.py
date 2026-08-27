@@ -12,7 +12,7 @@ from contextlib import contextmanager
 from pathlib import Path
 from typing import Any
 
-SCHEMA_VERSION = 1
+SCHEMA_VERSION = 2
 
 _SCHEMA = """
 CREATE TABLE IF NOT EXISTS schema_migrations (
@@ -34,6 +34,21 @@ CREATE TABLE IF NOT EXISTS source_manifests (
     input_sha256 TEXT,
     captured_at_utc TEXT,
     usage_policy TEXT NOT NULL
+);
+CREATE TABLE IF NOT EXISTS shadow_fixtures (
+    fixture_key TEXT PRIMARY KEY,
+    match_id TEXT NOT NULL,
+    league_shortcut TEXT NOT NULL,
+    league_season INTEGER NOT NULL,
+    kickoff_utc TEXT NOT NULL,
+    team1_id INTEGER NOT NULL,
+    team1_name TEXT NOT NULL,
+    team2_id INTEGER NOT NULL,
+    team2_name TEXT NOT NULL,
+    source_manifest_fingerprint TEXT NOT NULL,
+    first_seen_at_utc TEXT NOT NULL,
+    last_seen_at_utc TEXT NOT NULL,
+    status TEXT NOT NULL CHECK(status = 'upcoming')
 );
 CREATE TABLE IF NOT EXISTS predictions (
     prediction_id TEXT PRIMARY KEY,
@@ -225,6 +240,56 @@ class SQLiteStore:
                 ),
             )
         return cursor.rowcount == 1
+
+    def record_shadow_fixture(
+        self,
+        fixture_key: str,
+        match_id: str,
+        league_shortcut: str,
+        league_season: int,
+        kickoff_utc: str,
+        team1_id: int,
+        team1_name: str,
+        team2_id: int,
+        team2_name: str,
+        source_manifest_fingerprint: str,
+        observed_at_utc: str,
+    ) -> bool:
+        with self.transaction() as connection:
+            cursor = connection.execute(
+                "INSERT OR IGNORE INTO shadow_fixtures("
+                "fixture_key, match_id, league_shortcut, league_season, kickoff_utc, "
+                "team1_id, team1_name, team2_id, team2_name, source_manifest_fingerprint, "
+                "first_seen_at_utc, last_seen_at_utc, status) "
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                (
+                    fixture_key,
+                    match_id,
+                    league_shortcut,
+                    league_season,
+                    kickoff_utc,
+                    team1_id,
+                    team1_name,
+                    team2_id,
+                    team2_name,
+                    source_manifest_fingerprint,
+                    observed_at_utc,
+                    observed_at_utc,
+                    "upcoming",
+                ),
+            )
+            if cursor.rowcount == 1:
+                return True
+            connection.execute(
+                "UPDATE shadow_fixtures SET last_seen_at_utc=?, "
+                "source_manifest_fingerprint=? WHERE fixture_key=?",
+                (observed_at_utc, source_manifest_fingerprint, fixture_key),
+            )
+        return False
+
+    def shadow_fixture_count(self) -> int:
+        with self.connect() as connection:
+            return int(connection.execute("SELECT COUNT(*) FROM shadow_fixtures").fetchone()[0])
 
     def record_shadow_run(
         self,

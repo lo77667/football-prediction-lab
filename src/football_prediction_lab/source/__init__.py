@@ -10,6 +10,7 @@ from .openligadb import (
     OpenLigaMatch,
     OpenLigaTeam,
 )
+from .shadow_ingest import OpenLigaDBShadowIngestor, ShadowIngestResult
 
 __all__ = [
     "LocalJsonlSource",
@@ -20,6 +21,8 @@ __all__ = [
     "OpenLigaDBPayloadError",
     "OpenLigaMatch",
     "OpenLigaTeam",
+    "OpenLigaDBShadowIngestor",
+    "ShadowIngestResult",
     "QuarantineRow",
     "SourceBatch",
     "SourceRow",
