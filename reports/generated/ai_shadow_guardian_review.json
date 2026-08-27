@@ -1,0 +1,42 @@
+{
+  "review_type": "guardian_review",
+  "reviewed_commit": "c66c52a4aa63f105527dd941472ec55c8b176bb0",
+  "pytest": {
+    "collected_count": 358,
+    "passed_count": 358,
+    "status": "passed"
+  },
+  "ruff": "passed",
+  "compileall": "passed",
+  "git_diff_check": "passed",
+  "openligadb_live_probe": {
+    "status": "passed",
+    "league_shortcut": "pl",
+    "season": 2026,
+    "match_count": 380,
+    "finished_count": 10,
+    "upcoming_count": 370,
+    "response_sha256": "3b6986e8a0476301a2ac8c026ca4c6a32d54e55e669486b1e32a2ec2a3e3375d",
+    "network_opt_in": true
+  },
+  "ai_live_probe": {
+    "status": "quarantined",
+    "model": "gpt-5-mini",
+    "fixtures_considered": 1,
+    "analyses_stored": 0,
+    "analyses_quarantined": 1,
+    "prediction_issued": false
+  },
+  "controls": {
+    "network_default_disabled": true,
+    "ai_explicit_opt_in": true,
+    "telegram_enabled": false,
+    "commercial_release": false,
+    "odds_enabled": false,
+    "pre_match_only": true,
+    "no_automatic_model_update": true
+  },
+  "decision": "shadow_internal_only",
+  "commercial_approval": "not_ready",
+  "ci_remote": "unverified_no_run_for_current_head"
+}
