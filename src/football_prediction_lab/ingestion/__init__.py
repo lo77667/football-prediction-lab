@@ -20,10 +20,12 @@ from football_prediction_lab.ingestion.local_csv import (
     replay_manifest,
     validate_manifest,
 )
+from football_prediction_lab.ingestion.odds_adapter import OddsAdapterResult, adapt_odds_payload
 
 __all__ = [
     "DataSourceAdapter",
     "ExternalSnapshotRecord",
+    "OddsAdapterResult",
     "ExternalSource",
     "ExternalSourceAdapter",
     "IngestionResult",
@@ -33,6 +35,7 @@ __all__ = [
     "SourceRecord",
     "LocalUnavailableExternalAdapter",
     "UnavailableExternalAdapter",
+    "adapt_odds_payload",
     "ingest_file",
     "replay_manifest",
     "validate_manifest",
