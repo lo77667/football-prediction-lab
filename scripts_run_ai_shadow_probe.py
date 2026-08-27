@@ -8,9 +8,8 @@ from datetime import UTC, datetime
 
 from football_prediction_lab.ai import (
     AIAnalysisError,
-    AnalysisEvidence,
-    AnalysisRequest,
     OpenAIJSONAnalyzer,
+    build_pre_match_request,
 )
 from football_prediction_lab.source import OpenLigaDBClient
 
@@ -35,34 +34,12 @@ def main() -> int:
         print(json.dumps({"status": "no_upcoming_fixture", "commercial_release": False}))
         return 0
     match = upcoming[0]
-    request = AnalysisRequest(
-        match_id=str(match.match_id),
-        kickoff_utc=match.kickoff_utc,
-        as_of_utc=as_of,
-        evidence=(
-            AnalysisEvidence(
-                evidence_id=f"openligadb-{match.match_id}",
-                source_name="OpenLigaDB",
-                source_url=batch.endpoint,
-                captured_at_utc=batch.fetched_at_utc,
-                content_sha256=batch.response_sha256,
-            ),
-        ),
-    )
+    request, context = build_pre_match_request(batch, match, as_of_utc=as_of)
     analyzer = OpenAIJSONAnalyzer(model=args.model)
     try:
         result = analyzer.analyze(
             request,
-            context={
-                "league_shortcut": match.league_shortcut,
-                "league_season": match.league_season,
-                "team1_id": match.team1.team_id,
-                "team1_name": match.team1.name,
-                "team2_id": match.team2.team_id,
-                "team2_name": match.team2.name,
-                "kickoff_utc": match.kickoff_utc.isoformat(),
-                "finished": False,
-            },
+            context=context,
         )
     except AIAnalysisError as error:
         print(
