@@ -1,0 +1,89 @@
+name: OpenLigaDB shadow collection
+
+on:
+  schedule:
+    - cron: "17 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: openligadb-shadow-${{ github.workflow }}
+  cancel-in-progress: false
+
+env:
+  PYTHONUNBUFFERED: "1"
+  PIP_DISABLE_PIP_VERSION_CHECK: "1"
+  PYTHONDONTWRITEBYTECODE: "1"
+  SHADOW_ROOT: ${{ runner.temp }}/openligadb-shadow
+
+jobs:
+  collect-shadow:
+    name: Collect Premier League shadow fixtures
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: requirements.lock
+
+      - name: Install project dependencies
+        shell: bash
+        run: |
+          set -euxo pipefail
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements.lock
+          python -m pip install -e .
+          python -m pip check
+
+      - name: Verify project import path
+        shell: bash
+        run: |
+          set -euxo pipefail
+          python -c "import football_prediction_lab; print(football_prediction_lab.__file__)"
+
+      - name: Collect one bounded shadow snapshot
+        shell: bash
+        run: |
+          set -euxo pipefail
+          rm -rf "$SHADOW_ROOT"
+          python scripts_run_local_shadow.py \
+            --allow-network \
+            --iterations 1 \
+            --output-root "$SHADOW_ROOT"
+
+      - name: Verify shadow controls
+        shell: bash
+        run: |
+          set -euxo pipefail
+          python - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          report = json.loads((Path(os.environ["SHADOW_ROOT"]) / "latest_run.json").read_text())
+          assert report["status"] == "completed"
+          assert report["network_opt_in"] is True
+          assert report["telegram_enabled"] is False
+          assert report["commercial_release"] is False
+          assert report["iterations_completed"] == 1
+          print(json.dumps(report, ensure_ascii=False, sort_keys=True, indent=2))
+          PY
+
+      - name: Upload shadow artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: openligadb-shadow-${{ github.run_id }}
+          path: ${{ runner.temp }}/openligadb-shadow
+          if-no-files-found: error
+          retention-days: 7
