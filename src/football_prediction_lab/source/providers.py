@@ -68,9 +68,15 @@ def _utc(value: object) -> datetime:
 def _score(value: object) -> int | None:
     if value is None:
         return None
-    if isinstance(value, bool) or not isinstance(value, int):
+    if isinstance(value, bool):
         raise ProviderPayloadError("score must be an integer or null")
-    return value
+    if isinstance(value, int):
+        return value
+    if isinstance(value, str) and value.strip() in {"", "-", "null", "None"}:
+        return None
+    if isinstance(value, str) and value.strip().lstrip("-").isdigit():
+        return int(value.strip())
+    raise ProviderPayloadError("score must be an integer or null")
 
 
 def _text(value: object, field: str) -> str:

@@ -69,6 +69,16 @@ def test_sportscore_network_is_disabled_by_default() -> None:
         SportScoreClient().fetch_fixtures(date(2026, 8, 28))
 
 
+def test_sportscore_accepts_numeric_score_strings() -> None:
+    payload = json.loads(json.dumps(SPORTSCORE_PAYLOAD))
+    payload["matches"][0]["home_score"] = "0"
+    payload["matches"][0]["away_score"] = "1"
+    client = SportScoreClient(transport=lambda url, headers, timeout: encoded(payload))
+    batch = client.fetch_fixtures("2026-08-28")
+    assert batch.matches[0].home_score == 0
+    assert batch.matches[0].away_score == 1
+
+
 def test_sportscore_fixture_contract_and_query() -> None:
     calls: list[tuple[str, dict[str, str]]] = []
 
