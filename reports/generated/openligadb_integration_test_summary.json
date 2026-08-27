@@ -1,0 +1,15 @@
+{
+  "collected_count": 340,
+  "passed_count": 340,
+  "ruff": "passed",
+  "compileall": "passed",
+  "diff_check": "passed",
+  "live_probe_status": "live_probe_passed",
+  "live_match_count": 380,
+  "live_finished_count": 10,
+  "live_upcoming_count": 370,
+  "live_response_sha256": "3b6986e8a0476301a2ac8c026ca4c6a32d54e55e669486b1e32a2ec2a3e3375d",
+  "league_shortcut": "pl",
+  "season": 2026,
+  "commercial_release": false
+}
