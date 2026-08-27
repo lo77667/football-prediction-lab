@@ -12,7 +12,7 @@ from contextlib import contextmanager
 from pathlib import Path
 from typing import Any
 
-SCHEMA_VERSION = 2
+SCHEMA_VERSION = 3
 
 _SCHEMA = """
 CREATE TABLE IF NOT EXISTS schema_migrations (
@@ -49,6 +49,18 @@ CREATE TABLE IF NOT EXISTS shadow_fixtures (
     first_seen_at_utc TEXT NOT NULL,
     last_seen_at_utc TEXT NOT NULL,
     status TEXT NOT NULL CHECK(status = 'upcoming')
+);
+CREATE TABLE IF NOT EXISTS ai_analyses (
+    analysis_id TEXT PRIMARY KEY,
+    match_id TEXT NOT NULL,
+    as_of_utc TEXT NOT NULL,
+    model_name TEXT NOT NULL,
+    schema_version TEXT NOT NULL,
+    status TEXT NOT NULL,
+    output_json TEXT NOT NULL,
+    source_manifest_fingerprint TEXT NOT NULL,
+    created_at_utc TEXT NOT NULL,
+    UNIQUE(match_id, as_of_utc, model_name)
 );
 CREATE TABLE IF NOT EXISTS predictions (
     prediction_id TEXT PRIMARY KEY,
@@ -324,6 +336,43 @@ class SQLiteStore:
                 (version_key, model_version, policy_version, feature_version, recorded_at_utc),
             )
         return cursor.rowcount == 1
+
+    def record_ai_analysis(
+        self,
+        analysis_id: str,
+        match_id: str,
+        as_of_utc: str,
+        model_name: str,
+        schema_version: str,
+        status: str,
+        output: dict[str, Any],
+        source_manifest_fingerprint: str,
+        created_at_utc: str,
+    ) -> bool:
+        output_json = _safe_json(output)
+        with self.transaction() as connection:
+            cursor = connection.execute(
+                "INSERT OR IGNORE INTO ai_analyses("
+                "analysis_id, match_id, as_of_utc, model_name, schema_version, status, "
+                "output_json, source_manifest_fingerprint, created_at_utc) "
+                "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                (
+                    analysis_id,
+                    match_id,
+                    as_of_utc,
+                    model_name,
+                    schema_version,
+                    status,
+                    output_json,
+                    source_manifest_fingerprint,
+                    created_at_utc,
+                ),
+            )
+        return cursor.rowcount == 1
+
+    def ai_analysis_count(self) -> int:
+        with self.connect() as connection:
+            return int(connection.execute("SELECT COUNT(*) FROM ai_analyses").fetchone()[0])
 
     def record_prediction(self, prediction: dict[str, Any]) -> bool:
         columns = (
