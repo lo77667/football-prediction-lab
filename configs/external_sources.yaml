@@ -1,0 +1,29 @@
+schema_version: external-sources-v1
+mode: shadow_only
+commercial_release: false
+allow_network_default: false
+providers:
+  openligadb:
+    enabled: true
+    auth: none
+    allow_network: false
+    base_url: https://api.openligadb.de
+  sportscore:
+    enabled: true
+    auth: none
+    allow_network: false
+    base_url: https://sportscore.com
+    attribution_required: true
+    cache_seconds: 60
+  football_data:
+    enabled: true
+    auth: x-auth-token
+    token_env: FOOTBALL_DATA_API_TOKEN
+    allow_network: false
+    base_url: https://api.football-data.org/v4
+  thesportsdb:
+    enabled: true
+    auth: path-key
+    token_env: THESPORTSDB_API_KEY
+    allow_network: false
+    base_url: https://www.thesportsdb.com

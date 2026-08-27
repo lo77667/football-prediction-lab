@@ -25,6 +25,12 @@
 ## الوضع التشغيلي
 
 التشغيل الحالي محلي وshadow-only. لا توجد خدمة عامة أو scheduler خارجي أو Telegram حقيقي أو مصدر odds حي. workflow الموجود في `.github/workflows/` محفوظ للتحقق من بنية الجودة، لكن لا يُعلن نجاح CI البعيد دون سجل تنفيذ فعلي على آخر commit.
+## محولات مصادر كرة القدم
+
+أضيفت محولات موحدة للمصادر الأربعة المرتبطة بالمشروع في `src/football_prediction_lab/source/providers.py`، وهي `OpenLigaDB` و`SportScore` و`football-data.org` و`TheSportsDB`. إعدادها موجود في `configs/external_sources.yaml`، وجميعها `enabled: true` داخل registry المحلي، لكن `allow_network: false` افتراضياً حتى لا تبدأ الاختبارات أو الاستيرادات طلبات خارجية. يحتاج `football-data.org` إلى متغير البيئة `FOOTBALL_DATA_API_TOKEN`، ويحتاج `TheSportsDB` إلى `THESPORTSDB_API_KEY`؛ لا تُحفظ هذه القيم في Git. التفعيل الشبكي الفعلي يتطلب تمريراً صريحاً من المشغل ومراجعة شروط المزود، ولا يفتح commercial release.
+
+البيانات القادمة من أي مزود لا تدخل التقييم مباشرة؛ يجب أولاً فحص provenance و`kickoff_utc` والتكرار والتغطية ومنع الحقول اللاحقة للمباراة. نجاح محول أو طلب واحد لا يثبت جودة BTTS أو الربحية.
+
 ## بنية المستودع
 
 - `src/football_prediction_lab/`: حزم جمع البيانات، الميزات، النماذج، التقييم، السجل، والوكيل التفسيري.
