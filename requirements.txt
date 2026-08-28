@@ -1,0 +1,2 @@
+xgboost>=1.7
+lightgbm>=3.3
