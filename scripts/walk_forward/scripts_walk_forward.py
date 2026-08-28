@@ -18,6 +18,10 @@ from football_prediction_lab.features.pre_match import FEATURE_COLUMNS
 from football_prediction_lab.models.btts import LEGACY_FEATURE_COLUMNS, BttsLogisticBaseline
 from football_prediction_lab.models.cards import TotalYellowCardsBaseline
 
+# New model imports
+from football_prediction_lab.models.btts_xgboost import BttsXGBoostModel
+from football_prediction_lab.models.btts_lightgbm import BttsLightGBMModel
+
 
 def evaluate_btts(
     frame: pd.DataFrame,
@@ -133,6 +137,8 @@ def main() -> int:
         "constant_train_rate": [],
         "legacy": [],
         "expanded": [],
+        "xgboost": [],
+        "lightgbm": [],
     }
     for index in range(1, len(seasons)):
         train_seasons = seasons[:index]
@@ -146,6 +152,40 @@ def main() -> int:
         btts_results["expanded"].append(
             evaluate_btts(btts_frame, FEATURE_COLUMNS, train_seasons, test_season)
         )
+
+        # prepare train/test frames for model wrappers (no shuffling)
+        train = btts_frame[btts_frame["season"].astype(str).isin(train_seasons)]
+        test = btts_frame[btts_frame["season"].astype(str) == test_season]
+
+        # XGBoost evaluation with error isolation
+        try:
+            xgb_model = BttsXGBoostModel(feature_columns=FEATURE_COLUMNS).fit(train)
+            xgb_prob = xgb_model.predict_probability(test)
+            btts_results["xgboost"].append(
+                evaluate_binary(xgb_prob, test["btts"]).as_dict() | {
+                    "test_season": test_season,
+                    "train_seasons": train_seasons,
+                }
+            )
+        except Exception as exc:  # pragma: no cover
+            btts_results["xgboost"].append(
+                {"error": str(exc), "test_season": test_season, "train_seasons": train_seasons}
+            )
+
+        # LightGBM evaluation with error isolation
+        try:
+            lgb_model = BttsLightGBMModel(feature_columns=FEATURE_COLUMNS).fit(train)
+            lgb_prob = lgb_model.predict_probability(test)
+            btts_results["lightgbm"].append(
+                evaluate_binary(lgb_prob, test["btts"]).as_dict() | {
+                    "test_season": test_season,
+                    "train_seasons": train_seasons,
+                }
+            )
+        except Exception as exc:  # pragma: no cover
+            btts_results["lightgbm"].append(
+                {"error": str(exc), "test_season": test_season, "train_seasons": train_seasons}
+            )
 
     matches = pd.read_csv(root / args.cards_input, parse_dates=["kickoff_utc"])
     cards_frame = build_card_features(matches)
