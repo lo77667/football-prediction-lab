@@ -52,13 +52,16 @@ def main() -> int:
             extra_metadata={"response_sha256": response.response_sha256},
         )
     if args.rss_url:
-        response = RSSClient(allow_network=True).fetch(args.rss_url)
+        response, raw_payload = RSSClient(allow_network=True).fetch_raw(args.rss_url)
         archive.store(
             provider="rss",
             endpoint=response.feed_url,
-            payload=_json_bytes({"items": [item.__dict__ for item in response.items]}),
+            payload=raw_payload,
             fetched_at_utc=response.fetched_at_utc,
-            extra_metadata={"response_sha256": response.response_sha256},
+            extra_metadata={
+                "response_sha256": response.response_sha256,
+                "parsed_items": len(response.items),
+            },
         )
     return 0
 

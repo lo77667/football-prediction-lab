@@ -129,7 +129,7 @@ class RSSClient:
         self.timeout_seconds = timeout_seconds
         self._transport = transport or _default_transport
 
-    def fetch(self, feed_url: str) -> RSSBatch:
+    def fetch_raw(self, feed_url: str) -> tuple[RSSBatch, bytes]:
         if not isinstance(feed_url, str) or not feed_url.startswith(("https://", "http://")):
             raise ValueError("feed_url must be an HTTP(S) URL")
         if not self.allow_network and self._transport is _default_transport:
@@ -137,7 +137,10 @@ class RSSClient:
         payload = self._transport(feed_url, self.timeout_seconds)
         if not isinstance(payload, bytes):
             raise RSSFetchError("transport must return bytes")
-        return parse_feed(feed_url, payload)
+        return parse_feed(feed_url, payload), payload
+
+    def fetch(self, feed_url: str) -> RSSBatch:
+        return self.fetch_raw(feed_url)[0]
 
 
 __all__ = ["RSSBatch", "RSSClient", "RSSFetchError", "RSSItem", "parse_feed"]
