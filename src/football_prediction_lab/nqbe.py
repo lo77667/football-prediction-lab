@@ -15,10 +15,10 @@ These components are signals for evaluation, not financial advice or guarantees.
 
 from __future__ import annotations
 
+from collections.abc import Iterable, Mapping, Sequence
 from dataclasses import dataclass
 from math import exp, isfinite, log
 from statistics import median
-from typing import Iterable, Mapping, Sequence
 
 
 @dataclass(frozen=True)
@@ -95,7 +95,13 @@ class LiveFlowAnalyzer:
             variance = (1.0 - self.decay) * variance + self.decay * (value - mean) ** 2
             std = max(variance**0.5, 1e-9)
             z_score = (value - mean) / std
-            action = "buy" if z_score >= self.z_threshold else "sell" if z_score <= -self.z_threshold else "hold"
+            action = (
+                "buy"
+                if z_score >= self.z_threshold
+                else "sell"
+                if z_score <= -self.z_threshold
+                else "hold"
+            )
             confidence = min(1.0, abs(z_score) / (self.z_threshold * 2.0))
             signals.append(FlowSignal(action, z_score, value, mean, std, confidence))
             mean = (1.0 - self.decay) * mean + self.decay * value
@@ -122,8 +128,13 @@ class PoissonPosterior:
 class BayesianAdaptivePoisson:
     """Independent Gamma-Poisson posterior for home and away goal rates."""
 
-    def __init__(self, alpha_home: float = 1.4, beta_home: float = 1.0,
-                 alpha_away: float = 1.1, beta_away: float = 1.0) -> None:
+    def __init__(
+        self,
+        alpha_home: float = 1.4,
+        beta_home: float = 1.0,
+        alpha_away: float = 1.1,
+        beta_away: float = 1.0,
+    ) -> None:
         for value in (alpha_home, beta_home, alpha_away, beta_away):
             if value <= 0 or not isfinite(value):
                 raise ValueError("Poisson prior parameters must be finite and positive")
@@ -146,7 +157,12 @@ class BayesianAdaptivePoisson:
         self._away = PoissonPosterior(self._away.alpha + goals_away, self._away.beta + exposure)
 
     def predict_btts(self) -> float:
-        probability = 1.0 - exp(-self.home_rate) - exp(-self.away_rate) + exp(-(self.home_rate + self.away_rate))
+        probability = (
+            1.0
+            - exp(-self.home_rate)
+            - exp(-self.away_rate)
+            + exp(-(self.home_rate + self.away_rate))
+        )
         return min(1.0, max(0.0, probability))
 
 
@@ -173,7 +189,9 @@ class SmartArbitrageDetector:
         if any(not isfinite(value) or value <= 1.0 for value in clean.values()):
             raise ValueError("all decimal odds must be finite and greater than 1.0")
         implied = sum(1.0 / value for value in clean.values())
-        return ArbitrageOpportunity(clean, implied, 1.0 - implied, implied < self.max_implied_probability)
+        return ArbitrageOpportunity(
+            clean, implied, 1.0 - implied, implied < self.max_implied_probability
+        )
 
 
 def half_kelly_fraction(probability: float, decimal_odds: float, cap: float = 0.05) -> float:
