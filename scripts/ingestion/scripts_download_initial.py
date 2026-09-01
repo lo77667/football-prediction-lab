@@ -13,21 +13,34 @@ def main() -> int:
     parser.add_argument("--season", default="2425")
     parser.add_argument("--competition", default="E0")
     parser.add_argument(
+        "--competition-name", help="canonical competition name for normalized output"
+    )
+    parser.add_argument(
         "--allow-network",
         action="store_true",
         help="explicitly allow the legacy public download",
     )
     args = parser.parse_args()
 
-    root = Path(__file__).resolve().parents[2].parents[0]
+    root = Path(__file__).resolve().parents[2]
     raw_path = root / "data" / "raw" / f"{args.season}_{args.competition}.csv"
     processed_path = root / "data" / "processed" / f"{args.season}_{args.competition}.csv"
     url = f"https://www.football-data.co.uk/mmz4281/{args.season}/{args.competition}.csv"
+    raw_path.parent.mkdir(parents=True, exist_ok=True)
+    processed_path.parent.mkdir(parents=True, exist_ok=True)
 
     download_csv(url, raw_path, allow_network=args.allow_network)
+    competition_names = {
+        "E0": "English Premier League",
+        "SP1": "Spanish La Liga",
+        "D1": "German Bundesliga",
+        "I1": "Italian Serie A",
+        "F1": "French Ligue 1",
+    }
     normalized = normalize_football_data_csv(
         raw_path,
-        competition="English Premier League",
+        competition=args.competition_name
+        or competition_names.get(args.competition, args.competition),
         season=args.season,
     )
     normalized.to_csv(processed_path, index=False)
