@@ -1,0 +1,21 @@
+{
+  "match_id": "2026-09-05_M123",
+  "recommendation": "HOME_WIN",
+  "edge_percentage": 0.078,
+  "confidence_score": 82,
+  "kelly_stake_pct": 2.500,
+  "model_weights_used": {
+    "elo_poisson": 0.40,
+    "lstm": 0.35,
+    "llm_ensemble": 0.25
+  },
+  "tactical_insights": [
+    "High Press Success: 0.45",
+    "Transition Efficiency: 0.31"
+  ],
+  "risk_factors": [
+    "J. Example (FW) doubtful — recent official update within 48h",
+    "Sensible exposure limit applied (Kelly cap 3%)"
+  ],
+  "source_ids": ["doc-1", "doc-2"]
+}
