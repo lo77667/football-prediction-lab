@@ -1,0 +1,26 @@
+{
+  "doc_id": "doc-1",
+  "url": "https://data.example/match_2026_09_05",
+  "retrieved_at": "2026-09-01T20:00:00Z",
+  "payload": {
+    "match_id": "2026-09-05_M123",
+    "match_date": "2026-09-05T19:45:00Z",
+    "home_team": "Team A",
+    "away_team": "Team B",
+    "home_xG": 1.234,
+    "home_xGA": 0.890,
+    "home_possession_pct": 0.543,
+    "away_xG": 0.910,
+    "away_xGA": 1.234,
+    "away_possession_pct": 0.457,
+    "closing_line_home": 2.10,
+    "closing_line_away": 3.40,
+    "offered_odds_home": 2.00,
+    "tactical": {
+      "high_press_success": 0.45,
+      "transition_efficiency": 0.31,
+      "counter_attack_vulnerability": 0.22,
+      "possession_regain_rate": 0.18
+    }
+  }
+}
