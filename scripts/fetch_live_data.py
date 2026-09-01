@@ -15,6 +15,7 @@ from football_prediction_lab.source.football_data_org import FootballDataOrgClie
 from football_prediction_lab.source.raw_archive import RawArchive
 from football_prediction_lab.source.rss import RSSClient
 from football_prediction_lab.source.the_odds_api import TheOddsApiClient
+from football_prediction_lab.source.worldcup2026 import WorldCup2026Client
 
 
 def main() -> int:
@@ -25,8 +26,27 @@ def main() -> int:
     parser.add_argument("--rss-url")
     parser.add_argument("--skip-football-data", action="store_true")
     parser.add_argument("--skip-odds", action="store_true")
+    parser.add_argument("--worldcup", action="store_true", help="fetch World Cup 2026 fixtures")
     args = parser.parse_args()
     archive = RawArchive(args.archive)
+    if args.worldcup:
+        response = WorldCup2026Client(allow_network=True).fetch_fixtures()
+        archive.store(
+            provider="worldcup2026",
+            endpoint=response.endpoint,
+            payload=_json_bytes(
+                {
+                    "version": response.provider_version,
+                    "count": len(response.fixtures),
+                    "fixtures": [fixture.__dict__ for fixture in response.fixtures],
+                }
+            ),
+            fetched_at_utc=response.fetched_at_utc,
+            extra_metadata={
+                "response_sha256": response.response_sha256,
+                "fixtures": len(response.fixtures),
+            },
+        )
     if not args.skip_football_data:
         token = os.environ.get("FOOTBALL_DATA_API_TOKEN")
         if not token:
