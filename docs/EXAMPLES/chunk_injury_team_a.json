@@ -1,0 +1,16 @@
+{
+  "doc_id": "doc-2",
+  "url": "https://club.example/news/injury-team-a",
+  "retrieved_at": "2026-09-01T19:30:00Z",
+  "payload": {
+    "injury_report": [
+      {
+        "player": "J. Example",
+        "position": "FW",
+        "status": "doubtful",
+        "source_url": "https://club.example/news/injury-team-a",
+        "last_update_ISO8601": "2026-09-01T18:00:00Z"
+      }
+    ]
+  }
+}
