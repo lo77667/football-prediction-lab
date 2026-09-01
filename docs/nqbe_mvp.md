@@ -96,3 +96,11 @@ ruff check src/football_prediction_lab/nqbe.py \
   src/football_prediction_lab/nqbe_workflow.py \
   src/football_prediction_lab/nqbe_api.py
 ```
+
+## FreePublicAPIs discovery catalog
+
+يحتوي السكربت على خيار `--discover-catalog` لحفظ فهرس FreePublicAPIs الخام في `data/raw/freepublicapis-catalog`. هذا الفهرس للاكتشاف والمراجعة فقط؛ لا تُستخدم إدخالاته تلقائيًا في نماذج NQBE ولا تُنسخ منه مفاتيح أو endpoints مشبوهة.
+
+```bash
+python3 scripts/fetch_live_data.py --discover-catalog --skip-football-data --skip-odds --archive data/raw
+```

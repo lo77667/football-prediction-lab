@@ -12,6 +12,7 @@ import os
 from pathlib import Path
 
 from football_prediction_lab.source.football_data_org import FootballDataOrgClient
+from football_prediction_lab.source.freepublicapis_catalog import FreePublicAPIsCatalogClient
 from football_prediction_lab.source.raw_archive import RawArchive
 from football_prediction_lab.source.rss import RSSClient
 from football_prediction_lab.source.the_odds_api import TheOddsApiClient
@@ -27,8 +28,25 @@ def main() -> int:
     parser.add_argument("--skip-football-data", action="store_true")
     parser.add_argument("--skip-odds", action="store_true")
     parser.add_argument("--worldcup", action="store_true", help="fetch World Cup 2026 fixtures")
+    parser.add_argument(
+        "--discover-catalog",
+        action="store_true",
+        help="archive FreePublicAPIs catalog for source discovery",
+    )
     args = parser.parse_args()
     archive = RawArchive(args.archive)
+    if args.discover_catalog:
+        response = FreePublicAPIsCatalogClient().fetch()
+        archive.store(
+            provider="freepublicapis-catalog",
+            endpoint=response.endpoint,
+            payload=_json_bytes([entry.raw for entry in response.entries]),
+            fetched_at_utc=response.fetched_at_utc,
+            extra_metadata={
+                "response_sha256": response.response_sha256,
+                "entries": len(response.entries),
+            },
+        )
     if args.worldcup:
         response = WorldCup2026Client(allow_network=True).fetch_fixtures()
         archive.store(
