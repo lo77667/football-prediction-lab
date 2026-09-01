@@ -1,0 +1,38 @@
+{
+  "match_id": "2026-09-05_M123",
+  "match_date": "2026-09-05T19:45:00Z",
+  "home_team": "Team A",
+  "away_team": "Team B",
+  "metrics": {
+    "home": {
+      "xG": 1.234,
+      "xGA": 0.890,
+      "possession_pct": 0.543,
+      "possession_adjusted_xG": 1.102
+    },
+    "away": {
+      "xG": 0.910,
+      "xGA": 1.234,
+      "possession_pct": 0.457,
+      "possession_adjusted_xG": 0.980
+    }
+  },
+  "sources": [
+    {
+      "id": "doc-1",
+      "url": "https://data.example/match_2026_09_05",
+      "retrieved_at": "2026-09-01T20:00:00Z"
+    },
+    {
+      "id": "doc-2",
+      "url": "https://club.example/news/injury-team-a",
+      "retrieved_at": "2026-09-01T19:30:00Z"
+    }
+  ],
+  "odds": {
+    "bookmakers": [
+      { "name": "B1", "home": 2.10, "draw": 3.60, "away": 3.40 },
+      { "name": "B2", "home": 2.12, "draw": 3.55, "away": 3.35 }
+    ]
+  }
+}
