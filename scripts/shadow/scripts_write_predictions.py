@@ -28,9 +28,7 @@ def main() -> int:
 
     for row, probability in zip(split.test.itertuples(index=False), probabilities, strict=True):
         kickoff = pd.Timestamp(row.kickoff_utc).to_pydatetime()
-        feature_values = {
-            column: getattr(row, column) for column in model_feature_columns()
-        }
+        feature_values = {column: getattr(row, column) for column in model_feature_columns()}
         fingerprint = hashlib.sha256(
             json.dumps(feature_values, sort_keys=True, default=str).encode("utf-8")
         ).hexdigest()

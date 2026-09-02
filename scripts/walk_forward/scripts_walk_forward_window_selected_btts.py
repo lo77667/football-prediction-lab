@@ -112,7 +112,7 @@ def main() -> int:
     folds = [
         evaluate_nested_window_fold(
             frames,
-            seasons[:index - 1],
+            seasons[: index - 1],
             seasons[index - 1],
             seasons[index],
         )

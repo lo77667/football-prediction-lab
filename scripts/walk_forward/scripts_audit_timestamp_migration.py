@@ -22,16 +22,12 @@ def _identity(frame: pd.DataFrame) -> pd.DataFrame:
 
 
 def _time_summary(frame: pd.DataFrame) -> dict[str, object]:
-    timestamps = pd.to_datetime(
-        frame["kickoff_utc"], utc=True, errors="coerce", format="mixed"
-    )
+    timestamps = pd.to_datetime(frame["kickoff_utc"], utc=True, errors="coerce", format="mixed")
     return {
         "rows": len(frame),
         "parse_failures": int(timestamps.isna().sum()),
         "timezone": str(timestamps.dt.tz),
-        "midnight_rows": int(
-            ((timestamps.dt.hour == 0) & (timestamps.dt.minute == 0)).sum()
-        ),
+        "midnight_rows": int(((timestamps.dt.hour == 0) & (timestamps.dt.minute == 0)).sum()),
         "min": None if timestamps.dropna().empty else str(timestamps.min()),
         "max": None if timestamps.dropna().empty else str(timestamps.max()),
     }

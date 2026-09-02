@@ -89,12 +89,8 @@ def test_audit_keeps_latest_pre_match_and_rejects_closing_by_default() -> None:
         expected_market_definitions={"btts": DEFINITION},
     )
     assert [item.snapshot_id for item in result.accepted] == ["latest"]
-    assert "superseded_by_latest_pre_match" in {
-        row["reason"] for row in result.discarded_rows
-    }
-    assert "odds_type_not_allowed:closing" in {
-        row["reason"] for row in result.discarded_rows
-    }
+    assert "superseded_by_latest_pre_match" in {row["reason"] for row in result.discarded_rows}
+    assert "odds_type_not_allowed:closing" in {row["reason"] for row in result.discarded_rows}
 
 
 def test_audit_rejects_duplicate_outcome_and_market_definition_mismatch() -> None:
@@ -111,9 +107,7 @@ def test_audit_rejects_duplicate_outcome_and_market_definition_mismatch() -> Non
 
 def test_binary_overround_rejects_mixed_snapshot_context() -> None:
     yes = OddsSnapshot(**snapshot("yes", "yes"))
-    no = OddsSnapshot(
-        **snapshot("no", "no", captured_at=KICKOFF - timedelta(minutes=20))
-    )
+    no = OddsSnapshot(**snapshot("no", "no", captured_at=KICKOFF - timedelta(minutes=20)))
     with pytest.raises(ValueError, match="one snapshot context"):
         remove_binary_overround_from_snapshots([yes, no])
 

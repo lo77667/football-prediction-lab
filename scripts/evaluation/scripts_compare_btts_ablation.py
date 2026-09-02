@@ -19,9 +19,7 @@ from football_prediction_lab.models.btts import (
 
 def feature_variants() -> dict[str, list[str]]:
     rolling_only = [
-        column
-        for column in FEATURE_COLUMNS
-        if column.endswith("_5") or column.endswith("_10")
+        column for column in FEATURE_COLUMNS if column.endswith("_5") or column.endswith("_10")
     ]
     rolling_plus_context = [
         column
@@ -47,9 +45,7 @@ def evaluate_variant(
     feature_columns: list[str],
 ) -> dict[str, object]:
     model = BttsLogisticBaseline(feature_columns=feature_columns).fit(train)
-    return evaluate_binary(
-        model.predict_probability(evaluation), evaluation["btts"]
-    ).as_dict()
+    return evaluate_binary(model.predict_probability(evaluation), evaluation["btts"]).as_dict()
 
 
 def main() -> int:
@@ -74,9 +70,7 @@ def main() -> int:
         ),
     )
     combined = pd.concat([split.train, split.validation], ignore_index=True)
-    test = {
-        selected: evaluate_variant(combined, split.test, variants[selected])
-    }
+    test = {selected: evaluate_variant(combined, split.test, variants[selected])}
     result = {
         "selection_rule": (
             "select one feature family on validation Brier then Log Loss; "

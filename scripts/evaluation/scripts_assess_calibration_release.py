@@ -27,25 +27,20 @@ def main() -> int:
     folds = report["folds"]
     fold_comparison = {
         "brier_wins": sum(
-            float(fold["calibrated"]["brier_score"])
-            < float(fold["base"]["brier_score"])
+            float(fold["calibrated"]["brier_score"]) < float(fold["base"]["brier_score"])
             for fold in folds
         ),
         "log_loss_wins": sum(
-            float(fold["calibrated"]["log_loss"])
-            < float(fold["base"]["log_loss"])
+            float(fold["calibrated"]["log_loss"]) < float(fold["base"]["log_loss"])
             for fold in folds
         ),
         "joint_probability_metric_wins": sum(
-            float(fold["calibrated"]["brier_score"])
-            < float(fold["base"]["brier_score"])
-            and float(fold["calibrated"]["log_loss"])
-            < float(fold["base"]["log_loss"])
+            float(fold["calibrated"]["brier_score"]) < float(fold["base"]["brier_score"])
+            and float(fold["calibrated"]["log_loss"]) < float(fold["base"]["log_loss"])
             for fold in folds
         ),
         "ece_wins": sum(
-            float(fold["calibrated_ece_10"]) <= float(fold["base_ece_10"])
-            for fold in folds
+            float(fold["calibrated_ece_10"]) <= float(fold["base_ece_10"]) for fold in folds
         ),
         "total_folds": len(folds),
     }

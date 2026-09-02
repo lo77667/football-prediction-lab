@@ -42,13 +42,9 @@ def evaluate_fold(
         "train_seasons": train_seasons,
         "calibration_seasons": calibration_seasons,
         "base": evaluate_binary(test_probability, test["btts"]).as_dict(),
-        "base_ece_10": expected_calibration_error(
-            test_probability, test["btts"], bins=10
-        ),
+        "base_ece_10": expected_calibration_error(test_probability, test["btts"], bins=10),
         "calibrated": evaluate_binary(calibrated, test["btts"]).as_dict(),
-        "calibrated_ece_10": expected_calibration_error(
-            calibrated, test["btts"], bins=10
-        ),
+        "calibrated_ece_10": expected_calibration_error(calibrated, test["btts"], bins=10),
     }
 
 
@@ -57,12 +53,9 @@ def average(results: list[dict[str, object]], key: str) -> dict[str, float | int
     return {
         "folds": len(metrics),
         "rows": sum(int(metric["rows"]) for metric in metrics),
-        "brier_score_mean": sum(float(metric["brier_score"]) for metric in metrics)
-        / len(metrics),
-        "log_loss_mean": sum(float(metric["log_loss"]) for metric in metrics)
-        / len(metrics),
-        "ece_10_mean": sum(float(result[f"{key}_ece_10"]) for result in results)
-        / len(metrics),
+        "brier_score_mean": sum(float(metric["brier_score"]) for metric in metrics) / len(metrics),
+        "log_loss_mean": sum(float(metric["log_loss"]) for metric in metrics) / len(metrics),
+        "ece_10_mean": sum(float(result[f"{key}_ece_10"]) for result in results) / len(metrics),
     }
 
 

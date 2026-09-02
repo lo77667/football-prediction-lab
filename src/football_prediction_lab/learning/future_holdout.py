@@ -12,6 +12,5 @@ def is_future_holdout_available(
     """Return true only for an observed season beyond the frozen history cutoff."""
 
     return (
-        requested_future_season in observed_seasons
-        and requested_future_season > historical_through
+        requested_future_season in observed_seasons and requested_future_season > historical_through
     )

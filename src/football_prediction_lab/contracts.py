@@ -10,7 +10,6 @@ from pydantic import BaseModel, ConfigDict, Field, field_validator
 Market = Literal["btts", "total_yellows_over_3_5"]
 
 
-
 class MatchRecord(BaseModel):
     """A normalized football match record."""
 

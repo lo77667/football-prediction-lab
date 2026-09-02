@@ -46,9 +46,7 @@ def main() -> int:
         evaluation = evaluate_binary(probability, split.test["btts"])
         results[name] = evaluation.as_dict()
     train_rate = float(split.train["btts"].mean())
-    constant = evaluate_binary(
-        [train_rate] * len(split.test), split.test["btts"]
-    )
+    constant = evaluate_binary([train_rate] * len(split.test), split.test["btts"])
     results["constant_train_rate"] = constant.as_dict()
     output = root / "reports" / "generated" / "btts_variant_comparison.json"
     output.write_text(json.dumps(results, indent=2), encoding="utf-8")

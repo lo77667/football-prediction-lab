@@ -30,9 +30,7 @@ def summarize(probability: pd.Series, actual: pd.Series) -> dict[str, object]:
     reliability["bucket"] = reliability["bucket"].astype(str)
     return {
         "metrics": evaluation.as_dict(),
-        "expected_calibration_error_10": expected_calibration_error(
-            probability, actual, bins=10
-        ),
+        "expected_calibration_error_10": expected_calibration_error(probability, actual, bins=10),
         "reliability": reliability.to_dict(orient="records"),
     }
 

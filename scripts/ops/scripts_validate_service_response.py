@@ -4,9 +4,13 @@ from __future__ import annotations
 
 import argparse
 import json
+import sys
 from pathlib import Path
 
-from football_prediction_lab.service.artifact_validation import (
+ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(ROOT / "src"))
+
+from football_prediction_lab.service.artifact_validation import (  # noqa: E402
     validate_service_response,
     validate_service_run,
 )

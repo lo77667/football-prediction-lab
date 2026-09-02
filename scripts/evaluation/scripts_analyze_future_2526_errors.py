@@ -110,12 +110,8 @@ def top_errors(frame: pd.DataFrame, probability: str, limit: int = 10) -> list[d
         f"{probability}_confidence",
         f"{probability}_brier_contribution",
     ]
-    selected = frame.sort_values(
-        f"{probability}_brier_contribution", ascending=False
-    ).head(limit)
-    selected = selected[columns].assign(
-        kickoff_utc=lambda value: value["kickoff_utc"].astype(str)
-    )
+    selected = frame.sort_values(f"{probability}_brier_contribution", ascending=False).head(limit)
+    selected = selected[columns].assign(kickoff_utc=lambda value: value["kickoff_utc"].astype(str))
     return selected.to_dict(orient="records")
 
 
@@ -154,9 +150,7 @@ def main() -> int:
     parser.add_argument("--features", default="data/processed/epl_1516_2526_features.csv")
     parser.add_argument("--test-season", default="2526")
     parser.add_argument("--calibration-season", default="2425")
-    parser.add_argument(
-        "--ledger-output", default="reports/generated/future_2526_error_ledger.csv"
-    )
+    parser.add_argument("--ledger-output", default="reports/generated/future_2526_error_ledger.csv")
     parser.add_argument(
         "--report-output", default="reports/generated/future_2526_error_analysis.json"
     )
@@ -213,9 +207,7 @@ def main() -> int:
                 "constant_probability",
             )
         }
-        report_markets[market]["top_platt_errors"] = top_errors(
-            market_frame, "platt_probability"
-        )
+        report_markets[market]["top_platt_errors"] = top_errors(market_frame, "platt_probability")
     ledger = pd.concat(ledger_parts, ignore_index=True)
     ledger_path = root / args.ledger_output
     ledger_path.parent.mkdir(parents=True, exist_ok=True)

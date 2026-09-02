@@ -32,9 +32,7 @@ def main() -> int:
     holdout = holdout.assign(
         probability_yes=model.predict_probability(holdout).to_numpy(),
     )
-    summary = evaluate_binary(
-        holdout["probability_yes"], holdout["total_yellows_over_3_5"]
-    )
+    summary = evaluate_binary(holdout["probability_yes"], holdout["total_yellows_over_3_5"])
     holdout.to_csv(output_path, index=False)
     print(f"rows={len(features)}")
     print(f"holdout_rows={len(holdout)}")

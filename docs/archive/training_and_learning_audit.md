@@ -74,8 +74,7 @@ for entry in ledger.records():
         result_source=str(match["source"]),
     )
     if not any(
-        item["record_type"] == "outcome"
-        and item["record_id"] == outcome.prediction_id
+        item["record_type"] == "outcome" and item["record_id"] == outcome.prediction_id
         for item in ledger.records()
     ):
         ledger.append_outcome(outcome)

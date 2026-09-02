@@ -56,9 +56,7 @@ def build_qualitative_features(
             "match_id": row.match_id,
             "qualitative_event_count_before": len(available),
             "qualitative_confidence_mean_before": (
-                sum(event.confidence for event in available) / len(available)
-                if available
-                else 0.0
+                sum(event.confidence for event in available) / len(available) if available else 0.0
             ),
         }
         for category in QUALITATIVE_CATEGORIES:

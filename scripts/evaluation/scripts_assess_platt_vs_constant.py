@@ -48,7 +48,7 @@ def main() -> int:
             evaluate_constant(
                 matches,
                 "btts",
-                seasons[: index],
+                seasons[:index],
                 seasons[index],
             )
         )
@@ -66,20 +66,16 @@ def main() -> int:
         "candidate_platt": candidate,
         "platt_vs_constant_fold_comparison": {
             "brier_wins": sum(
-                float(candidate_fold["brier_score"])
-                < float(constant_fold["brier_score"])
+                float(candidate_fold["brier_score"]) < float(constant_fold["brier_score"])
                 for candidate_fold, constant_fold in zip(calibrated_folds, constant_folds)
             ),
             "log_loss_wins": sum(
-                float(candidate_fold["log_loss"])
-                < float(constant_fold["log_loss"])
+                float(candidate_fold["log_loss"]) < float(constant_fold["log_loss"])
                 for candidate_fold, constant_fold in zip(calibrated_folds, constant_folds)
             ),
             "joint_probability_metric_wins": sum(
-                float(candidate_fold["brier_score"])
-                < float(constant_fold["brier_score"])
-                and float(candidate_fold["log_loss"])
-                < float(constant_fold["log_loss"])
+                float(candidate_fold["brier_score"]) < float(constant_fold["brier_score"])
+                and float(candidate_fold["log_loss"]) < float(constant_fold["log_loss"])
                 for candidate_fold, constant_fold in zip(calibrated_folds, constant_folds)
             ),
             "total_folds": len(constant_folds),

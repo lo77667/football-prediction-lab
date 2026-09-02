@@ -74,8 +74,7 @@ def main() -> int:
     matches = pd.read_csv(root / args.input, parse_dates=["kickoff_utc"])
     indices = sorted({0, len(matches) // 2, len(matches) - 1})
     btts_results = {
-        str(window): audit_btts(matches, indices, window=window)
-        for window in (3, 5, 10)
+        str(window): audit_btts(matches, indices, window=window) for window in (3, 5, 10)
     }
     cards_results = audit_cards(matches, indices)
     result = {

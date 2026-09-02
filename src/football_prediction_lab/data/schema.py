@@ -50,6 +50,4 @@ def validate_pre_match_feature_columns(feature_columns: Sequence[str]) -> None:
 
     forbidden = sorted(set(feature_columns).intersection(POST_MATCH_AUDIT_COLUMNS))
     if forbidden:
-        raise ValueError(
-            "Feature columns contain post-match fields: " + ", ".join(forbidden)
-        )
+        raise ValueError("Feature columns contain post-match fields: " + ", ".join(forbidden))

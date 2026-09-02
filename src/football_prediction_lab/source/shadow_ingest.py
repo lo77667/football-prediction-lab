@@ -48,9 +48,7 @@ def _fixture_key(match: OpenLigaMatch) -> str:
     return f"openligadb:{match.league_shortcut}:{match.league_season}:{match.match_id}"
 
 
-def _manifest_fingerprint(
-    *, endpoint: str, source_version: str, response_sha256: str
-) -> str:
+def _manifest_fingerprint(*, endpoint: str, source_version: str, response_sha256: str) -> str:
     payload = {
         "endpoint": endpoint,
         "response_sha256": response_sha256,

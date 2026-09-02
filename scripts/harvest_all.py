@@ -8,33 +8,37 @@ Small CLI to run a simple daily harvest pipeline:
 - attempt to fetch Understat xG for each match (best-effort)
 
 Notes:
-- This script uses the modules under data_harvester/ which must exist in PYTHONPATH (run from repo root)
+- This script uses the modules under data_harvester/ which must exist in PYTHONPATH (run from repo root)  # noqa: E501
 - It respects the retry/backoff behavior in data_harvester.utils
-- It does not use any paid keys. Optionally set FOOTBALL_DATA_API_KEY env var for higher rate limits.
+- It does not use any paid keys. Optionally set FOOTBALL_DATA_API_KEY env var for higher rate limits.  # noqa: E501
 
 Usage:
   python scripts/harvest_all.py --date 2026-09-05 --feeds "feed1,feed2" --only-rss
 
 """
+
+# ruff: noqa: E501
+
 from __future__ import annotations
+
 import argparse
 import os
 import sys
 from datetime import datetime
-from typing import List
 
 # Ensure repo root is on path so data_harvester can be imported when running from scripts/
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if ROOT not in sys.path:
     sys.path.insert(0, ROOT)
 
-from data_harvester import db
-from data_harvester import rss_harvester
-from data_harvester import football_data_org
-from data_harvester import understat_harvester
-from data_harvester import utils
-
-import requests
+import requests  # noqa: E402
+from data_harvester import (  # noqa: E402
+    db,
+    football_data_org,
+    rss_harvester,
+    understat_harvester,
+    utils,
+)
 
 logger = utils.get_logger(__name__)
 
@@ -49,16 +53,22 @@ API_KEY = os.getenv("FOOTBALL_DATA_API_KEY")
 
 
 def parse_args():
-    p = argparse.ArgumentParser(description="Harvest RSS, Football-Data matches, and Understat xG (best-effort)")
+    p = argparse.ArgumentParser(
+        description="Harvest RSS, Football-Data matches, and Understat xG (best-effort)"
+    )
     p.add_argument("--date", help="Date for matches (YYYY-MM-DD). Default: today UTC", default=None)
-    p.add_argument("--feeds", help="Comma-separated RSS feeds to harvest", default=','.join(DEFAULT_FEEDS))
+    p.add_argument(
+        "--feeds", help="Comma-separated RSS feeds to harvest", default=",".join(DEFAULT_FEEDS)
+    )
     p.add_argument("--only-rss", help="Only run RSS harvest and exit", action="store_true")
-    p.add_argument("--limit", help="Limit number of matches to process (for testing)", type=int, default=0)
+    p.add_argument(
+        "--limit", help="Limit number of matches to process (for testing)", type=int, default=0
+    )
     return p.parse_args()
 
 
 @utils.retry(exceptions=(requests.RequestException, Exception), tries=3)
-def fetch_matches_for_date(date_str: str) -> List[dict]:
+def fetch_matches_for_date(date_str: str) -> list[dict]:
     """Fetch matches for date via Football-Data.org /matches?dateFrom=...&dateTo=..."""
     headers = {}
     if API_KEY:
@@ -104,7 +114,7 @@ def main():
 
     if not matches:
         logger.info("No matches found for %s, exiting", target_date)
-        print("No matches found for {}".format(target_date))
+        print(f"No matches found for {target_date}")
         return
 
     logger.info("Found %d matches for %s", len(matches), target_date)
@@ -118,19 +128,26 @@ def main():
         try:
             # Extract primary fields
             m_id = str(m.get("id") or m.get("matchId") or "")
-            utcDate = m.get("utcDate") or m.get("date")
-            home = (m.get("homeTeam") or {}).get("name") if m.get("homeTeam") else m.get("homeTeam") or m.get("home_team")
-            away = (m.get("awayTeam") or {}).get("name") if m.get("awayTeam") else m.get("awayTeam") or m.get("away_team")
+            m.get("utcDate") or m.get("date")
+            home = (
+                (m.get("homeTeam") or {}).get("name")
+                if m.get("homeTeam")
+                else m.get("homeTeam") or m.get("home_team")
+            )
+            away = (
+                (m.get("awayTeam") or {}).get("name")
+                if m.get("awayTeam")
+                else m.get("awayTeam") or m.get("away_team")
+            )
 
             # Upsert via the provided module (this will cache in SQLite)
-            fetched = football_data_org.fetch_match(m_id)
+            football_data_org.fetch_match(m_id)
             logger.info("Cached match %s: %s vs %s", m_id, home, away)
 
-            # Attempt Understat fetch (best-effort). Understat IDs differ from football-data IDs; try with m_id anyway
+            # Attempt Understat fetch (best-effort). Understat IDs differ from football-data IDs; try with m_id anyway  # noqa: E501
             try:
-                raw = None
                 if hasattr(understat_harvester, "fetch_match_xg"):
-                    raw = understat_harvester.fetch_match_xg(m_id)
+                    understat_harvester.fetch_match_xg(m_id)
                     logger.info("Understat fetch returned for match %s", m_id)
                 else:
                     logger.warning("Understat harvester not available")

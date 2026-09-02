@@ -7,20 +7,23 @@ Implements the same interface as BttsLogisticBaseline:
 Type hints and docstrings follow project style. Uses conservative defaults to avoid
 overfitting on small sports datasets.
 """
+
 from __future__ import annotations
 
-from typing import Sequence
+from collections.abc import Sequence
 
 import pandas as pd
 
 try:
     from xgboost import XGBClassifier
 except Exception as exc:  # pragma: no cover - helpful error if dependency missing
-    raise RuntimeError("xgboost is required for BttsXGBoostModel. Install with `pip install xgboost`.") from exc
+    raise RuntimeError(
+        "xgboost is required for BttsXGBoostModel. Install with `pip install xgboost`."
+    ) from exc
 
 from football_prediction_lab.data.schema import validate_pre_match_feature_columns
 from football_prediction_lab.features.pre_match import FEATURE_COLUMNS
-from football_prediction_lab.models.btts import _validate_training_frame, _validate_feature_frame
+from football_prediction_lab.models.btts import _validate_feature_frame, _validate_training_frame
 
 
 class BttsXGBoostModel:
@@ -64,7 +67,7 @@ class BttsXGBoostModel:
         )
         self._fitted = False
 
-    def fit(self, frame: pd.DataFrame) -> "BttsXGBoostModel":
+    def fit(self, frame: pd.DataFrame) -> BttsXGBoostModel:
         """Fit the XGBoost classifier on the provided training frame.
 
         The frame MUST contain the `btts` target and the model's feature columns.

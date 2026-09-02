@@ -48,9 +48,7 @@ def _provider_response() -> bytes:
         "unsupported_claims": [],
         "limitations": ["not a prediction"],
     }
-    return json.dumps(
-        {"choices": [{"message": {"content": json.dumps(output)}}]}
-    ).encode()
+    return json.dumps({"choices": [{"message": {"content": json.dumps(output)}}]}).encode()
 
 
 def test_adapter_returns_verified_output_without_network() -> None:

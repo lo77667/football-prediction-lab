@@ -64,10 +64,7 @@ def _order_change(old: pd.DataFrame, rebuilt: pd.DataFrame) -> dict[str, int]:
     new_order = list(rebuilt["match_id"].astype(str))
     old_position = {match_id: index for index, match_id in enumerate(old_order)}
     comparable = [match_id for match_id in new_order if match_id in old_position]
-    changed = sum(
-        old_position[match_id] != index
-        for index, match_id in enumerate(comparable)
-    )
+    changed = sum(old_position[match_id] != index for index, match_id in enumerate(comparable))
     return {
         "old_rows": len(old_order),
         "rebuilt_rows": len(new_order),
@@ -105,16 +102,16 @@ def _season_record(root: Path, season: str) -> dict[str, object]:
                 pd.to_numeric(source["home_yellows"], errors="raise")
                 + pd.to_numeric(source["away_yellows"], errors="raise")
                 > 3
-            ).astype(int).equals(new_cards["total_yellows_over_3_5"].astype(int))
+            )
+            .astype(int)
+            .equals(new_cards["total_yellows_over_3_5"].astype(int))
         ),
     }
     return {
         "season": season,
         "source_quality": source_quality,
         "old_btts_available": old_btts is not None,
-        "old_btts_identity": (
-            None if old_btts is None else _identity_summary(source, old_btts)
-        ),
+        "old_btts_identity": (None if old_btts is None else _identity_summary(source, old_btts)),
         "rebuilt_btts_identity": _identity_summary(source, new_btts),
         "rebuilt_cards_identity": _identity_summary(source, new_cards),
         "old_btts_time": (
@@ -143,16 +140,12 @@ def main() -> int:
     result = {
         "protocol": "Migration-only rebuild; 2526 remains a frozen holdout.",
         "seasons": records,
-        "all_labels_unchanged": all(
-            all(record["labels_unchanged"].values()) for record in records
-        ),
+        "all_labels_unchanged": all(all(record["labels_unchanged"].values()) for record in records),
         "all_rebuilt_btts_identity_matches": all(
-            record["rebuilt_btts_identity"]["sorted_identity_matches"]
-            for record in records
+            record["rebuilt_btts_identity"]["sorted_identity_matches"] for record in records
         ),
         "all_rebuilt_cards_identity_matches": all(
-            record["rebuilt_cards_identity"]["sorted_identity_matches"]
-            for record in records
+            record["rebuilt_cards_identity"]["sorted_identity_matches"] for record in records
         ),
     }
     output = root / args.output

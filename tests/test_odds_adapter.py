@@ -38,9 +38,7 @@ def _row(**overrides: object) -> dict[str, object]:
 
 
 def test_adapter_accepts_only_source_backed_pre_match_fixture() -> None:
-    result = adapt_odds_payload(
-        [_row()], source=_source(), event_kickoffs_utc={"match-1": KICKOFF}
-    )
+    result = adapt_odds_payload([_row()], source=_source(), event_kickoffs_utc={"match-1": KICKOFF})
     assert result.accepted_rows == 1
     assert result.rejected_by_reason == {}
     assert result.records[0].kickoff_utc == KICKOFF

@@ -192,12 +192,8 @@ def audit_odds_snapshots(
                 ).items()
             )
         },
-        "first_captured_at": (
-            _as_utc(selected[0].captured_at).isoformat() if selected else None
-        ),
-        "last_captured_at": (
-            _as_utc(selected[-1].captured_at).isoformat() if selected else None
-        ),
+        "first_captured_at": (_as_utc(selected[0].captured_at).isoformat() if selected else None),
+        "last_captured_at": (_as_utc(selected[-1].captured_at).isoformat() if selected else None),
         "selection_protocol": selection_protocol,
         "allowed_odds_types": sorted(allowed),
         "kickoff_tolerance_seconds": kickoff_tolerance_seconds,

@@ -116,9 +116,11 @@ def build_high_risk_alerts(
         if column not in frame:
             frame[column] = default
         frame[column] = frame[column].fillna(default)
-    frame["baseline_volatility_score"] = pd.to_numeric(
-        frame["baseline_volatility_score"], errors="coerce"
-    ).fillna(0.0).clip(0.0, 1.0)
+    frame["baseline_volatility_score"] = (
+        pd.to_numeric(frame["baseline_volatility_score"], errors="coerce")
+        .fillna(0.0)
+        .clip(0.0, 1.0)
+    )
     frame["load_ratio"] = frame["player_load_au"] / frame["prior_28_observation_load_avg"]
     frame["adaptive_threshold"] = frame.apply(
         lambda row: adaptive_load_ratio_threshold(

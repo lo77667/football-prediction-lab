@@ -61,21 +61,16 @@ def main() -> int:
     calibrator = IsotonicRegression(out_of_bounds="clip").fit(
         validation_probability, split.validation["btts"]
     )
-    calibrated_test = pd.Series(
-        calibrator.predict(test_probability), index=split.test.index
-    )
+    calibrated_test = pd.Series(calibrator.predict(test_probability), index=split.test.index)
     result = {
         "calibration_rule": (
-            "fit isotonic mapping on validation probabilities only; "
-            "evaluate once on future test"
+            "fit isotonic mapping on validation probabilities only; evaluate once on future test"
         ),
         "base_test": evaluate_binary(test_probability, split.test["btts"]).as_dict(),
         "base_test_ece_10": expected_calibration_error(
             test_probability, split.test["btts"], bins=10
         ),
-        "calibrated_test": evaluate_binary(
-            calibrated_test, split.test["btts"]
-        ).as_dict(),
+        "calibrated_test": evaluate_binary(calibrated_test, split.test["btts"]).as_dict(),
         "calibrated_test_ece_10": expected_calibration_error(
             calibrated_test, split.test["btts"], bins=10
         ),

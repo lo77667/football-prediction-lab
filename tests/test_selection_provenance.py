@@ -52,9 +52,7 @@ def test_bundle_contains_only_policy_and_snapshot_identity() -> None:
 
 
 def test_bundle_rejects_policy_declared_after_capture() -> None:
-    late_policy = policy().model_copy(
-        update={"declared_at": CAPTURED + timedelta(minutes=1)}
-    )
+    late_policy = policy().model_copy(update={"declared_at": CAPTURED + timedelta(minutes=1)})
     with pytest.raises(ValueError, match="no later"):
         build_selection_provenance(late_policy, [snapshot()])
 

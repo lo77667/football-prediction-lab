@@ -87,8 +87,7 @@ def main() -> int:
     ]
     report = {
         "rule": (
-            "fit cards base on earlier seasons, calibrate on prior seasons, "
-            "test on next season"
+            "fit cards base on earlier seasons, calibrate on prior seasons, test on next season"
         ),
         "market": "total_yellows_over_3_5",
         "feature_set": "legacy",

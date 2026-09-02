@@ -6,10 +6,14 @@ import argparse
 import json
 import socket
 import subprocess
+import sys
 from datetime import UTC, datetime
 from pathlib import Path
 
-from football_prediction_lab.ingestion.external_readiness import (
+ROOT = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(ROOT / "src"))
+
+from football_prediction_lab.ingestion.external_readiness import (  # noqa: E402
     build_deferred_manifest,
     deferred_readiness_report,
     load_external_policy,
@@ -19,7 +23,6 @@ from football_prediction_lab.ingestion.external_readiness import (
     write_readiness_report,
 )
 
-ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_POLICY = ROOT / "configs" / "cycle40_external_source_policy.yaml"
 DEFAULT_OUTPUT = ROOT / "reports" / "generated" / "cycle_40_source_readiness.json"
 DEFAULT_MANIFEST = ROOT / "reports" / "generated" / "cycle_40_deferred_manifest.json"

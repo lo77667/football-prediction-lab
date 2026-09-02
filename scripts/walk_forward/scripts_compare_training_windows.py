@@ -68,12 +68,10 @@ def main() -> int:
             "not selected on the holdout"
         ),
         "btts": {
-            name: evaluate_btts(btts, train, args.test_season)
-            for name, train in windows.items()
+            name: evaluate_btts(btts, train, args.test_season) for name, train in windows.items()
         },
         "cards_legacy": {
-            name: evaluate_cards(cards, train, args.test_season)
-            for name, train in windows.items()
+            name: evaluate_cards(cards, train, args.test_season) for name, train in windows.items()
         },
     }
     output = root / args.output

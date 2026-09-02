@@ -30,9 +30,9 @@ class IngestionReceipt(BaseModel):
 def canonical_sha256(payload: Mapping[str, Any]) -> str:
     """Hash a JSON mapping deterministically for idempotency and provenance."""
 
-    encoded = json.dumps(
-        payload, sort_keys=True, separators=(",", ":"), ensure_ascii=False
-    ).encode("utf-8")
+    encoded = json.dumps(payload, sort_keys=True, separators=(",", ":"), ensure_ascii=False).encode(
+        "utf-8"
+    )
     return hashlib.sha256(encoded).hexdigest()
 
 

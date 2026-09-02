@@ -3,9 +3,10 @@
 Mirrors the BttsLogisticBaseline interface (fit, predict_probability).
 Uses conservative defaults suitable for small/temporal sports datasets.
 """
+
 from __future__ import annotations
 
-from typing import Sequence
+from collections.abc import Sequence
 
 import pandas as pd
 
@@ -18,7 +19,7 @@ except Exception as exc:  # pragma: no cover - helpful error if dependency missi
 
 from football_prediction_lab.data.schema import validate_pre_match_feature_columns
 from football_prediction_lab.features.pre_match import FEATURE_COLUMNS
-from football_prediction_lab.models.btts import _validate_training_frame, _validate_feature_frame
+from football_prediction_lab.models.btts import _validate_feature_frame, _validate_training_frame
 
 
 class BttsLightGBMModel:
@@ -58,7 +59,7 @@ class BttsLightGBMModel:
         )
         self._fitted = False
 
-    def fit(self, frame: pd.DataFrame) -> "BttsLightGBMModel":
+    def fit(self, frame: pd.DataFrame) -> BttsLightGBMModel:
         """Fit the LightGBM classifier on the provided training frame.
 
         The frame MUST contain the `btts` target and the model's feature columns.

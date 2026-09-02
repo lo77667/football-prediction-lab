@@ -60,10 +60,7 @@ class QualitativeEvent(BaseModel):
     def validate_provenance(self) -> QualitativeEvent:
         if self.source_url is None and self.source_id is None:
             raise ValueError("at least one of source_url or source_id is required")
-        if (
-            self.observed_at_utc is not None
-            and self.observed_at_utc > self.available_at_utc
-        ):
+        if self.observed_at_utc is not None and self.observed_at_utc > self.available_at_utc:
             raise ValueError("observed_at_utc cannot be later than available_at_utc")
         if (
             self.provenance is not None
@@ -114,11 +111,7 @@ class QualitativeFeatureSet(BaseModel):
         """Return only source-backed events available before the declared cutoff."""
 
         return sorted(
-            (
-                event
-                for event in self.events
-                if event.is_available_at(self.cutoff_utc)
-            ),
+            (event for event in self.events if event.is_available_at(self.cutoff_utc)),
             key=lambda event: (event.available_at_utc, event.event_id),
         )
 

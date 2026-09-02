@@ -32,9 +32,7 @@ class DecisionLedgerEvent(BaseModel):
     @classmethod
     def reject_financial_claims(cls, reasons: list[str]) -> list[str]:
         prohibited = {"roi", "stake", "profit", "wager", "bet", "odds recommendation"}
-        if any(
-            any(term in reason.casefold() for term in prohibited) for reason in reasons
-        ):
+        if any(any(term in reason.casefold() for term in prohibited) for reason in reasons):
             raise ValueError("decision ledger cannot contain financial claims")
         return reasons
 
@@ -73,8 +71,7 @@ def write_decision_ledger(
     ordered = sorted(events, key=lambda event: event.event_id)
     path.write_text(
         "".join(
-            json.dumps(event.model_dump(mode="json"), sort_keys=True) + "\n"
-            for event in ordered
+            json.dumps(event.model_dump(mode="json"), sort_keys=True) + "\n" for event in ordered
         ),
         encoding="utf-8",
     )

@@ -12,9 +12,7 @@ import pandas as pd
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--input", default="data/processed/epl_1819_2425.csv")
-    parser.add_argument(
-        "--output", default="reports/generated/temporal_leakage_diagnosis.json"
-    )
+    parser.add_argument("--output", default="reports/generated/temporal_leakage_diagnosis.json")
     args = parser.parse_args()
 
     root = Path(__file__).resolve().parents[2]

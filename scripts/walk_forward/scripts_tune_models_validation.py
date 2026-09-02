@@ -90,9 +90,7 @@ def tune_cards(frame: pd.DataFrame) -> dict[str, object]:
     test_probability = final_model.predict_probability(split.test)
     return {
         "selected": selected,
-        "test": evaluate_binary(
-            test_probability, split.test["total_yellows_over_3_5"]
-        ).as_dict(),
+        "test": evaluate_binary(test_probability, split.test["total_yellows_over_3_5"]).as_dict(),
         "candidates": candidates,
     }
 

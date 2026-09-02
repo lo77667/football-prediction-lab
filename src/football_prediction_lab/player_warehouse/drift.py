@@ -100,9 +100,7 @@ def detect_feature_drift(
     psi = population_stability_index(baseline_valid, current_valid)
     missingness_drift = abs(current_missing_rate - baseline_missing_rate) >= 0.05
     is_drift = (
-        float(ks.pvalue) < alpha
-        or (psi is not None and psi >= psi_threshold)
-        or missingness_drift
+        float(ks.pvalue) < alpha or (psi is not None and psi >= psi_threshold) or missingness_drift
     )
     return DriftResult(
         feature_name=feature_name,

@@ -39,8 +39,7 @@ def paired_bootstrap(
             indices = rng.integers(0, len(target), size=len(target))
             sampled_target = target[indices]
             brier_fold_deltas.append(
-                _brier(platt[indices], sampled_target)
-                - _brier(constant[indices], sampled_target)
+                _brier(platt[indices], sampled_target) - _brier(constant[indices], sampled_target)
             )
             log_loss_fold_deltas.append(
                 _log_loss(platt[indices], sampled_target)

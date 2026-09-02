@@ -2,20 +2,20 @@
 
 Added features:
 - fatigue_index: matches played in prior 14 days per team (home_fatigue_14d, away_fatigue_14d)
-- match_importance: integer flag (0=normal,1=high_importance) based on current season standings (top/bottom thresholds)
+- match_importance: integer flag (0=normal,1=high_importance) based on current season standings (top/bottom thresholds)  # noqa: E501
 
 Enhanced _optional_value to use team-historical median or league running average as fallbacks
 and emit warnings if fallbacks are used extensively (>20% of rows).
 """
 
-from __future__ import annotations
+# ruff: noqa: E501
 
-from collections import defaultdict, deque
-from collections.abc import Iterable
-from typing import Deque, Dict, Iterable as IterableTyp, Optional, Tuple
+from __future__ import annotations
 
 import logging
 import statistics
+from collections import defaultdict, deque
+from collections.abc import Iterable as IterableTyp
 
 import pandas as pd
 
@@ -47,15 +47,19 @@ _DERIVED_COLUMNS = [
     )
 ]
 # New contextual features: fatigue index for prior 14 days and match_importance flag
-FEATURE_COLUMNS = _ROLLING_COLUMNS + _DERIVED_COLUMNS + [
-    "home_matches_before",
-    "away_matches_before",
-    "league_btts_rate_before",
-    "league_avg_goals_before",
-    "home_fatigue_14d",
-    "away_fatigue_14d",
-    "match_importance",
-]
+FEATURE_COLUMNS = (
+    _ROLLING_COLUMNS
+    + _DERIVED_COLUMNS
+    + [
+        "home_matches_before",
+        "away_matches_before",
+        "league_btts_rate_before",
+        "league_avg_goals_before",
+        "home_fatigue_14d",
+        "away_fatigue_14d",
+        "match_importance",
+    ]
+)
 PRE_MATCH_FEATURE_COLUMNS = tuple(FEATURE_COLUMNS)
 
 
@@ -67,9 +71,7 @@ def feature_columns_for_window(window: int) -> list[str]:
         raise ValueError("feature_columns_for_window requires exactly one window")
     selected = windows[0]
     rolling = [
-        f"{side}_{metric}_{selected}"
-        for side in ("home", "away")
-        for metric in _BASE_FEATURES
+        f"{side}_{metric}_{selected}" for side in ("home", "away") for metric in _BASE_FEATURES
     ]
     derived = [
         f"{name}_{selected}"
@@ -81,22 +83,26 @@ def feature_columns_for_window(window: int) -> list[str]:
             "btts_rate_product",
         )
     ]
-    return rolling + derived + [
-        "home_matches_before",
-        "away_matches_before",
-        "league_btts_rate_before",
-        "league_avg_goals_before",
-        "home_fatigue_14d",
-        "away_fatigue_14d",
-        "match_importance",
-    ]
+    return (
+        rolling
+        + derived
+        + [
+            "home_matches_before",
+            "away_matches_before",
+            "league_btts_rate_before",
+            "league_avg_goals_before",
+            "home_fatigue_14d",
+            "away_fatigue_14d",
+            "match_importance",
+        ]
+    )
 
 
 # HistoryEntry keeps the same numeric layout as before
-HistoryEntry = Tuple[float, float, float, float, float, float, float]
+HistoryEntry = tuple[float, float, float, float, float, float, float]
 
 # Map optional stat field names to their index in HistoryEntry for team-historical median fallback
-_STAT_INDEX: Dict[str, int] = {
+_STAT_INDEX: dict[str, int] = {
     "shots_on_target": 4,
     "corners": 5,
 }
@@ -132,14 +138,12 @@ def build_pre_match_features(
     normalized["kickoff_utc"] = pd.to_datetime(
         normalized["kickoff_utc"], utc=True, errors="raise", format="mixed"
     )
-    ordered = normalized.sort_values(
-        ["kickoff_utc", "match_id"]
-    ).reset_index(drop=True)
+    ordered = normalized.sort_values(["kickoff_utc", "match_id"]).reset_index(drop=True)
 
     # Rolling numeric history (same layout as before)
-    history: Dict[str, Deque[HistoryEntry]] = defaultdict(lambda: deque(maxlen=max(windows)))
+    history: dict[str, deque[HistoryEntry]] = defaultdict(lambda: deque(maxlen=max(windows)))
     # Keep per-team recent kickoff timestamps to compute fatigue in a 14-day window
-    history_dates: Dict[str, Deque[pd.Timestamp]] = defaultdict(lambda: deque(maxlen=256))
+    history_dates: dict[str, deque[pd.Timestamp]] = defaultdict(lambda: deque(maxlen=256))
 
     # Running league-level aggregates for fallback averages
     total_matches = 0
@@ -151,10 +155,10 @@ def build_pre_match_features(
     total_corners_count = 0
 
     # Running season points to compute provisional standings (if season column exists)
-    season_points: Dict[object, Dict[str, float]] = defaultdict(lambda: defaultdict(float))
+    season_points: dict[object, dict[str, float]] = defaultdict(lambda: defaultdict(float))
 
-    records: list[Dict[str, object]] = []
-    fallback_counts: Dict[str, int] = defaultdict(int)
+    records: list[dict[str, object]] = []
+    fallback_counts: dict[str, int] = defaultdict(int)
 
     for row in ordered.itertuples(index=False):
         home_history = history[row.home_team]
@@ -222,12 +226,15 @@ def build_pre_match_features(
                     away_rank = team_rank.get(row.away_team)
                     threshold = 3
                     if (
-                        (home_rank is not None and (home_rank <= threshold or home_rank > num_teams - threshold))
-                        or (away_rank is not None and (away_rank <= threshold or away_rank > num_teams - threshold))
+                        home_rank is not None
+                        and (home_rank <= threshold or home_rank > num_teams - threshold)
+                    ) or (
+                        away_rank is not None
+                        and (away_rank <= threshold or away_rank > num_teams - threshold)
                     ):
                         match_importance_flag = 1
 
-        record: Dict[str, object] = {
+        record: dict[str, object] = {
             "match_id": row.match_id,
             "kickoff_utc": row.kickoff_utc,
             "home_team": row.home_team,
@@ -336,10 +343,10 @@ def _optional_value(
     row: object,
     field: str,
     *,
-    team_history: Optional[Deque[HistoryEntry]] = None,
-    stat_name: Optional[str] = None,
-    fallback_counters: Optional[Dict[str, int]] = None,
-    league_running_avg: Optional[Tuple[float, int]] = None,
+    team_history: deque[HistoryEntry] | None = None,
+    stat_name: str | None = None,
+    fallback_counters: dict[str, int] | None = None,
+    league_running_avg: tuple[float, int] | None = None,
 ) -> float:
     """Return a numeric stat from the row or use smart fallbacks.
 
@@ -366,7 +373,9 @@ def _optional_value(
         stat_index = _STAT_INDEX.get(stat_name)
         if stat_index is not None:
             try:
-                values = [entry[stat_index] for entry in team_history if not pd.isna(entry[stat_index])]
+                values = [
+                    entry[stat_index] for entry in team_history if not pd.isna(entry[stat_index])
+                ]
                 if values:
                     median = float(statistics.median(values))
                     if fallback_counters is not None:
@@ -394,8 +403,10 @@ def _optional_value(
     return 0.0
 
 
-def _count_recent_matches(dates: Deque[pd.Timestamp], kickoff: pd.Timestamp, *, days: int = 14) -> int:
-    """Count prior matches in dates deque that are strictly before kickoff and within the lookback window."""
+def _count_recent_matches(
+    dates: deque[pd.Timestamp], kickoff: pd.Timestamp, *, days: int = 14
+) -> int:
+    """Count prior matches in dates deque that are strictly before kickoff and within the lookback window."""  # noqa: E501
 
     cutoff = kickoff - pd.Timedelta(days=days)
     count = 0
@@ -411,7 +422,7 @@ def _count_recent_matches(dates: Deque[pd.Timestamp], kickoff: pd.Timestamp, *, 
     return count
 
 
-def _derived(record: Dict[str, object], window: int) -> Dict[str, float]:
+def _derived(record: dict[str, object], window: int) -> dict[str, float]:
     home_attack = float(record[f"home_avg_scored_{window}"]) + float(
         record[f"away_avg_conceded_{window}"]
     )
@@ -428,9 +439,7 @@ def _derived(record: Dict[str, object], window: int) -> Dict[str, float]:
     }
 
 
-def _summary(
-    history: IterableTyp[HistoryEntry], prefix: str, window: int
-) -> Dict[str, float]:
+def _summary(history: IterableTyp[HistoryEntry], prefix: str, window: int) -> dict[str, float]:
     values = list(history)[-window:]
     if not values:
         return {

@@ -45,9 +45,7 @@ def main() -> int:
             },
             "validation": {
                 "target_rate": float(btts_split.validation["btts"].mean()),
-                "correlation": correlations(
-                    btts_split.validation, FEATURE_COLUMNS, "btts"
-                ),
+                "correlation": correlations(btts_split.validation, FEATURE_COLUMNS, "btts"),
             },
             "test": {
                 "target_rate": float(btts_split.test["btts"].mean()),
@@ -64,9 +62,7 @@ def main() -> int:
             "feature_std": {
                 feature: float(cards[feature].std(ddof=0)) for feature in CARD_FEATURE_COLUMNS
             },
-            "correlation": correlations(
-                cards, CARD_FEATURE_COLUMNS, "total_yellows_over_3_5"
-            ),
+            "correlation": correlations(cards, CARD_FEATURE_COLUMNS, "total_yellows_over_3_5"),
         },
     }
     output = root / "reports" / "generated" / "feature_signal_diagnosis.json"

@@ -78,9 +78,8 @@ def gate_prediction_with_source_policy(
     if not decision.accepted:
         return decision.model_copy(
             update={
-                "reasons": decision.reasons + [
-                    row["reason"] for row in policy_result.discarded_rows
-                ]
+                "reasons": decision.reasons
+                + [row["reason"] for row in policy_result.discarded_rows]
             }
         )
     provenance = build_selection_provenance(policy, policy_result.accepted)
@@ -123,8 +122,7 @@ def gate_prediction_for_market_comparison(
     relevant = [
         snapshot
         for snapshot in snapshots
-        if snapshot.match_id == prediction.match_id
-        and snapshot.market == prediction.market
+        if snapshot.match_id == prediction.match_id and snapshot.market == prediction.market
     ]
     if not relevant:
         return GateDecision(
@@ -170,9 +168,7 @@ def gate_prediction_for_market_comparison(
         ),
         0,
     )
-    fair_probability = normalized[
-        "fair_probability_a" if yes_index == 0 else "fair_probability_b"
-    ]
+    fair_probability = normalized["fair_probability_a" if yes_index == 0 else "fair_probability_b"]
     return GateDecision(
         accepted=True,
         prediction_id=prediction.prediction_id,

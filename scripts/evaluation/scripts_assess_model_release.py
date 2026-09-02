@@ -19,9 +19,7 @@ def main() -> int:
     report = json.loads((root / args.input).read_text(encoding="utf-8"))
     assessments = {
         "btts": {
-            "expanded_vs_legacy": _assess(
-                report["btts"]["summary"], "legacy", "expanded"
-            ),
+            "expanded_vs_legacy": _assess(report["btts"]["summary"], "legacy", "expanded"),
             "legacy_vs_constant": _assess(
                 report["btts"]["summary"], "constant_train_rate", "legacy"
             ),

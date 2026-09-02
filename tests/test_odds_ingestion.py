@@ -76,9 +76,7 @@ def test_ingestion_rejects_protected_holdout(tmp_path: Path) -> None:
         source_version="v1",
         license_status="test-only",
         reusable=True,
-        matches=[
-            MatchReference(match_id="m-2526", kickoff_utc=KICKOFF, season="2526")
-        ],
+        matches=[MatchReference(match_id="m-2526", kickoff_utc=KICKOFF, season="2526")],
     )
     assert accepted == []
     assert result.protected_holdout_rows == 1

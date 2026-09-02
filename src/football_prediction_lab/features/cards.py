@@ -57,12 +57,8 @@ def build_card_features(
         raise ValueError(f"Missing card columns: {sorted(missing)}")
 
     ordered = matches.sort_values(["kickoff_utc", "match_id"]).reset_index(drop=True)
-    history: dict[str, deque[TeamCardEntry]] = defaultdict(
-        lambda: deque(maxlen=max(windows))
-    )
-    referee_history: dict[str, deque[RefereeCardEntry]] = defaultdict(
-        lambda: deque(maxlen=10)
-    )
+    history: dict[str, deque[TeamCardEntry]] = defaultdict(lambda: deque(maxlen=max(windows)))
+    referee_history: dict[str, deque[RefereeCardEntry]] = defaultdict(lambda: deque(maxlen=10))
     rows: list[dict[str, object]] = []
 
     for row in ordered.itertuples(index=False):
@@ -137,9 +133,7 @@ def _optional_value(row: object, field: str) -> float:
     return 0.0 if pd.isna(value) else float(value)
 
 
-def _summary(
-    history: deque[TeamCardEntry], prefix: str, window: int
-) -> dict[str, float]:
+def _summary(history: deque[TeamCardEntry], prefix: str, window: int) -> dict[str, float]:
     values = list(history)[-window:]
     if not values:
         return {

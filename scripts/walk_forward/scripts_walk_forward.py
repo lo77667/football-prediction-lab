@@ -16,11 +16,11 @@ from football_prediction_lab.features.cards import (
 )
 from football_prediction_lab.features.pre_match import FEATURE_COLUMNS
 from football_prediction_lab.models.btts import LEGACY_FEATURE_COLUMNS, BttsLogisticBaseline
-from football_prediction_lab.models.cards import TotalYellowCardsBaseline
+from football_prediction_lab.models.btts_lightgbm import BttsLightGBMModel
 
 # New model imports
 from football_prediction_lab.models.btts_xgboost import BttsXGBoostModel
-from football_prediction_lab.models.btts_lightgbm import BttsLightGBMModel
+from football_prediction_lab.models.cards import TotalYellowCardsBaseline
 
 
 def evaluate_btts(
@@ -66,9 +66,7 @@ def evaluate_cards(
     test = frame[frame["season"].astype(str) == test_season]
     model = TotalYellowCardsBaseline(feature_columns=feature_columns).fit(train)
     probability = model.predict_probability(test)
-    return evaluate_binary(
-        probability, test["total_yellows_over_3_5"]
-    ).as_dict() | {
+    return evaluate_binary(probability, test["total_yellows_over_3_5"]).as_dict() | {
         "test_season": test_season,
         "train_seasons": train_seasons,
     }
@@ -162,7 +160,8 @@ def main() -> int:
             xgb_model = BttsXGBoostModel(feature_columns=FEATURE_COLUMNS).fit(train)
             xgb_prob = xgb_model.predict_probability(test)
             btts_results["xgboost"].append(
-                evaluate_binary(xgb_prob, test["btts"]).as_dict() | {
+                evaluate_binary(xgb_prob, test["btts"]).as_dict()
+                | {
                     "test_season": test_season,
                     "train_seasons": train_seasons,
                 }
@@ -177,7 +176,8 @@ def main() -> int:
             lgb_model = BttsLightGBMModel(feature_columns=FEATURE_COLUMNS).fit(train)
             lgb_prob = lgb_model.predict_probability(test)
             btts_results["lightgbm"].append(
-                evaluate_binary(lgb_prob, test["btts"]).as_dict() | {
+                evaluate_binary(lgb_prob, test["btts"]).as_dict()
+                | {
                     "test_season": test_season,
                     "train_seasons": train_seasons,
                 }
@@ -233,16 +233,12 @@ def main() -> int:
         "walk_forward_rule": "train on all seasons before the held-out season; no shuffling",
         "btts": {
             "variants": btts_results,
-            "summary": {
-                name: average_metrics(values) for name, values in btts_results.items()
-            },
+            "summary": {name: average_metrics(values) for name, values in btts_results.items()},
             "comparison_to_constant": compare_to_constant(btts_results),
         },
         "cards": {
             "variants": card_results,
-            "summary": {
-                name: average_metrics(values) for name, values in card_results.items()
-            },
+            "summary": {name: average_metrics(values) for name, values in card_results.items()},
             "comparison_to_constant": compare_to_constant(card_results),
         },
     }

@@ -303,8 +303,7 @@ def main() -> int:
                 "P(BTTS)=1-exp(-lambda_h)-exp(-lambda_a)+exp(-(lambda_h+lambda_a))"
             ),
             "poisson_cards_rate": (
-                "Poisson total-card rate and "
-                "P(total_yellows>3.5)=1-PoissonCDF(3)"
+                "Poisson total-card rate and P(total_yellows>3.5)=1-PoissonCDF(3)"
             ),
         },
         "markets": market_reports,

@@ -31,18 +31,14 @@ _MARKER_PATTERNS: dict[QualitativeTrait, tuple[re.Pattern[str], ...]] = {
     "coachability": (
         re.compile(r"\b(coachab(?:le|ility)|responded\s+well\s+to\s+feedback)\b", re.I),
     ),
-    "attention": (
-        re.compile(r"\b(focus(?:ed)?|concentration|attentive|switched\s+off)\b", re.I),
-    ),
+    "attention": (re.compile(r"\b(focus(?:ed)?|concentration|attentive|switched\s+off)\b", re.I),),
     "recovery_mindset": (
         re.compile(r"\b(recover(?:y|ed|ing)|bounced\s+back|resilience|resilient)\b", re.I),
     ),
     "competitive_response": (
         re.compile(r"\b(competi(?:tive|tion)|responded\s+after|reaction\s+to\s+setback)\b", re.I),
     ),
-    "readiness": (
-        re.compile(r"\b(ready|readiness|prepared|preparedness)\b", re.I),
-    ),
+    "readiness": (re.compile(r"\b(ready|readiness|prepared|preparedness)\b", re.I),),
 }
 
 _NEGATION_RE = re.compile(r"\b(no|not|without|never|didn't|did not|shows no signs of)\b", re.I)

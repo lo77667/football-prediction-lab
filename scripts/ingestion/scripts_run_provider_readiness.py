@@ -21,9 +21,7 @@ def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--date", default=date.today().isoformat())
     parser.add_argument("--allow-network", action="store_true")
-    parser.add_argument(
-        "--output", default="reports/generated/provider_readiness.json"
-    )
+    parser.add_argument("--output", default="reports/generated/provider_readiness.json")
     args = parser.parse_args()
     try:
         requested_date = date.fromisoformat(args.date)

@@ -19,9 +19,7 @@ from football_prediction_lab.models.cards import TotalYellowCardsBaseline
 
 
 def feature_variants() -> dict[str, list[str]]:
-    team_context = [
-        column for column in CARD_FEATURE_COLUMNS if not column.startswith("referee_")
-    ]
+    team_context = [column for column in CARD_FEATURE_COLUMNS if not column.startswith("referee_")]
     return {
         "legacy": LEGACY_CARD_FEATURE_COLUMNS,
         "team_context": team_context,

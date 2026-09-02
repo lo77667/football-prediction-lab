@@ -111,9 +111,7 @@ def main() -> None:
     REPORT.parent.mkdir(parents=True, exist_ok=True)
     REPORT.write_text(json.dumps(report, indent=2, sort_keys=True), encoding="utf-8")
     raw_paths = [ROOT / path for path in files]
-    digest_input = "".join(
-        f"{path}:{sha256_file(path)};" for path in raw_paths
-    )
+    digest_input = "".join(f"{path}:{sha256_file(path)};" for path in raw_paths)
     manifest = build_manifest(
         input_path=";".join(files),
         input_sha256=hashlib.sha256(digest_input.encode("utf-8")).hexdigest(),

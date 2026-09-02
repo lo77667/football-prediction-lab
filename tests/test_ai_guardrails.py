@@ -59,9 +59,7 @@ def test_supported_output_requires_supplied_evidence() -> None:
 
 def test_unknown_evidence_is_rejected() -> None:
     payload = _output(
-        signals=[
-            {"name": "injury", "value": "unknown", "evidence_ids": ["invented"]}
-        ]
+        signals=[{"name": "injury", "value": "unknown", "evidence_ids": ["invented"]}]
     )
     with pytest.raises(AIAnalysisError, match="evidence"):
         validate_ai_output(payload, _request())

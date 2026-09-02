@@ -32,9 +32,7 @@ def make_event(event_id: str, match_id: str, hour: int, category: str) -> Qualit
 
 
 def test_event_without_provenance_is_not_trainable() -> None:
-    matches = pd.DataFrame(
-        {"match_id": ["m1"], "kickoff_utc": ["2024-08-10T14:00:00Z"]}
-    )
+    matches = pd.DataFrame({"match_id": ["m1"], "kickoff_utc": ["2024-08-10T14:00:00Z"]})
     event = make_event("e1", "m1", 13, "lineup").model_copy(update={"provenance": None})
 
     result = build_qualitative_features(matches, [event])

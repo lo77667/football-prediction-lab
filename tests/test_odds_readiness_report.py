@@ -37,9 +37,7 @@ def test_empty_snapshots_keep_source_findings_out_of_row_counts() -> None:
     assert value["standardized_snapshot_rows"] == 0
     assert value["discarded_snapshot_rows"] == 0
     assert value["snapshot_rejections_by_reason"] == {}
-    assert value["source_observations"]["source_rejections_by_reason"] == {
-        "missing_manifest": 10
-    }
+    assert value["source_observations"]["source_rejections_by_reason"] == {"missing_manifest": 10}
 
 
 def test_snapshot_rejections_sum_to_discarded_rows() -> None:

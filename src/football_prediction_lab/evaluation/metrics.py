@@ -110,9 +110,7 @@ def evaluate_binary_extended(
             else float(1 - result["log_loss"] / baseline_metrics.log_loss)
         )
     result["valid_rows"] = int(len(actual_array))
-    result["coverage"] = (
-        1.0 if expected_rows is None else float(len(actual_array) / expected_rows)
-    )
+    result["coverage"] = 1.0 if expected_rows is None else float(len(actual_array) / expected_rows)
     return result
 
 

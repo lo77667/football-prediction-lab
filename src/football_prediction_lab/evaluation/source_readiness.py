@@ -39,9 +39,7 @@ def select_manifested_source_files(
             continue
         missing = sorted(REQUIRED_MANIFEST_FIELDS.difference(manifest))
         if missing:
-            rejected.append(
-                {"path": str(path), "reason": f"manifest_missing:{','.join(missing)}"}
-            )
+            rejected.append({"path": str(path), "reason": f"manifest_missing:{','.join(missing)}"})
             continue
         if manifest.get("license_policy") not in {"redistributable", "internal_licensed"}:
             rejected.append({"path": str(path), "reason": "unverified_license_policy"})

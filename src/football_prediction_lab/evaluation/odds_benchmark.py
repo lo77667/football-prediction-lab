@@ -163,8 +163,7 @@ def paired_permutation_test(
         signs = rng.choice(np.array([-1.0, 1.0]), size=len(differences))
         null_means[index] = float((differences * signs).mean())
     p_value = float(
-        (1 + np.count_nonzero(np.abs(null_means) >= abs(observed)))
-        / (n_permutations + 1)
+        (1 + np.count_nonzero(np.abs(null_means) >= abs(observed))) / (n_permutations + 1)
     )
     return {
         "metric": metric,

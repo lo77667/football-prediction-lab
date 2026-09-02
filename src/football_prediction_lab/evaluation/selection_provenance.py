@@ -56,9 +56,7 @@ def build_selection_provenance(
         policy_id=policy.policy_id,
         policy_sha256=policy_sha256(policy),
         snapshot_ids=[snapshot.snapshot_id for snapshot in snapshots],
-        snapshot_fingerprints=[
-            canonical_snapshot_fingerprint(snapshot) for snapshot in snapshots
-        ],
+        snapshot_fingerprints=[canonical_snapshot_fingerprint(snapshot) for snapshot in snapshots],
         market=policy.market,
         source_name=policy.source_name,
         odds_type=policy.odds_type,

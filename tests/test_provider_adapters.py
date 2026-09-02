@@ -129,9 +129,7 @@ def test_thesportsdb_key_is_redacted_from_batch_endpoint() -> None:
         assert secret in url
         return encoded(THESPORTSDB_PAYLOAD)
 
-    batch = TheSportsDBClient(token=secret, transport=transport).fetch_fixtures(
-        date(2026, 8, 28)
-    )
+    batch = TheSportsDBClient(token=secret, transport=transport).fetch_fixtures(date(2026, 8, 28))
     assert secret not in batch.endpoint
     assert "<redacted>" in batch.endpoint
     assert batch.matches[0].external_id == "99"

@@ -53,9 +53,7 @@ def profile_odds_quality(snapshots: Iterable[OddsSnapshot]) -> OddsQualityProfil
     for snapshot in rows:
         captures_by_match[snapshot.match_id].append(snapshot.captured_at.astimezone(UTC))
     non_monotonic = sum(
-        1
-        for captures in captures_by_match.values()
-        if captures != sorted(captures)
+        1 for captures in captures_by_match.values() if captures != sorted(captures)
     )
     captures = [snapshot.captured_at.astimezone(UTC) for snapshot in rows]
     groups = {(item.market, item.source_name) for item in rows}

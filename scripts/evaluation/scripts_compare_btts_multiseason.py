@@ -53,9 +53,7 @@ def summarize(probability: pd.Series, actual: pd.Series) -> dict[str, object]:
     reliability["bucket"] = reliability["bucket"].astype(str)
     return {
         "metrics": evaluation.as_dict(),
-        "expected_calibration_error_10": expected_calibration_error(
-            probability, actual, bins=10
-        ),
+        "expected_calibration_error_10": expected_calibration_error(probability, actual, bins=10),
         "reliability": reliability.to_dict(orient="records"),
     }
 
@@ -123,9 +121,7 @@ def main() -> int:
             }
             for name, feature_columns in variants.items():
                 probability = fit_predict(historical, final_season, feature_columns)
-                seasonal_results["variants"][name] = summarize(
-                    probability, final_season["btts"]
-                )
+                seasonal_results["variants"][name] = summarize(probability, final_season["btts"])
             results["season_2425_holdout"] = seasonal_results
 
     selected = min(validation_scores, key=lambda name: validation_scores[name])

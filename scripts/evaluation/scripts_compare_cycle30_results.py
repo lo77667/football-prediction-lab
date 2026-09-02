@@ -12,9 +12,7 @@ METRICS = ("accuracy", "brier_score", "log_loss", "ece_10")
 def _metric_block(report: dict, market: str, variant: str) -> dict[str, float | int]:
     block = report[market]["summary"].get(variant, {})
     return {
-        metric: float(block[f"{metric}_mean"])
-        for metric in METRICS
-        if f"{metric}_mean" in block
+        metric: float(block[f"{metric}_mean"]) for metric in METRICS if f"{metric}_mean" in block
     }
 
 

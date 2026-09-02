@@ -78,8 +78,7 @@ def main() -> int:
     )
     report = {
         "protocol": (
-            "Train on seasons before calibration, fit Platt on 2425, "
-            "test once on unseen 2526."
+            "Train on seasons before calibration, fit Platt on 2425, test once on unseen 2526."
         ),
         "test_season": args.test_season,
         "btts": evaluate_market(

@@ -72,6 +72,4 @@ def test_readiness_conditional_is_not_financial_execution() -> None:
 
 def test_readiness_rejects_protected_holdout() -> None:
     with pytest.raises(ValueError, match="protected"):
-        assess_commercial_readiness(
-            frame(2, season="2526"), source_verified=True, minimum_rows=1
-        )
+        assess_commercial_readiness(frame(2, season="2526"), source_verified=True, minimum_rows=1)
