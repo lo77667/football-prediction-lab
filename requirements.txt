@@ -1,2 +1,10 @@
 xgboost>=1.7
 lightgbm>=3.3
+
+aiohttp>=3.8.0
+python-telegram-bot>=20.0
+feedparser>=6.0.0
+understat>=0.3.0
+requests>=2.28.0
+beautifulsoup4>=4.11.1
+vaderSentiment>=3.3.2
