@@ -8,6 +8,7 @@
 |---|---|---|---|---|---|
 | football-data.org | API token | `FOOTBALL_DATA_API_TOKEN` | Header باسم `X-Auth-Token` | مفقود | مطلوب عند تفعيل الشبكة، ويجب مراجعة الخطة والحدود والترخيص |
 | TheSportsDB | API key | `THESPORTSDB_API_KEY` | ضمن مسار الطلب حسب adapter | مفقود | مطلوب فقط عند اعتماد المصدر وفحص الترخيص والتغطية |
+| API-Football/API-Sports | API key | `API_FOOTBALL_KEY` | Header باسم `x-apisports-key` | غير مفعّل | خيار للـfixtures والإصابات والتشكيلات وpre-match odds؛ راجع الخطة قبل الاستخدام |
 
 ## خدمات لا تحتاج token
 
@@ -20,7 +21,7 @@
 
 | التكامل | متغير البيئة/السر | الاستخدام | القرار الحالي |
 |---|---|---|---|
-| The Odds API | `THE_ODDS_API_KEY` | odds وbenchmark اقتصادي | مؤجل؛ لا يفتح `EV` أو `ROI` تلقائيًا |
+| The Odds API | `THE_ODDS_API_KEY` | odds وbenchmark اقتصادي | مؤجل؛ historical odds endpoint مدفوع وفق الوثائق، ولا يفتح `EV` أو `ROI` تلقائيًا |
 | OpenAI | `OPENAI_API_KEY` | adapter للتحليل المساعد | اختياري، وليس مطلوبًا لمسار BTTS الأساسي |
 | Telegram | `TELEGRAM_BOT_TOKEN` | إرسال الإشعارات | مؤجل؛ المسار الحالي dry-run/shadow فقط |
 | RAGFlow | `RAGFLOW_API_KEY` و`RAGFLOW_API_URL` | سياق واسترجاع نصي | غير مطلوب للنموذج الأساسي ومؤجل |
