@@ -31,6 +31,7 @@ def rate_limited(calls: int, period: float):
 
     return decorator
 
+
 @dataclass
 class DataSource:
     name: str
