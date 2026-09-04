@@ -1,11 +1,12 @@
 """SQLite cache used across data sources to reduce API calls and respect free limits."""
-import sqlite3
+
 import json
+import sqlite3
 from datetime import datetime, timedelta
-from typing import Optional
 
 DB_PATH = "data_harvester.db"
 TABLE = "data_cache"
+
 
 def init_cache(path: str = DB_PATH):
     conn = sqlite3.connect(path)
@@ -23,7 +24,8 @@ def init_cache(path: str = DB_PATH):
     conn.commit()
     conn.close()
 
-def get_cache(key: str, max_age_seconds: Optional[int] = None, path: str = DB_PATH) -> Optional[dict]:
+
+def get_cache(key: str, max_age_seconds: int | None = None, path: str = DB_PATH) -> dict | None:
     conn = sqlite3.connect(path)
     conn.row_factory = sqlite3.Row
     cur = conn.cursor()
@@ -38,10 +40,17 @@ def get_cache(key: str, max_age_seconds: Optional[int] = None, path: str = DB_PA
             return None
     return json.loads(row["response"])
 
+
 def set_cache(key: str, source: str, url: str, response: dict, path: str = DB_PATH):
     conn = sqlite3.connect(path)
     cur = conn.cursor()
-    cur.execute(f"INSERT OR REPLACE INTO {TABLE} (cache_key, source, url, response, fetched_at) VALUES (?, ?, ?, ?, ?)",
-                (key, source, url, json.dumps(response, ensure_ascii=False), datetime.utcnow().isoformat()))
+    query = (
+        f"INSERT OR REPLACE INTO {TABLE} "
+        "(cache_key, source, url, response, fetched_at) VALUES (?, ?, ?, ?, ?)"
+    )
+    cur.execute(
+        query,
+        (key, source, url, json.dumps(response, ensure_ascii=False), datetime.utcnow().isoformat()),
+    )
     conn.commit()
     conn.close()

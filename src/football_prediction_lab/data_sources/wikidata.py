@@ -1,16 +1,19 @@
 """Adapter for Wikipedia / Wikidata metadata extraction (team names, players)."""
+
+from typing import Any
+
 import aiohttp
-import asyncio
-from typing import Any, Dict, List
+
 from .base import DataSource
-from .cache import init_cache, get_cache, set_cache
+from .cache import get_cache, init_cache, set_cache
+
 
 class WikiDataAdapter(DataSource):
     def __init__(self):
         super().__init__(name="wikidata")
         init_cache()
 
-    async def query_team_info(self, team_wikidata_id: str) -> Dict[str, Any]:
+    async def query_team_info(self, team_wikidata_id: str) -> dict[str, Any]:
         key = f"wikidata:{team_wikidata_id}"
         cached = get_cache(key, max_age_seconds=86400)
         if cached is not None:

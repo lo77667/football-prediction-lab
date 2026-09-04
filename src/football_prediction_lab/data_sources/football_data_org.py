@@ -1,12 +1,15 @@
 """Adapter for football-data.org free tier with explicit rate limit (10 req/min).
 Requires env var FOOTBALL_DATA_ORG_TOKEN (free signup, no card required for free tier).
 """
+
 import os
+from typing import Any
+
 import aiohttp
-import asyncio
-from typing import Any, Dict
+
 from .base import DataSource, rate_limited
-from .cache import init_cache, get_cache, set_cache
+from .cache import get_cache, init_cache, set_cache
+
 
 class FootballDataOrg(DataSource):
     def __init__(self, token: str = None):
@@ -16,7 +19,7 @@ class FootballDataOrg(DataSource):
         # 10 requests per minute -> rate_limited decorator with calls=10, period=60
         self._fetch = rate_limited(10, 60)(self._fetch_impl)
 
-    async def _fetch_impl(self, endpoint: str) -> Dict[str, Any]:
+    async def _fetch_impl(self, endpoint: str) -> dict[str, Any]:
         url = f"https://api.football-data.org/v2/{endpoint}"
         key = f"fdo:{endpoint}"
         cached = get_cache(key, max_age_seconds=60)
@@ -34,5 +37,5 @@ class FootballDataOrg(DataSource):
         set_cache(key, self.name, url, data)
         return data
 
-    async def fetch_competition(self, comp_id: str) -> Dict[str, Any]:
+    async def fetch_competition(self, comp_id: str) -> dict[str, Any]:
         return await self._fetch(f"competitions/{comp_id}/matches")
